@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getFilterObject } from '../../../util/get';
-import * as config from '../../../constant/config';
 
 class ProductList extends Component {
 
@@ -198,7 +197,7 @@ class ProductList extends Component {
       ...this.getColumnSearchProps('createdBy'),
       render: createdBy => (
         <>
-          <Avatar src={`${config.FILE_URL}/${createdBy.avatar}`} />
+          <Avatar src={createdBy.avatar} />
           <span style={{ paddingLeft: '10px' }}>{createdBy.username}</span>
         </>
       ),
