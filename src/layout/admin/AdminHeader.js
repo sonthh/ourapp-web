@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { toggleMenu } from '../../action/appAction';
 import { logout } from '../../util/auth';
 import { Redirect, Link } from 'react-router-dom';
+import { getCurrentUser } from '../../util/auth';
 
 const { Header } = Layout;
 
@@ -30,11 +31,22 @@ class AdminHeader extends Component {
     this.setState({ logout: true });
   }
 
-  userMenu = (
+  componentWillReceiveProps(nextProps) {
+    if (nextProps && nextProps.currentUser) {
+      const { currentUser } = nextProps;
+      const { username, avatar } = currentUser;
+
+      console.log(currentUser);
+
+      localStorage.setItem('currentUser', JSON.stringify({ username, avatar }));
+    }
+  }
+
+  userMenu = (currentUser) => (
     <Menu>
       <Menu.Item>
         <UserOutlined />
-        <Link style={{ display: 'inline' }} to='/admin/profile'><span>Profile</span></Link>
+        <Link style={{ display: 'inline' }} to='/admin/profile'><span>{currentUser.username}</span></Link>
       </Menu.Item>
       <Menu.Item>
         <SettingOutlined />
@@ -62,6 +74,8 @@ class AdminHeader extends Component {
       return <Redirect to={'/auth/login'} />
     }
 
+    const currentUser = getCurrentUser();
+
     return (
       <Header className='site-layout-background' style={{ padding: 0 }}>
         <Row justify='space-between' >
@@ -79,9 +93,9 @@ class AdminHeader extends Component {
                   cursor: 'pointer', transition: 'color 0.3s', color: '#1890ff'
                 }} />
             </Dropdown>
-            <Dropdown trigger={['click']} overlay={this.userMenu} placement="bottomRight">
+            <Dropdown trigger={['click']} overlay={this.userMenu(currentUser)} placement="bottomRight">
               <Avatar style={{ lineHeight: '64px', cursor: 'pointer' }}
-                src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                src={currentUser.avatar} />
             </Dropdown>
           </Col>
         </Row>

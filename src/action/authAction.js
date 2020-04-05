@@ -10,11 +10,11 @@ export const passwordLogin = (loginData) => {
     });
 
     try {
-      const { token } = await authService.passwordLogin(loginData);
+      const authData = await authService.passwordLogin(loginData);
 
       dispatch({
         type: actionTypes.PASSWORD_LOGIN_SUCCESS,
-        payloads: { token },
+        payloads: authData,
       });
     } catch (error) {
       const errorData = error.response.data;
@@ -23,6 +23,22 @@ export const passwordLogin = (loginData) => {
         type: actionTypes.PASSWORD_LOGIN_FAILURE,
         payloads: { error: errorData },
       });
+    }
+  }
+}
+
+export const userMe = () => {
+
+  return async (dispatch) => {
+    try {
+      const currentUser = await authService.userMe();
+
+      dispatch({
+        type: actionTypes.FIND_ME_SUCCESS,
+        payloads: { currentUser },
+      });
+    } catch (error) {
+      console.log(error);
     }
   }
 }

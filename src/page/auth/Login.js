@@ -19,7 +19,7 @@ class Login extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps && nextProps.auth && nextProps.auth !== this.props.auth) {
-      const { token, error, isLoading, isAuthenticated } = nextProps.auth;
+      const { token, error, isLoading, isAuthenticated, username, avatar } = nextProps.auth;
 
       if (isLoading !== undefined) {
         this.setState({ loading: isLoading });
@@ -33,7 +33,7 @@ class Login extends Component {
       }
 
       if (token && isAuthenticated) {
-        saveAuthData({ token, isAuthenticated });
+        saveAuthData({ token, isAuthenticated, username, avatar });
       }
     }
   }
@@ -106,7 +106,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     passwordLogin: (loginData) => {
       dispatch(authAction.passwordLogin(loginData));
-    }
+    },
   }
 }
 

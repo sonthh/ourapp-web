@@ -9,7 +9,8 @@ export const findManyProducts = (params = {}) => {
       type: actionTypes.FIND_MANY_PRODUCTS,
     });
 
-    try {const dataList = await productService.findManyProducts(params);      
+    try {
+      const dataList = await productService.findManyProducts(params);      
 
       dispatch({
         type: actionTypes.FIND_MANY_PRODUCTS_SUCCESS,
