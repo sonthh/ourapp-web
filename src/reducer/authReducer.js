@@ -9,28 +9,28 @@ const initialState = {
 export const authReducer = (state = initialState, action) => {
 
   switch (action.type) {
-    case actionTypes.PASSWORD_LOGIN_SUCCESS:
-    
-    return {
-        ...action.payloads,
-        isLoading: false,
-        isAuthenticated: true,
-      }
-    case actionTypes.PASSWORD_LOGIN:
+    case actionTypes.AUTH_REQUEST:
 
       return {
         isLoading: true,
       };
-    case actionTypes.PASSWORD_LOGIN_FAILURE:
+    case actionTypes.AUTH_FAILURE:
       const { error } = action.payloads;
 
       return {
         error,
         isLoading: false,
       };
+    case actionTypes.PASSWORD_LOGIN_SUCCESS:
+
+      return {
+        ...action.payloads,
+        isLoading: false,
+        isAuthenticated: true,
+      }
     case actionTypes.FIND_ME_SUCCESS:
       const { currentUser } = action.payloads;
-      
+
       return {
         currentUser,
         isLoading: false,

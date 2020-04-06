@@ -1,17 +1,26 @@
 import React, { Component } from 'react';
-import { Breadcrumb, Table, Tag, Input, Button, notification, Avatar, Popconfirm, message } from 'antd';
+import {
+  Breadcrumb, Table, Tag, Input, Button, notification, Avatar, Popconfirm, message, Typography,
+  Tooltip,
+} from 'antd';
 import * as productAction from '../../../action/productAction';
 import { connect } from 'react-redux';
 import Highlighter from 'react-highlight-words';
-import { SearchOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, DeleteOutlined, ClearOutlined, SortAscendingOutlined, FilterOutlined } from '@ant-design/icons';
 import { getFilterObject } from '../../../util/get';
+import { checkIsEmptyObj } from '../../../util/check';
+
+const { Paragraph } = Typography;
 
 class ProductList extends Component {
 
   state = {
+    filteredInfo: null,
+    sortedInfo: null,
     data: [],
     pagination: {},
     loading: true,
+    selectedRowKeys: [],
   };
 
   componentDidMount() {
@@ -54,26 +63,33 @@ class ProductList extends Component {
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-
-    const { current, pageSize } = pagination;
+    const { current } = pagination;
 
     this.setState({
       pagination: { ...this.state.pagination, current },
+      filteredInfo: filters,
+      sortedInfo: sorter,
     });
 
-    filters = getFilterObject(['status', 'name', 'price', 'createdBy'], filters);
+    this.fetchProducts(pagination, filters, sorter);
+  };
 
-    const offset = (current - 1) * pageSize;
-    const sortDirection = (sorter.order && sorter.order === 'ascend') ? 'ASC' : 'DESC';
+  fetchProducts = (pagination, filters, sorter) => {
+
+    filters = getFilterObject(['status', 'name', 'price', 'createdBy'], filters);
+    
+    const sortDirection = (sorter && sorter.order && sorter.order === 'ascend') ? 'ASC' : 'DESC';
+    const sortBy = (sorter && sorter.order && sorter.field) ? sorter.field : 'id';
+    const { current, pageSize } = pagination;
 
     this.props.findManyProducts({
-      offset,
+      currentPage: current,
       limit: pageSize,
-      sortBy: sorter.field,
+      sortBy,
       sortDirection,
       ...filters,
     });
-  };
+  }
 
   getColumnSearchProps = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -141,93 +157,139 @@ class ProductList extends Component {
     clearFilters();
   };
 
-  columns = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      width: '20%',
-      ...this.getColumnSearchProps('name'),
-    },
-    {
-      title: 'Price',
-      dataIndex: 'price',
-      sorter: true,
-      width: '20%',
-      ...this.getColumnSearchProps('price'),
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      width: '20%',
-      filters: [
-        {
-          text: <Tag color='red'>OUT OF STOCK</Tag>,
-          value: 'OUT_OF_STOCK',
-        },
-        {
-          text: <Tag color='green'>AVAILABLE</Tag>,
-          value: 'AVAILABLE',
-        },
-      ],
-      filterMultiple: false,
-      render: status => {
-        let color = 'green';
-        let value = ''
-        switch (status) {
-          case 'OUT_OF_STOCK':
-            color = 'red';
-            value = 'OUT OF STOCK'
-            break;
-          case 'AVAILABLE':
-            color = 'green';
-            value = 'AVAILABLE'
-            break;
-          default:
-            break;
-        }
-        return (
-          <Tag color={color}>{value}</Tag>
-        );
-      },
-    },
-    {
-      title: 'Create by',
-      dataIndex: 'createdBy',
-      width: '20%',
-      ...this.getColumnSearchProps('createdBy'),
-      render: createdBy => (
-        <>
-          <Avatar src={createdBy.avatar} />
-          <span style={{ paddingLeft: '10px' }}>{createdBy.username}</span>
-        </>
-      ),
-    },
-    {
-      title: 'Action',
-      width: '20%',
-      dataIndex: 'id',
-      render: (text, record, index) => (
-        <Popconfirm
-          title="Are you sure delete this product?"
-          onConfirm={() => this.confirmDelete(record, index)}
-        >
-          <Button
-            type='primary'
-            style={{ background: 'red', borderColor: 'red' }}
-            icon={<DeleteOutlined />}
-            size='small'>Delete
-        </Button>
-        </Popconfirm>
-      ),
-    },
-  ];
+
 
   confirmDelete = (record, index) => {
     message.success(`Deleted ${record.name}`);
   }
 
+  onSelectChange = selectedRowKeys => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    this.setState({ selectedRowKeys });
+  };
+
+  clearFilters = () => {
+    this.setState({ filteredInfo: null });
+    const { pagination, sortedInfo } = this.state;
+    this.fetchProducts(pagination, null, sortedInfo);
+  };
+
+  clearSorters = () => {
+    this.setState({ sortedInfo: null });
+    const { pagination, filteredInfo } = this.state;
+    this.fetchProducts(pagination, filteredInfo, null);
+  };
+
+  clearFiltersAndSorters = () => {
+    this.setState({
+      filteredInfo: null,
+      sortedInfo: null,
+    });
+
+    const { pagination } = this.state;
+    this.fetchProducts(pagination, null, null);
+  };
+
   render() {
-    const { data, pagination, loading } = this.state;
+    const { data, pagination, loading, selectedRowKeys } = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+    const hasSelected = selectedRowKeys.length > 0;
+    let { sortedInfo, filteredInfo } = this.state;
+    sortedInfo = sortedInfo || {};
+    filteredInfo = filteredInfo || {};
+
+    const columns = [
+      {
+        title: 'Name',
+        dataIndex: 'name',
+        width: '20%',
+        filteredValue: filteredInfo.name || null,
+        ...this.getColumnSearchProps('name'),
+        render: name => (
+          <Paragraph ellipsis={{ suffix: ' ' }}>{name}</Paragraph>
+        )
+      },
+      {
+        title: 'Price',
+        dataIndex: 'price',
+        sorter: true,
+        width: '20%',
+        key: 'price',
+        filteredValue: filteredInfo.price || null,
+        sortOrder: sortedInfo.columnKey === 'price' && sortedInfo.order,
+        ...this.getColumnSearchProps('price'),
+      },
+      {
+        title: 'Status',
+        dataIndex: 'status',
+        width: '20%',
+        filteredValue: filteredInfo.status || null,
+        filters: [
+          {
+            text: <Tag color='red'>OUT OF STOCK</Tag>,
+            value: 'OUT_OF_STOCK',
+          },
+          {
+            text: <Tag color='green'>AVAILABLE</Tag>,
+            value: 'AVAILABLE',
+          },
+        ],
+        filterMultiple: false,
+        render: status => {
+          let color = 'green';
+          let value = ''
+          switch (status) {
+            case 'OUT_OF_STOCK':
+              color = 'red';
+              value = 'OUT OF STOCK'
+              break;
+            case 'AVAILABLE':
+              color = 'green';
+              value = 'AVAILABLE'
+              break;
+            default:
+              break;
+          }
+          return (
+            <Tag color={color}>{value}</Tag>
+          );
+        },
+      },
+      {
+        title: 'Create by',
+        dataIndex: 'createdBy',
+        width: '20%',
+        filteredValue: filteredInfo.createdBy || null,
+        ...this.getColumnSearchProps('createdBy'),
+        render: createdBy => (
+          <>
+            <Avatar src={createdBy.avatar} />
+            <span style={{ paddingLeft: '10px' }}>{createdBy.username}</span>
+          </>
+        ),
+      },
+      {
+        title: 'Action',
+        width: '20%',
+        dataIndex: 'id',
+        render: (text, record, index) => (
+          <Popconfirm
+            title="Are you sure delete this product?"
+            onConfirm={() => this.confirmDelete(record, index)}
+          >
+            <Button
+              type='primary'
+              style={{ background: 'red', borderColor: 'red' }}
+              icon={<DeleteOutlined />}
+              size='small'>Delete
+          </Button>
+          </Popconfirm>
+        ),
+      },
+    ];
 
     return (
       <>
@@ -235,9 +297,52 @@ class ProductList extends Component {
           <Breadcrumb.Item>Product</Breadcrumb.Item>
           <Breadcrumb.Item>List</Breadcrumb.Item>
         </Breadcrumb>
+        <div style={{ marginBottom: 16 }}>
+          <Tooltip placement="topLeft" title='Clear sorters'>
+            <Button
+              type='dashed'
+              onClick={this.clearSorters}
+              icon={<ClearOutlined />}
+              disabled={checkIsEmptyObj(sortedInfo) || !sortedInfo.order}
+            >
+              <SortAscendingOutlined />
+            </Button>
+          </Tooltip>
+          <Tooltip placement="topLeft" title='Clear filters'>
+            <Button
+              type='dashed'
+              onClick={this.clearFilters}
+              icon={<ClearOutlined />}
+              disabled={checkIsEmptyObj(filteredInfo)}
+            >
+              <FilterOutlined />
+            </Button>
+          </Tooltip>
+          <Tooltip placement="topLeft" title='Clear sorters and filters'>
+            <Button
+              type='dashed'
+              onClick={this.clearFiltersAndSorters}
+              icon={<ClearOutlined />}
+              disabled={
+                checkIsEmptyObj(filteredInfo || checkIsEmptyObj(sortedInfo))
+                || checkIsEmptyObj(filteredInfo) || !sortedInfo.order
+              }
+            >
+              <FilterOutlined /> {'&'} <SortAscendingOutlined />
+            </Button>
+          </Tooltip>
+          <Tooltip placement="topLeft" title='Delete selected items'>
+            <Button type="danger" onClick={() => {}} disabled={!hasSelected} loading={false}>
+              Delete
+            </Button>
+          </Tooltip>
+          <span style={{ marginLeft: 8 }}>
+            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+          </span>
+        </div>
         <Table
-          title={() => 'List of products'}
-          columns={this.columns}
+          rowSelection={rowSelection}
+          columns={columns}
           rowKey={record => record.id}
           dataSource={data}
           pagination={pagination}

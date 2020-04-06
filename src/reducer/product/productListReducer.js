@@ -9,6 +9,18 @@ const initialState = {
 export const productListReducer = (state = initialState, action) => {
 
   switch (action.type) {
+    case actionTypes.PRODUCTS_REQUEST:
+
+      return {
+        isLoading: true
+      };
+    case actionTypes.PRODUCTS_FAILURE:
+      const { error } = action.payloads;
+
+      return {
+        error,
+        isLoading: false
+      };
     case actionTypes.FIND_MANY_PRODUCTS_SUCCESS:
       const { dataList } = action.payloads;
 
@@ -16,18 +28,6 @@ export const productListReducer = (state = initialState, action) => {
         dataList,
         isLoading: false,
       }
-    case actionTypes.FIND_MANY_PRODUCTS:
-
-      return {
-        isLoading: true
-      };
-    case actionTypes.FIND_MANY_PRODUCTS_FAILURE:
-      const { error } = action.payloads;
-
-      return {
-        error,
-        isLoading: false
-      };
     default:
       return state;
   }

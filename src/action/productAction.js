@@ -6,7 +6,7 @@ export const findManyProducts = (params = {}) => {
 
   return async (dispatch) => {
     dispatch({
-      type: actionTypes.FIND_MANY_PRODUCTS,
+      type: actionTypes.PRODUCTS_REQUEST,
     });
 
     try {
@@ -20,7 +20,7 @@ export const findManyProducts = (params = {}) => {
       const errorData = error.response.data;
       
       dispatch({
-        type: actionTypes.FIND_MANY_PRODUCTS_FAILURE,
+        type: actionTypes.PRODUCTS_FAILURE,
         payloads: { error: errorData },
       });
     }

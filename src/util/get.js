@@ -5,11 +5,19 @@ import { checkAuth } from './auth';
 // helper function for filtering data in ant design table components
 export const getFilterObject = (keys = [], filterObject = {}) => {
 
+  if (!filterObject) {
+    return null;
+  }
+
   let result = { ...filterObject };
 
   for (const key of keys) {
     if (!filterObject[key] || !filterObject[key][0]) {
       continue;
+    }
+
+    if (filterObject[key] == null) {
+      delete filterObject[key];
     }
 
     result[key] = filterObject[key][0];

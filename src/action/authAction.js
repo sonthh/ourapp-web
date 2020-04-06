@@ -6,7 +6,7 @@ export const passwordLogin = (loginData) => {
 
   return async (dispatch) => {
     dispatch({
-      type: actionTypes.PASSWORD_LOGIN,
+      type: actionTypes.AUTH_REQUEST,
     });
 
     try {
@@ -18,9 +18,9 @@ export const passwordLogin = (loginData) => {
       });
     } catch (error) {
       const errorData = error.response.data;
-      
+
       dispatch({
-        type: actionTypes.PASSWORD_LOGIN_FAILURE,
+        type: actionTypes.AUTH_FAILURE,
         payloads: { error: errorData },
       });
     }
@@ -30,6 +30,10 @@ export const passwordLogin = (loginData) => {
 export const userMe = () => {
 
   return async (dispatch) => {
+    dispatch({
+      type: actionTypes.AUTH_REQUEST,
+    });
+
     try {
       const currentUser = await authService.userMe();
 
@@ -38,7 +42,12 @@ export const userMe = () => {
         payloads: { currentUser },
       });
     } catch (error) {
-      console.log(error);
+      const errorData = error.response.data;
+
+      dispatch({
+        type: actionTypes.AUTH_FAILURE,
+        payloads: { error: errorData },
+      });
     }
   }
 }
