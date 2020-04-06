@@ -42,4 +42,11 @@ export const getCurrentUser = () => {
   return auth;
 }
 
+export const isTokenSentToServer = () => {
+  return window.localStorage.getItem('sentToServer') === '1';
+}
+
+export const setTokenSentToServer = (sent) => {
+  window.localStorage.setItem('sentToServer', sent ? '1' : '0');
+}
 

@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import Highlighter from 'react-highlight-words';
 import {
   SearchOutlined, DeleteOutlined, ClearOutlined, SortAscendingOutlined, FilterOutlined,
-  InfoCircleOutlined,
+  InfoCircleOutlined, CheckSquareOutlined,
 } from '@ant-design/icons';
 import { getFilterObject } from '../../../util/get';
 import { checkIsEmptyObj } from '../../../util/check';
@@ -94,14 +94,14 @@ class ProductList extends Component {
     });
   }
 
-  getColumnSearchProps = dataIndex => ({
+  getColumnSearchProps = (dataIndex, title = null) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
         <Input
           ref={node => {
             this.searchInput = node;
           }}
-          placeholder={`Search by ${dataIndex}`}
+          placeholder={`Search by ${title ? title : dataIndex}`}
           value={selectedKeys[0]}
           onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => this.handleSearch(selectedKeys, confirm, dataIndex)}
@@ -191,7 +191,13 @@ class ProductList extends Component {
     this.fetchProducts(pagination, null, null);
   };
 
-  getColumns = (filteredInfo, sortedInfo) => {    
+  clearSelected = () => {
+    this.setState({
+      selectedRowKeys: [],
+    });
+  }
+
+  getColumns = (filteredInfo, sortedInfo) => {
     const columns = [
       {
         title: 'Name',
@@ -254,7 +260,7 @@ class ProductList extends Component {
         dataIndex: 'createdBy',
         width: '20%',
         filteredValue: filteredInfo.createdBy || null,
-        ...this.getColumnSearchProps('createdBy'),
+        ...this.getColumnSearchProps('createdBy', 'created by'),
         render: createdBy => (
           <>
             <Avatar src={createdBy.avatar} />
@@ -281,8 +287,9 @@ class ProductList extends Component {
   }
 
   render() {
+    document.title = 'Product list';
     const { data, pagination, loading, selectedRowKeys } = this.state;
-    
+
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
@@ -292,7 +299,7 @@ class ProductList extends Component {
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
-    
+
     const columns = this.getColumns(filteredInfo, sortedInfo);
 
     return (
@@ -333,6 +340,16 @@ class ProductList extends Component {
               }
             >
               <FilterOutlined /> {'&'} <SortAscendingOutlined />
+            </Button>
+          </Tooltip>
+          <Tooltip placement="topLeft" title='Clear selected'>
+            <Button
+              type='dashed'
+              onClick={this.clearSelected}
+              icon={<ClearOutlined />}
+              disabled={selectedRowKeys.length === 0}
+            >
+              <CheckSquareOutlined />
             </Button>
           </Tooltip>
           <Popconfirm
