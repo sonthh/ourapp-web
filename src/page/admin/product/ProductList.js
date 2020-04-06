@@ -6,7 +6,10 @@ import {
 import * as productAction from '../../../action/productAction';
 import { connect } from 'react-redux';
 import Highlighter from 'react-highlight-words';
-import { SearchOutlined, DeleteOutlined, ClearOutlined, SortAscendingOutlined, FilterOutlined } from '@ant-design/icons';
+import {
+  SearchOutlined, DeleteOutlined, ClearOutlined, SortAscendingOutlined, FilterOutlined,
+  InfoCircleOutlined,
+} from '@ant-design/icons';
 import { getFilterObject } from '../../../util/get';
 import { checkIsEmptyObj } from '../../../util/check';
 
@@ -77,7 +80,7 @@ class ProductList extends Component {
   fetchProducts = (pagination, filters, sorter) => {
 
     filters = getFilterObject(['status', 'name', 'price', 'createdBy'], filters);
-    
+
     const sortDirection = (sorter && sorter.order && sorter.order === 'ascend') ? 'ASC' : 'DESC';
     const sortBy = (sorter && sorter.order && sorter.field) ? sorter.field : 'id';
     const { current, pageSize } = pagination;
@@ -157,16 +160,14 @@ class ProductList extends Component {
     clearFilters();
   };
 
-
-
-  confirmDelete = (record, index) => {
-    message.success(`Deleted ${record.name}`);
-  }
-
   onSelectChange = selectedRowKeys => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
     this.setState({ selectedRowKeys });
   };
+
+  onDeleteMany = () => {
+    const { selectedRowKeys } = this.state;
+    message.success(`Deleted ${selectedRowKeys.length} items`);
+  }
 
   clearFilters = () => {
     this.setState({ filteredInfo: null });
@@ -190,17 +191,7 @@ class ProductList extends Component {
     this.fetchProducts(pagination, null, null);
   };
 
-  render() {
-    const { data, pagination, loading, selectedRowKeys } = this.state;
-    const rowSelection = {
-      selectedRowKeys,
-      onChange: this.onSelectChange,
-    };
-    const hasSelected = selectedRowKeys.length > 0;
-    let { sortedInfo, filteredInfo } = this.state;
-    sortedInfo = sortedInfo || {};
-    filteredInfo = filteredInfo || {};
-
+  getColumns = (filteredInfo, sortedInfo) => {    
     const columns = [
       {
         title: 'Name',
@@ -209,7 +200,7 @@ class ProductList extends Component {
         filteredValue: filteredInfo.name || null,
         ...this.getColumnSearchProps('name'),
         render: name => (
-          <Paragraph ellipsis={{ suffix: ' ' }}>{name}</Paragraph>
+          <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ' }}>{name}</Paragraph>
         )
       },
       {
@@ -275,21 +266,34 @@ class ProductList extends Component {
         title: 'Action',
         width: '20%',
         dataIndex: 'id',
-        render: (text, record, index) => (
-          <Popconfirm
-            title="Are you sure delete this product?"
-            onConfirm={() => this.confirmDelete(record, index)}
-          >
-            <Button
-              type='primary'
-              style={{ background: 'red', borderColor: 'red' }}
-              icon={<DeleteOutlined />}
-              size='small'>Delete
+        render: () => (
+          <Button
+            type='default'
+            // style={{ background: 'red', borderColor: 'red' }}
+            icon={<InfoCircleOutlined />}
+            size='small'>Details
           </Button>
-          </Popconfirm>
         ),
       },
     ];
+
+    return columns;
+  }
+
+  render() {
+    const { data, pagination, loading, selectedRowKeys } = this.state;
+    
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange,
+    };
+    const hasSelected = selectedRowKeys.length > 0;
+
+    let { sortedInfo, filteredInfo } = this.state;
+    sortedInfo = sortedInfo || {};
+    filteredInfo = filteredInfo || {};
+    
+    const columns = this.getColumns(filteredInfo, sortedInfo);
 
     return (
       <>
@@ -331,11 +335,15 @@ class ProductList extends Component {
               <FilterOutlined /> {'&'} <SortAscendingOutlined />
             </Button>
           </Tooltip>
-          <Tooltip placement="topLeft" title='Delete selected items'>
-            <Button type="danger" onClick={() => {}} disabled={!hasSelected} loading={false}>
+          <Popconfirm
+            placement='bottomLeft'
+            title={`Are you sure delete ${selectedRowKeys.length} selected products?`}
+            onConfirm={this.onDeleteMany}
+          >
+            <Button type="danger" icon={<DeleteOutlined />} disabled={!hasSelected} loading={false}>
               Delete
             </Button>
-          </Tooltip>
+          </Popconfirm>
           <span style={{ marginLeft: 8 }}>
             {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
           </span>

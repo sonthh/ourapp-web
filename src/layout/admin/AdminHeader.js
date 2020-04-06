@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Menu, Dropdown, Avatar, Row, Col } from 'antd';
+import { Layout, Menu, Dropdown, Avatar, Row, Col, Badge } from 'antd';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -86,15 +86,17 @@ class AdminHeader extends Component {
             })}
           </Col>
           <Col>
-            <Dropdown overlay={this.notificationMenu} placement="bottomRight">
-              <NotificationOutlined
-                style={{
-                  fontSize: '18px', lineHeight: '64px', padding: '0 24px',
-                  cursor: 'pointer', transition: 'color 0.3s', color: '#1890ff'
-                }} />
+            <Dropdown style overlay={this.notificationMenu} placement="bottomRight">
+              <Badge count={5}>
+                <NotificationOutlined
+                  style={{
+                    fontSize: '18px', cursor: 'pointer', transition: 'color 0.3s', color: '#1890ff'
+                  }}
+                />
+              </Badge>
             </Dropdown>
             <Dropdown trigger={['click']} overlay={this.userMenu(currentUser)} placement="bottomRight">
-              <Avatar style={{ lineHeight: '64px', cursor: 'pointer' }}
+              <Avatar style={{ lineHeight: '64px', cursor: 'pointer', marginLeft: '20px' }}
                 src={currentUser.avatar} />
             </Dropdown>
           </Col>
