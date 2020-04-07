@@ -49,6 +49,16 @@ class ProductList extends Component {
       })
     }
 
+    if (this.props.isDeleted !== undefined && this.props.isDeleted === true
+      && this.props.ids !== prevProps.ids) {
+      message.success(`Deleted ${this.props.ids.length} items`);
+      this.setState({ selectedRowKeys: [] });
+
+      const { pagination, filteredInfo, sortedInfo } = this.state;
+
+      setTimeout(() => this.fetchProducts(pagination, filteredInfo, sortedInfo), 2000);
+    }
+
     if (this.props.dataList && this.props.dataList !== prevProps.dataList) {
       const { dataList } = this.props;
       const { content, totalElements } = dataList;
@@ -162,7 +172,7 @@ class ProductList extends Component {
 
   onDeleteMany = () => {
     const { selectedRowKeys } = this.state;
-    message.success(`Deleted ${selectedRowKeys.length} items`);
+    this.props.deleteManyProducts(selectedRowKeys);
   }
 
   clearFilters = () => {
@@ -354,7 +364,7 @@ class ProductList extends Component {
             onConfirm={this.onDeleteMany}
             disabled={!hasSelected}
           >
-            <Button type="danger" icon={<DeleteOutlined />} disabled={!hasSelected} loading={false}>
+            <Button type="danger" icon={<DeleteOutlined />} disabled={!hasSelected} loading={this.props.isLoadingDelete}>
               Delete
             </Button>
           </Popconfirm>
@@ -378,12 +388,15 @@ class ProductList extends Component {
 }
 
 const mapStateToProps = state => {
-  const { dataList, isLoading, error } = state.product.productList;
+  const { dataList, isLoading, error, isLoadingDelete, isDeleted, ids } = state.product.productList;
 
   return {
     dataList,
     isLoading,
     error,
+    isLoadingDelete,
+    isDeleted,
+    ids,
   }
 }
 
@@ -391,6 +404,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     findManyProducts: (params = {}) => {
       dispatch(productAction.findManyProducts(params));
+    },
+    deleteManyProducts: (ids) => {
+      dispatch(productAction.delteManyProducts(ids));
     }
   }
 }
