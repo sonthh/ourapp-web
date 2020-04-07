@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import {
   SearchOutlined, DeleteOutlined, ClearOutlined, SortAscendingOutlined, FilterOutlined,
-  InfoCircleOutlined, CheckSquareOutlined,
+  InfoCircleOutlined, CheckSquareOutlined, ReloadOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import Highlighter from 'react-highlight-words';
@@ -53,10 +53,6 @@ class ProductList extends Component {
       && this.props.ids !== prevProps.ids) {
       message.success(`Deleted ${this.props.ids.length} items`);
       this.setState({ selectedRowKeys: [] });
-
-      const { pagination, filteredInfo, sortedInfo } = this.state;
-
-      setTimeout(() => this.fetchProducts(pagination, filteredInfo, sortedInfo), 2000);
     }
 
     if (this.props.dataList && this.props.dataList !== prevProps.dataList) {
@@ -186,6 +182,11 @@ class ProductList extends Component {
     const { pagination, filteredInfo } = this.state;
     this.fetchProducts(pagination, filteredInfo, null);
   };
+
+  refreshData = () => {
+    const { pagination, filteredInfo, sortedInfo } = this.state;
+    this.fetchProducts(pagination, filteredInfo, sortedInfo)
+  }
 
   clearFiltersAndSorters = () => {
     this.setState({
@@ -357,6 +358,13 @@ class ProductList extends Component {
             >
               <CheckSquareOutlined />
             </Button>
+          </Tooltip>
+          <Tooltip placement="topLeft" title='Refresh'>
+            <Button
+              type='dashed'
+              onClick={this.refreshData}
+              icon={<ReloadOutlined />}
+            />
           </Tooltip>
           <Popconfirm
             placement='bottomLeft'
