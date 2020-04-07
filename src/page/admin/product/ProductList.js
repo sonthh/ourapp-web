@@ -204,6 +204,7 @@ class ProductList extends Component {
     });
   }
 
+  // filteredInfo, sortedInfo // from state
   getColumns = (filteredInfo, sortedInfo) => {
     const columns = [
       {
