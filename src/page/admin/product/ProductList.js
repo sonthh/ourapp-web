@@ -3,13 +3,13 @@ import {
   Breadcrumb, Table, Tag, Input, Button, notification, Avatar, Popconfirm, message, Typography,
   Tooltip,
 } from 'antd';
-import * as productAction from '../../../action/productAction';
-import { connect } from 'react-redux';
-import Highlighter from 'react-highlight-words';
 import {
   SearchOutlined, DeleteOutlined, ClearOutlined, SortAscendingOutlined, FilterOutlined,
   InfoCircleOutlined, CheckSquareOutlined,
 } from '@ant-design/icons';
+import { connect } from 'react-redux';
+import Highlighter from 'react-highlight-words';
+import * as productAction from '../../../action/productAction';
 import { getFilterObject } from '../../../util/get';
 import { checkIsEmptyObj } from '../../../util/check';
 
@@ -30,11 +30,9 @@ class ProductList extends Component {
     this.props.findManyProducts({});
   }
 
-  componentWillReceiveProps(nextProps) {
-
-    if (nextProps && nextProps.error && nextProps.error !== this.props.error) {
-      const { error } = nextProps;
-
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.error && this.props.error !== prevProps.error) {
+      const { error } = this.props;
       if (error) {
         notification.error({
           message: 'Notification',
@@ -44,17 +42,15 @@ class ProductList extends Component {
       }
     }
 
-    if (nextProps && nextProps.isLoading !== this.props.isLoading) {
-      const { isLoading } = nextProps;
-
+    if (this.props.isLoading !== undefined && this.props.isLoading !== prevProps.isLoading) {
+      const { isLoading } = this.props;
       this.setState({
         loading: isLoading,
       })
     }
 
-    if (nextProps && nextProps.dataList && nextProps.dataList !== this.props.dataList) {
-
-      const { dataList } = nextProps;
+    if (this.props.dataList && this.props.dataList !== prevProps.dataList) {
+      const { dataList } = this.props;
       const { content, totalElements } = dataList;
       const pagination = { ...this.state.pagination, total: totalElements };
 
@@ -356,6 +352,7 @@ class ProductList extends Component {
             placement='bottomLeft'
             title={`Are you sure delete ${selectedRowKeys.length} selected products?`}
             onConfirm={this.onDeleteMany}
+            disabled={!hasSelected}
           >
             <Button type="danger" icon={<DeleteOutlined />} disabled={!hasSelected} loading={false}>
               Delete

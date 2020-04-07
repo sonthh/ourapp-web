@@ -51,7 +51,7 @@ messaging.onTokenRefresh(() => {
     });
 });
 
-messaging.onMessage((payloads) => {
+messaging.onMessage((payloads) => {  
   const { notification: notificationData } = payloads;
   const { title, body } = notificationData;
   notification.info({

@@ -31,12 +31,10 @@ class AdminHeader extends Component {
     this.setState({ logout: true });
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps && nextProps.currentUser) {
-      const { currentUser } = nextProps;
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.currentUser && this.props.currentUser !== prevProps.currentUser) {
+      const { currentUser } = this.props;
       const { username, avatar } = currentUser;
-
-      console.log(currentUser);
 
       localStorage.setItem('currentUser', JSON.stringify({ username, avatar }));
     }
@@ -69,21 +67,24 @@ class AdminHeader extends Component {
     </Menu>
   );
 
+  renderToggleIcon = () => {
+    if (this.props.collapsed) {
+      return (<MenuUnfoldOutlined className='trigger' onClick={this.toggle} />);
+    }
+    return (<MenuFoldOutlined className='trigger' onClick={this.toggle} />); 
+  }
+
   render() {
     if (this.state.logout) {
       return <Redirect to={'/auth/login'} />
     }
-
     const currentUser = getCurrentUser();
 
     return (
       <Header className='site-layout-background' style={{ padding: 0 }}>
         <Row justify='space-between' >
           <Col>
-            {React.createElement(this.props.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-              className: 'trigger',
-              onClick: this.toggle,
-            })}
+            {this.renderToggleIcon()}
           </Col>
           <Col>
             <Dropdown style overlay={this.notificationMenu} placement="bottomRight">

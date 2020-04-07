@@ -17,9 +17,9 @@ class Login extends Component {
     this.props.passwordLogin({ username, password });
   };
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps && nextProps.auth && nextProps.auth !== this.props.auth) {
-      const { token, error, isLoading, isAuthenticated, username, avatar } = nextProps.auth;
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.auth && this.props.auth !== prevProps.auth) {
+      const { token, error, isLoading, isAuthenticated, username, avatar }= this.props.auth;
 
       if (isLoading !== undefined) {
         this.setState({ loading: isLoading });
@@ -40,7 +40,13 @@ class Login extends Component {
 
   render() {
     if (checkAuth()) {
-      return <Redirect to={'/admin/dashboard'} />
+      const { state } = this.props.location;
+      
+      if (state && state.from) {
+        return <Redirect to={state.from} />
+      }
+      
+      return <Redirect to='/admin/dashboard' />
     }
 
     return (
@@ -58,10 +64,10 @@ class Login extends Component {
                 name='username'
                 rules={[{ required: true, message: 'Please input your Username!' }]}
               >
-                <Input 
-                  prefix={<UserOutlined className='site-form-item-icon' />} 
+                <Input
+                  prefix={<UserOutlined className='site-form-item-icon' />}
                   placeholder='Username'
-              />
+                />
               </Form.Item>
               <Form.Item
                 name='password'

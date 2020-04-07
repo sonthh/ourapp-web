@@ -19,6 +19,8 @@ firebase.initializeApp(config);
 const messaging = firebase.messaging();
 
 messaging.setBackgroundMessageHandler(function (payload) {
+  console.log(payload);
+  
   const promiseChain = clients
     .matchAll({
       type: "window",
