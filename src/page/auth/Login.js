@@ -19,7 +19,7 @@ class Login extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.auth && this.props.auth !== prevProps.auth) {
-      const { token, error, isLoading, isAuthenticated, username, avatar }= this.props.auth;
+      const { token, error, isLoading, isAuthenticated, username, avatar } = this.props.auth;
 
       if (isLoading !== undefined) {
         this.setState({ loading: isLoading });
@@ -41,63 +41,60 @@ class Login extends Component {
   render() {
     if (checkAuth()) {
       const { state } = this.props.location;
-      
+
       if (state && state.from) {
         return <Redirect to={state.from} />
       }
-      
+
       return <Redirect to='/admin/dashboard' />
     }
 
     return (
-      <>
-        <Row style={{ minHeight: '100%' }} justify='space-around' align='middle'>
-          <Col sm={{ span: 10 }} md={{ span: 8 }} lg={{ span: 8 }} xl={{ span: 7 }}>
+      <Row style={{ minHeight: '100%' }} justify='space-around' align='middle'>
+        <Col sm={{ span: 10 }} md={{ span: 8 }} lg={{ span: 8 }} xl={{ span: 7 }}>
 
-            <Form
-              name='normal_login'
-              className='login-form'
-              initialValues={{ remember: true }}
-              onFinish={this.onFinish}
+          <Form
+            name='normal_login'
+            className='login-form'
+            initialValues={{ remember: true }}
+            onFinish={this.onFinish}
+          >
+            <Form.Item
+              name='username'
+              rules={[{ required: true, message: 'Please input your Username!' }]}
             >
-              <Form.Item
-                name='username'
-                rules={[{ required: true, message: 'Please input your Username!' }]}
-              >
-                <Input
-                  prefix={<UserOutlined className='site-form-item-icon' />}
-                  placeholder='Username'
-                />
-              </Form.Item>
-              <Form.Item
-                name='password'
-                rules={[{ required: true, message: 'Please input your Password!' }]}
-              >
-                <Input
-                  prefix={<LockOutlined className='site-form-item-icon' />}
-                  type='password'
-                  placeholder='Password'
-                />
-              </Form.Item>
-              <Form.Item>
-                <Form.Item name='remember' valuePropName='checked' noStyle>
-                  <Checkbox>Remember me</Checkbox>
-                </Form.Item>
-
-                <Link to='/auth/forgot'><span className='login-form-forgot'>Forgot password</span></Link>
+              <Input
+                prefix={<UserOutlined className='site-form-item-icon' />}
+                placeholder='Username'
+              />
+            </Form.Item>
+            <Form.Item
+              name='password'
+              rules={[{ required: true, message: 'Please input your Password!' }]}
+            >
+              <Input
+                prefix={<LockOutlined className='site-form-item-icon' />}
+                type='password'
+                placeholder='Password'
+              />
+            </Form.Item>
+            <Form.Item>
+              <Form.Item name='remember' valuePropName='checked' noStyle>
+                <Checkbox>Remember me</Checkbox>
               </Form.Item>
 
-              <Form.Item>
-                <Button loading={this.state.loading} type='primary' htmlType='submit' className='login-form-button'>
-                  Log in
+              <Link to='/auth/forgot'><span className='login-form-forgot'>Forgot password</span></Link>
+            </Form.Item>
+
+            <Form.Item>
+              <Button loading={this.state.loading} type='primary' htmlType='submit' className='login-form-button'>
+                Log in
                   </Button>
-                Or <Link to='/auth/forgot'><span className='login-form-forgot'>Register now</span></Link>
-              </Form.Item>
-            </Form>
-
-          </Col>
-        </Row>
-      </>
+              Or <Link to='/auth/forgot'><span className='login-form-forgot'>Register now</span></Link>
+            </Form.Item>
+          </Form>
+        </Col>
+      </Row>
     );
   }
 }

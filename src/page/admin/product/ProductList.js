@@ -312,10 +312,6 @@ class ProductList extends Component {
 
     return (
       <>
-        <Breadcrumb style={{ margin: '16px 0' }}>
-          <Breadcrumb.Item>Product</Breadcrumb.Item>
-          <Breadcrumb.Item>List</Breadcrumb.Item>
-        </Breadcrumb>
         <div style={{ marginBottom: 16 }}>
           <Tooltip placement="topLeft" title='Clear sorters'>
             <Button
