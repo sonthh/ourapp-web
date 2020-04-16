@@ -88,6 +88,8 @@ class UserEdit extends Component {
         title={title}
         visible={this.state.visible}
         footer={footer}
+        onCancel={this.handleCancel}
+        onOk={this.onSubmitForm}
       >
         <Spin spinning={this.state.isLoading}>
           <Form

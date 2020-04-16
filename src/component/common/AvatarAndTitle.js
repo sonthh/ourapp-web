@@ -19,7 +19,7 @@ export default class AvatarAndTitle extends Component {
 
     const color = randomColor();
     const backgroundColor = randomColor();
-    let text = 'No';
+    let text = 'N';
     if (title && title.length > 0) {
       text = title[0].toUpperCase();
     }
