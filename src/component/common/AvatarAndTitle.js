@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Avatar } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
+import { randomColor } from '../../constant/colors'
 
 export default class AvatarAndTitle extends Component {
 
@@ -16,11 +17,23 @@ export default class AvatarAndTitle extends Component {
       );
     }
 
+    const color = randomColor();
+    const backgroundColor = randomColor();
+    let text = 'No';
+    if (title && title.length > 0) {
+      text = title[0].toUpperCase();
+    }
+
     return (
       <>
-        <Avatar icon={<UserOutlined />} />
+        <Avatar style={{ color, backgroundColor }}>{text}</Avatar>
         <span style={{ paddingLeft: '10px' }}>{title ? title : 'No'}</span>
       </>
     );
   }
 }
+
+AvatarAndTitle.propTypes = {
+  src: PropTypes.string,
+  title: PropTypes.string,
+};

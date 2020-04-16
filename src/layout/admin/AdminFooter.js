@@ -7,7 +7,7 @@ export default class AdminFooter extends Component {
 
   render() {
     return (
-      <Footer style={{ textAlign: 'center' }}>Copyright ©2020 Created by Ourapp</Footer>
+      <Footer style={{ textAlign: 'center' }}>Copyright ©{new Date().getFullYear()} Created by SHPD team</Footer>
     );
   }
 }
