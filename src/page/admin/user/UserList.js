@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Breadcrumb, Table, Tag, Input, Button, notification, Avatar, Popconfirm, message, Typography,
-  Tooltip,
+  Table, Tag, Input, Button, notification, Popconfirm, message, Tooltip,
 } from 'antd';
 import {
   SearchOutlined, DeleteOutlined, ClearOutlined, SortAscendingOutlined, FilterOutlined,
@@ -9,25 +8,29 @@ import {
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import Highlighter from 'react-highlight-words';
-import * as productAction from '../../../action/productAction';
+import * as userAction from '../../../action/userAction';
 import { getFilterObject } from '../../../util/get';
 import { checkIsEmptyObj } from '../../../util/check';
+import { getDateFormat } from '../../../util/date';
+import AvatarAndTitle from '../../../component/common/AvatarAndTitle';
+import UserEdit from '../../../component/user/UserEdit';
 
-const { Paragraph } = Typography;
-
-class ProductList extends Component {
+class UserList extends Component {
 
   state = {
     filteredInfo: null,
     sortedInfo: null,
     data: [],
-    pagination: {},
+    pagination: {
+      showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+      showQuickJumper: true,
+    },
     loading: true,
     selectedRowKeys: [],
   };
 
   componentDidMount() {
-    this.props.findManyProducts({});
+    this.props.findManyUsers({});
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -52,7 +55,7 @@ class ProductList extends Component {
     if (this.props.isDeleted !== undefined && this.props.isDeleted === true
       && this.props.ids !== prevProps.ids) {
       message.success(`Deleted ${this.props.ids.length} items`);
-      this.setState({ selectedRowKeys: [] });
+      this.setSttate({ selectedRowKeys: [] });
     }
 
     if (this.props.dataList && this.props.dataList !== prevProps.dataList) {
@@ -76,18 +79,21 @@ class ProductList extends Component {
       sortedInfo: sorter,
     });
 
-    this.fetchProducts(pagination, filters, sorter);
+    this.fetchUsers(pagination, filters, sorter);
   };
 
-  fetchProducts = (pagination, filters, sorter) => {
+  fetchUsers = (pagination, filters, sorter) => {
 
-    filters = getFilterObject(['status', 'name', 'price', 'createdBy'], filters);
+    filters = getFilterObject(
+      ['gender', 'username', 'createdBy', 'lastModifiedBy', 'address', 'status', 'email'],
+      filters,
+    );
 
     const sortDirection = (sorter && sorter.order && sorter.order === 'ascend') ? 'ASC' : 'DESC';
     const sortBy = (sorter && sorter.order && sorter.field) ? sorter.field : 'id';
     const { current, pageSize } = pagination;
 
-    this.props.findManyProducts({
+    this.props.findManyUsers({
       currentPage: current,
       limit: pageSize,
       sortBy,
@@ -124,20 +130,6 @@ class ProductList extends Component {
       </div>
     ),
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) => {
-      let cellValue = record[dataIndex];
-
-      if (dataIndex === 'createdBy') {
-        cellValue = cellValue['username'];
-      }
-
-      const filter = cellValue
-        .toString()
-        .toLowerCase()
-        .includes(value.toLowerCase());
-
-      return filter;
-    },
     onFilterDropdownVisibleChange: visible => {
       if (visible) {
         setTimeout(() => this.searchInput.select());
@@ -168,24 +160,24 @@ class ProductList extends Component {
 
   onDeleteMany = () => {
     const { selectedRowKeys } = this.state;
-    this.props.deleteManyProducts(selectedRowKeys);
+    this.props.deleteManyUsers(selectedRowKeys);
   }
 
   clearFilters = () => {
     this.setState({ filteredInfo: null });
     const { pagination, sortedInfo } = this.state;
-    this.fetchProducts(pagination, null, sortedInfo);
+    this.fetchUsers(pagination, null, sortedInfo);
   };
 
   clearSorters = () => {
     this.setState({ sortedInfo: null });
     const { pagination, filteredInfo } = this.state;
-    this.fetchProducts(pagination, filteredInfo, null);
+    this.fetchUsers(pagination, filteredInfo, null);
   };
 
   refreshData = () => {
     const { pagination, filteredInfo, sortedInfo } = this.state;
-    this.fetchProducts(pagination, filteredInfo, sortedInfo)
+    this.fetchUsers(pagination, filteredInfo, sortedInfo)
   }
 
   clearFiltersAndSorters = () => {
@@ -195,7 +187,7 @@ class ProductList extends Component {
     });
 
     const { pagination } = this.state;
-    this.fetchProducts(pagination, null, null);
+    this.fetchUsers(pagination, null, null);
   };
 
   clearSelected = () => {
@@ -204,56 +196,58 @@ class ProductList extends Component {
     });
   }
 
+  toggleModalUserForm = () => {
+    this.props.toggleModalUserForm();
+  }
+
+  onEditUser = (id) => {
+    this.props.toggleModalUserForm();
+    this.props.findOneUser(id);
+  }
+
   // filteredInfo, sortedInfo // from state
   getColumns = (filteredInfo, sortedInfo) => {
     const columns = [
       {
-        title: 'Name',
-        dataIndex: 'name',
-        width: '20%',
-        filteredValue: filteredInfo.name || null,
-        ...this.getColumnSearchProps('name'),
-        render: name => (
-          <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ' }}>{name}</Paragraph>
-        )
+        title: 'Username',
+        dataIndex: 'username',
+        // fixed: 'left',
+        filteredValue: filteredInfo.username || null,
+        ...this.getColumnSearchProps('username'),
+        render: (username, record) =>
+          <AvatarAndTitle
+            src={record.avatar}
+            title={username}
+          />,
       },
       {
-        title: 'Price',
-        dataIndex: 'price',
-        sorter: true,
-        width: '20%',
-        key: 'price',
-        filteredValue: filteredInfo.price || null,
-        sortOrder: sortedInfo.columnKey === 'price' && sortedInfo.order,
-        ...this.getColumnSearchProps('price'),
-      },
-      {
-        title: 'Status',
-        dataIndex: 'status',
-        width: '20%',
-        filteredValue: filteredInfo.status || null,
+        title: 'Gender',
+        dataIndex: 'gender',
+        // width: '20%',
+        filteredValue: filteredInfo.gender || null,
         filters: [
           {
-            text: <Tag color='red'>OUT OF STOCK</Tag>,
-            value: 'OUT_OF_STOCK',
+            text: <Tag color='red'>Male</Tag>,
+            value: 'MALE',
           },
           {
-            text: <Tag color='green'>AVAILABLE</Tag>,
-            value: 'AVAILABLE',
+            text: <Tag color='green'>Female</Tag>,
+            value: 'FEMALE',
           },
         ],
         filterMultiple: false,
-        render: status => {
+        render: gender => {
+          if (!gender) return 'No';
           let color = 'green';
           let value = ''
-          switch (status) {
-            case 'OUT_OF_STOCK':
+          switch (gender) {
+            case 'MALE':
               color = 'red';
-              value = 'OUT OF STOCK'
+              value = 'Male'
               break;
-            case 'AVAILABLE':
+            case 'FEMALE':
               color = 'green';
-              value = 'AVAILABLE'
+              value = 'Female'
               break;
             default:
               break;
@@ -264,24 +258,109 @@ class ProductList extends Component {
         },
       },
       {
+        title: 'Status',
+        dataIndex: 'status',
+        // width: '20%',
+        filteredValue: filteredInfo.status || null,
+        filters: [
+          {
+            text: <Tag color='red'>Inactive</Tag>,
+            value: 'INACTIVE',
+          },
+          {
+            text: <Tag color='green'>Active</Tag>,
+            value: 'ACTIVE',
+          },
+        ],
+        filterMultiple: false,
+        render: gender => {
+          let color = 'green';
+          let value = ''
+          switch (gender) {
+            case 'INACTIVE':
+              color = 'red';
+              value = 'Inactive';
+              break;
+            case 'ACTIVE':
+              color = 'green';
+              value = 'Active'
+              break;
+            default:
+              break;
+          }
+          return (
+            <Tag color={color}>{value}</Tag>
+          );
+        },
+      },
+      {
+        title: 'Address',
+        dataIndex: 'address',
+        // width: '20%',
+        filteredValue: filteredInfo.address || null,
+        ...this.getColumnSearchProps('address'),
+        render: address => address || 'No',
+      },
+      {
+        title: 'Birthday',
+        dataIndex: 'birthDay',
+        // width: '20%',
+        render: birthDay => getDateFormat(birthDay) || 'No',
+      },
+      {
+        title: 'Email',
+        dataIndex: 'email',
+        filteredValue: filteredInfo.email || null,
+        ...this.getColumnSearchProps('email'),
+        render: email => email || 'No',
+      },
+      {
+        title: 'Created date',
+        dataIndex: 'createdDate',
+        // width: '20%',
+        sorter: true,
+        render: createdDate => getDateFormat(createdDate) || 'No',
+      },
+      {
         title: 'Create by',
         dataIndex: 'createdBy',
-        width: '20%',
+        // width: '20%',
         filteredValue: filteredInfo.createdBy || null,
         ...this.getColumnSearchProps('createdBy', 'created by'),
         render: createdBy => (
-          <>
-            <Avatar src={createdBy.avatar} />
-            <span style={{ paddingLeft: '10px' }}>{createdBy.username}</span>
-          </>
+          <AvatarAndTitle
+            src={createdBy ? createdBy.avatar : null}
+            title={createdBy ? createdBy.username : null}
+          />
         ),
       },
       {
-        title: 'Action',
-        width: '20%',
+        title: 'Last modified date',
+        dataIndex: 'lastModifiedDate',
+        // width: '20%',
+        sorter: true,
+        render: lastModifiedDate => getDateFormat(lastModifiedDate),
+      },
+      {
+        title: 'Last modifed by',
+        dataIndex: 'lastModifiedBy',
+        // width: '20%',
+        filteredValue: filteredInfo.lastModifiedBy || null,
+        ...this.getColumnSearchProps('lastModifiedBy', 'last modified by'),
+        render: lastModifiedBy => (
+          <AvatarAndTitle
+            src={lastModifiedBy ? lastModifiedBy.avatar : null}
+            title={lastModifiedBy ? lastModifiedBy.username : null}
+          />
+        ),
+      },
+      {
+        title: 'Operations',
+        // width: '20%',
         dataIndex: 'id',
-        render: () => (
+        render: (id) => (
           <Button
+            onClick={() => this.onEditUser(id)}
             type='default'
             // style={{ background: 'red', borderColor: 'red' }}
             icon={<InfoCircleOutlined />}
@@ -294,8 +373,9 @@ class ProductList extends Component {
     return columns;
   }
 
+
   render() {
-    document.title = 'Product list';
+    document.title = 'Users';
     const { data, pagination, loading, selectedRowKeys } = this.state;
 
     const rowSelection = {
@@ -363,9 +443,15 @@ class ProductList extends Component {
               icon={<ReloadOutlined />}
             />
           </Tooltip>
+
+          <Button onClick={this.toggleModalUserForm} type='default' icon={<DeleteOutlined />}>
+            Add
+          </Button>
+          <UserEdit />
+
           <Popconfirm
             placement='bottomLeft'
-            title={`Are you sure delete ${selectedRowKeys.length} selected products?`}
+            title={`Are you sure delete ${selectedRowKeys.length} selected items?`}
             onConfirm={this.onDeleteMany}
             disabled={!hasSelected}
           >
@@ -378,6 +464,8 @@ class ProductList extends Component {
           </span>
         </div>
         <Table
+          style={{ fontSize: '13px' }}
+          bordered
           rowSelection={rowSelection}
           columns={columns}
           rowKey={record => record.id}
@@ -393,7 +481,7 @@ class ProductList extends Component {
 }
 
 const mapStateToProps = state => {
-  const { dataList, isLoading, error, isLoadingDelete, isDeleted, ids } = state.product.productList;
+  const { dataList, isLoading, error, isLoadingDelete, isDeleted, ids } = state.user.userList;
 
   return {
     dataList,
@@ -407,13 +495,19 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    findManyProducts: (params = {}) => {
-      dispatch(productAction.findManyProducts(params));
+    findManyUsers: (params = {}) => {
+      dispatch(userAction.findManyUsers(params));
     },
-    deleteManyProducts: (ids) => {
-      dispatch(productAction.delteManyProducts(ids));
-    }
+    deleteManyUsers: (ids) => {
+      dispatch(userAction.delteManyUsers(ids));
+    },
+    toggleModalUserForm: () => {
+      dispatch(userAction.toggleModalUserForm());
+    },
+    findOneUser: (id) => {
+      dispatch(userAction.findOneUser(id));
+    },
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProductList);
+export default connect(mapStateToProps, mapDispatchToProps)(UserList);

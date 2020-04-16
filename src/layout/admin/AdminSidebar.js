@@ -32,15 +32,15 @@ export default class AdminSidebar extends Component {
             title={
               <span>
                 <UserOutlined />
-                <span>Product</span>
+                <span>User</span>
               </span>
             }
           >
             <Menu.Item key='3'>
-              <Link to='/admin/product/list'>List</Link>
+              <Link to='/admin/user/list'>List</Link>
             </Menu.Item>
             <Menu.Item key='4'>
-              <Link to='/admin/product/add'>Add</Link>
+              <Link to='/admin/user/add'>Add</Link>
             </Menu.Item>
             <Menu.Item key='5'>Alex</Menu.Item>
           </SubMenu>

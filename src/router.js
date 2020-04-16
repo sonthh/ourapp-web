@@ -2,7 +2,7 @@ import Dashboard from './page/admin/Dashboard';
 import Profile from './page/admin/Profile';
 import ProfileSetting from './page/admin/ProfileSetting';
 import Login from './page/auth/Login';
-import ProductList from './page/admin/product/ProductList';
+import UserList from './page/admin/user/UserList';
 
 export const adminRoutes = [
   {
@@ -19,8 +19,8 @@ export const adminRoutes = [
     component: ProfileSetting,
   },
   {
-    path: '/product/list',
-    component: ProductList,
+    path: '/user/list',
+    component: UserList,
   },
 ];
 
