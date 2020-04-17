@@ -3,6 +3,8 @@ import { actionTypes } from '../../constant/actionTypes';
 
 const initialState = {
   isLoading: false,
+  isDeleted: false,
+  isLoadingDelete: false,
   dataList: {},
 }
 

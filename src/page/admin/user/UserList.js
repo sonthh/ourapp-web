@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import {
-  Table, Button, notification, Popconfirm, message, Tooltip,
+  Table, Button, notification, Popconfirm, message, Tooltip, Typography, Checkbox,
 } from 'antd';
 import {
-  DeleteOutlined, ClearOutlined, SortAscendingOutlined, FilterOutlined,
-  InfoCircleOutlined, CheckSquareOutlined, ReloadOutlined,
+  ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteTwoTone,
+  InfoCircleOutlined, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import * as userAction from '../../../action/userAction';
@@ -16,28 +16,39 @@ import UserEdit from '../../../component/user/UserEdit';
 import GenderTag from '../../../component/common/GenderTag';
 import StatusTag from '../../../component/common/StatusTag';
 import { getColumnSearchProps } from '../../../util/table';
+import { ResizeableTitle } from '../../../component/common/ResizeableTitle';
+import MyAvatar from '../../../component/common/MyAvatar';
+
+const Paragraph = Typography.Paragraph;
 
 class UserList extends Component {
 
-  state = {
-    filteredInfo: null,
-    sortedInfo: null,
-    data: [],
-    pagination: {
-      showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
-      showQuickJumper: true,
-    },
-    loading: true,
-    selectedRowKeys: [],
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      filteredInfo: null,
+      sortedInfo: null,
+      data: [],
+      pagination: {
+        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} users`,
+        showQuickJumper: true,
+      },
+      isLoadingTable: true,
+      selectedRowKeys: [],
+      columns: this.getColumns({}, {}),
+      isColumnsFixed: true,
+    };
+  }
 
   componentDidMount() {
     this.props.findManyUsers({});
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.error && this.props.error !== prevProps.error) {
-      const { error } = this.props;
+    const { error, isLoading, isDeleted, ids, dataList } = this.props;
+
+    if (error && error !== prevProps.error) {
       if (error) {
         notification.error({
           message: 'Notification',
@@ -47,21 +58,18 @@ class UserList extends Component {
       }
     }
 
-    if (this.props.isLoading !== undefined && this.props.isLoading !== prevProps.isLoading) {
-      const { isLoading } = this.props;
+    if (isLoading !== undefined && isLoading !== prevProps.isLoading) {
       this.setState({
-        loading: isLoading,
+        isLoadingTable: isLoading,
       })
     }
 
-    if (this.props.isDeleted !== undefined && this.props.isDeleted === true
-      && this.props.ids !== prevProps.ids) {
+    if (isDeleted !== undefined && isDeleted === true && ids !== prevProps.ids) {
       message.success(`Deleted ${this.props.ids.length} items`);
-      this.setSttate({ selectedRowKeys: [] });
+      this.setState({ selectedRowKeys: [] });
     }
 
-    if (this.props.dataList && this.props.dataList !== prevProps.dataList) {
-      const { dataList } = this.props;
+    if (dataList && dataList !== prevProps.dataList) {
       const { content, totalElements } = dataList;
       const pagination = { ...this.state.pagination, total: totalElements };
 
@@ -156,19 +164,34 @@ class UserList extends Component {
   }
 
   // filteredInfo, sortedInfo from state
-  getColumns = (filteredInfo, sortedInfo) => ([
+  getColumns = (filteredInfo, sortedInfo, isColumnsFixed = true) => ([
+    {
+      title: 'Avatar',
+      dataIndex: 'username',
+      key: 'avatar',
+      width: 75,
+      minWidth: 75,
+      fixed: isColumnsFixed ? 'left' : null,
+      render: (username, record) => (
+        <MyAvatar src={record.avatar} title={username} />
+      ),
+    },
     {
       title: 'Username',
       dataIndex: 'username',
       key: 'username',
+      width: 200,
       filteredValue: filteredInfo.username || null,
       ...getColumnSearchProps(this, 'username'),
-      render: (username, record) => (<AvatarAndTitle src={record.avatar} title={username} />),
+      render: (username) => (
+        <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ', rows: 1 }}>{username}</Paragraph>
+      ),
     },
     {
       title: 'Gender',
       dataIndex: 'gender',
       key: 'gender',
+      width: 200,
       filteredValue: filteredInfo.gender || null,
       filters: [
         {
@@ -187,6 +210,7 @@ class UserList extends Component {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      width: 200,
       filteredValue: filteredInfo.status || null,
       filters: [
         {
@@ -205,6 +229,7 @@ class UserList extends Component {
       title: 'Address',
       dataIndex: 'address',
       key: 'address',
+      width: 200,
       filteredValue: filteredInfo.address || null,
       ...getColumnSearchProps(this, 'address'),
       render: address => address || 'No',
@@ -213,12 +238,14 @@ class UserList extends Component {
       title: 'Birthday',
       dataIndex: 'birthDay',
       key: 'birthDay',
+      width: 200,
       render: birthDay => getDateFormat(birthDay) || 'No',
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
+      width: 200,
       filteredValue: filteredInfo.email || null,
       ...getColumnSearchProps(this, 'email'),
       render: email => email || 'No',
@@ -228,6 +255,8 @@ class UserList extends Component {
       dataIndex: 'createdDate',
       key: 'createdDate',
       sorter: true,
+      width: 200,
+      minWidth: 160,
       sortOrder: sortedInfo.columnKey === 'createdDate' && sortedInfo.order,
       render: createdDate => getDateFormat(createdDate) || 'No',
     },
@@ -235,6 +264,7 @@ class UserList extends Component {
       title: 'Create by',
       dataIndex: 'createdBy',
       key: 'createdBy',
+      width: 200,
       filteredValue: filteredInfo.createdBy || null,
       ...getColumnSearchProps(this, 'createdBy', 'created by'),
       render: createdBy => (
@@ -247,6 +277,8 @@ class UserList extends Component {
     {
       title: 'Last modified date',
       dataIndex: 'lastModifiedDate',
+      width: 200,
+      minWidth: 160,
       sorter: true,
       key: 'lastModifiedDate',
       sortOrder: sortedInfo.columnKey === 'lastModifiedDate' && sortedInfo.order,
@@ -256,6 +288,7 @@ class UserList extends Component {
       title: 'Last modifed by',
       dataIndex: 'lastModifiedBy',
       key: 'lastModifiedBy',
+      width: 200,
       filteredValue: filteredInfo.lastModifiedBy || null,
       ...getColumnSearchProps(this, 'lastModifiedBy', 'last modified by'),
       render: lastModifiedBy => (
@@ -268,7 +301,9 @@ class UserList extends Component {
     {
       title: 'Operations',
       key: 'operation',
+      width: 100,
       dataIndex: 'id',
+      fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
         <Button
           onClick={() => this.onEditUser(id)}
@@ -280,19 +315,58 @@ class UserList extends Component {
     },
   ]);
 
+  components = {
+    header: {
+      cell: ResizeableTitle,
+    },
+  };
+
+  handleResize = index => (e, { size }) => {
+    this.setState(({ columns }) => {
+      const nextColumns = [...columns];
+      nextColumns[index] = {
+        ...nextColumns[index],
+        width: size.width,
+      };
+      return { columns: nextColumns };
+    });
+  };
+
+  onChangeColumnsFixed = (e) => {
+    this.setState({
+      isColumnsFixed: e.target.checked,
+    });
+  }
+
   render() {
     document.title = 'Users';
-    const { data, pagination, loading, selectedRowKeys } = this.state;
+
+    const { data, pagination, isLoadingTable, selectedRowKeys, isColumnsFixed } = this.state;
 
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
+
     const hasSelected = selectedRowKeys.length > 0;
 
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
+
+    // columns with filteredInfo and sortedInfo
+    const columnsInfo = this.getColumns(filteredInfo, sortedInfo, isColumnsFixed);
+    const columns = this.state.columns.map((col, index) => ({
+      ...col,
+      filteredValue: columnsInfo[index].filteredValue,
+      sortOrder: columnsInfo[index].sortOrder,
+      fixed: columnsInfo[index].fixed,
+      onHeaderCell: column => ({
+        width: column.width,
+        minWidth: column.minWidth,
+        onResize: this.handleResize(index),
+      }),
+    }));
 
     return (
       <>
@@ -340,6 +414,14 @@ class UserList extends Component {
               <CheckSquareOutlined />
             </Button>
           </Tooltip>
+          <Tooltip placement="topLeft" title='Fixed columns'>
+            <Button type='dashed'>
+              <Checkbox
+                defaultChecked={this.state.isColumnsFixed}
+                onChange={this.onChangeColumnsFixed}
+              />
+            </Button>
+          </Tooltip>
           <Tooltip placement="topLeft" title='Refresh'>
             <Button
               type='dashed'
@@ -347,8 +429,7 @@ class UserList extends Component {
               icon={<ReloadOutlined />}
             />
           </Tooltip>
-
-          <Button onClick={this.toggleModalUserForm} type='default' icon={<DeleteOutlined />}>
+          <Button onClick={this.toggleModalUserForm} type='default' icon={<PlusCircleTwoTone />}>
             Add
           </Button>
           <UserEdit />
@@ -359,7 +440,7 @@ class UserList extends Component {
             onConfirm={this.onDeleteMany}
             disabled={!hasSelected}
           >
-            <Button type="danger" icon={<DeleteOutlined />} disabled={!hasSelected} loading={this.props.isLoadingDelete}>
+            <Button type="danger" icon={<DeleteTwoTone />} disabled={!hasSelected} loading={this.props.isLoadingDelete}>
               Delete
             </Button>
           </Popconfirm>
@@ -371,11 +452,12 @@ class UserList extends Component {
           style={{ fontSize: '13px' }}
           bordered
           rowSelection={rowSelection}
-          columns={this.getColumns(filteredInfo, sortedInfo)}
+          components={this.components}
+          columns={columns}
           rowKey={record => record.id}
           dataSource={data}
           pagination={pagination}
-          loading={loading}
+          loading={isLoadingTable}
           onChange={this.handleTableChange}
           scroll={{ x: 'max-content' }}
         />
@@ -385,15 +467,7 @@ class UserList extends Component {
 }
 
 const mapStateToProps = state => {
-  const { dataList, isLoading, error, isLoadingDelete, isDeleted, ids } = state.user.userList;
-  return {
-    dataList,
-    isLoading,
-    error,
-    isLoadingDelete,
-    isDeleted,
-    ids,
-  }
+  return state.user.userList;
 }
 
 const mapDispatchToProps = (dispatch) => {

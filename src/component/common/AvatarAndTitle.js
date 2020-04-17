@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Avatar } from 'antd';
 import PropTypes from 'prop-types';
-import { randomColor } from '../../constant/colors'
 
 export default class AvatarAndTitle extends Component {
 
@@ -17,8 +16,8 @@ export default class AvatarAndTitle extends Component {
       );
     }
 
-    const color = randomColor();
-    const backgroundColor = randomColor();
+    const color = '#cccccc';//randomColor();
+    const backgroundColor = '#e6f7fe';//randomColor();
     let text = 'N';
     if (title && title.length > 0) {
       text = title[0].toUpperCase();

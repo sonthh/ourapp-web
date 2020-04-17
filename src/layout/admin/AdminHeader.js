@@ -6,7 +6,7 @@ import {
   SettingOutlined,
   UserOutlined,
   LogoutOutlined,
-  NotificationOutlined,
+  BellTwoTone,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { toggleMenu } from '../../action/appAction';
@@ -71,7 +71,7 @@ class AdminHeader extends Component {
     if (this.props.collapsed) {
       return (<MenuUnfoldOutlined className='trigger' onClick={this.toggle} />);
     }
-    return (<MenuFoldOutlined className='trigger' onClick={this.toggle} />); 
+    return (<MenuFoldOutlined className='trigger' onClick={this.toggle} />);
   }
 
   render() {
@@ -87,11 +87,14 @@ class AdminHeader extends Component {
             {this.renderToggleIcon()}
           </Col>
           <Col>
-            <Dropdown style overlay={this.notificationMenu} placement="bottomRight">
+            <Dropdown trigger={['click']} style overlay={this.notificationMenu} placement="bottomRight">
               <Badge count={5}>
-                <NotificationOutlined
+                <BellTwoTone
+                  className='notificationIcon'
                   style={{
-                    fontSize: '18px', cursor: 'pointer', transition: 'color 0.3s', color: '#1890ff'
+                    fontSize: '22px', alignItems: 'center', borderRadius: '50%',
+                    cursor: 'pointer', transition: 'color 0.3s', color: '#1890ff',
+                    padding: '8px',
                   }}
                 />
               </Badge>
