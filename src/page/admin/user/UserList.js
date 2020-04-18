@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import {
-  Table, Button, notification, Popconfirm, message, Tooltip, Typography, Checkbox,
+  Table, Button, notification, Popconfirm, message, Tooltip, Typography, Checkbox, Space,
 } from 'antd';
 import {
-  ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteTwoTone,
-  InfoCircleOutlined, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone,
+  ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteOutlined, DeleteTwoTone, MailTwoTone,
+  EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import * as userAction from '../../../action/userAction';
@@ -37,7 +37,7 @@ class UserList extends Component {
       isLoadingTable: true,
       selectedRowKeys: [],
       columns: this.getColumns({}, {}),
-      isColumnsFixed: true,
+      isColumnsFixed: false,
     };
   }
 
@@ -81,6 +81,8 @@ class UserList extends Component {
   }
 
   handleTableChange = (pagination, filters, sorter) => {
+    console.log(filters, sorter);
+
     const { current } = pagination;
 
     this.setState({
@@ -164,7 +166,7 @@ class UserList extends Component {
   }
 
   // filteredInfo, sortedInfo from state
-  getColumns = (filteredInfo, sortedInfo, isColumnsFixed = true) => ([
+  getColumns = (filteredInfo, sortedInfo, isColumnsFixed = false) => ([
     {
       title: 'Avatar',
       dataIndex: 'username',
@@ -180,7 +182,8 @@ class UserList extends Component {
       title: 'Username',
       dataIndex: 'username',
       key: 'username',
-      width: 200,
+      width: 140,
+      minWidth: 140,
       filteredValue: filteredInfo.username || null,
       ...getColumnSearchProps(this, 'username'),
       render: (username) => (
@@ -191,7 +194,8 @@ class UserList extends Component {
       title: 'Gender',
       dataIndex: 'gender',
       key: 'gender',
-      width: 200,
+      width: 95,
+      minWidth: 95,
       filteredValue: filteredInfo.gender || null,
       filters: [
         {
@@ -210,7 +214,8 @@ class UserList extends Component {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      width: 200,
+      width: 95,
+      minWidth: 95,
       filteredValue: filteredInfo.status || null,
       filters: [
         {
@@ -229,7 +234,8 @@ class UserList extends Component {
       title: 'Address',
       dataIndex: 'address',
       key: 'address',
-      width: 200,
+      width: 150,
+      minWidth: 150,
       filteredValue: filteredInfo.address || null,
       ...getColumnSearchProps(this, 'address'),
       render: address => address || 'No',
@@ -238,33 +244,40 @@ class UserList extends Component {
       title: 'Birthday',
       dataIndex: 'birthDay',
       key: 'birthDay',
-      width: 200,
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === 'birthDay' && sortedInfo.order,
+      width: 140,
+      minWidth: 140,
       render: birthDay => getDateFormat(birthDay) || 'No',
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-      width: 200,
+      width: 240,
+      minWidth: 240,
       filteredValue: filteredInfo.email || null,
       ...getColumnSearchProps(this, 'email'),
-      render: email => email || 'No',
+      render: (email) => (
+        <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ', rows: 1 }}>{email || 'No'}</Paragraph>
+      ),
     },
     {
       title: 'Created date',
       dataIndex: 'createdDate',
       key: 'createdDate',
       sorter: true,
-      width: 200,
-      minWidth: 160,
       sortOrder: sortedInfo.columnKey === 'createdDate' && sortedInfo.order,
+      width: 140,
+      minWidth: 140,
       render: createdDate => getDateFormat(createdDate) || 'No',
     },
     {
       title: 'Create by',
       dataIndex: 'createdBy',
       key: 'createdBy',
-      width: 200,
+      width: 190,
+      minWidth: 190,
       filteredValue: filteredInfo.createdBy || null,
       ...getColumnSearchProps(this, 'createdBy', 'created by'),
       render: createdBy => (
@@ -277,7 +290,7 @@ class UserList extends Component {
     {
       title: 'Last modified date',
       dataIndex: 'lastModifiedDate',
-      width: 200,
+      width: 160,
       minWidth: 160,
       sorter: true,
       key: 'lastModifiedDate',
@@ -288,7 +301,8 @@ class UserList extends Component {
       title: 'Last modifed by',
       dataIndex: 'lastModifiedBy',
       key: 'lastModifiedBy',
-      width: 200,
+      width: 190,
+      minWidth: 190,
       filteredValue: filteredInfo.lastModifiedBy || null,
       ...getColumnSearchProps(this, 'lastModifiedBy', 'last modified by'),
       render: lastModifiedBy => (
@@ -301,16 +315,29 @@ class UserList extends Component {
     {
       title: 'Operations',
       key: 'operation',
-      width: 100,
+      width: 120,
+      minWidth: 120,
       dataIndex: 'id',
       fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
-        <Button
-          onClick={() => this.onEditUser(id)}
-          type='default'
-          icon={<InfoCircleOutlined />}
-          size='small'>Details
-          </Button>
+        <Space key={id}>
+          <Button
+            onClick={() => this.onEditUser(id)}
+            type='default'
+            icon={<EditTwoTone />}
+            size='small'
+          />
+          <Button
+            type='default'
+            icon={<DeleteTwoTone />}
+            size='small'
+          />
+          <Button
+            type='default'
+            icon={<MailTwoTone />}
+            size='small'
+          />
+        </Space>
       ),
     },
   ]);
@@ -338,6 +365,30 @@ class UserList extends Component {
     });
   }
 
+  onClickToggleFixed = () => {
+    this.setState({
+      isColumnsFixed: !this.state.isColumnsFixed,
+    });
+  }
+
+  onRow = (record, rowIndex) => ({
+    onDoubleClick: event => {
+      let { selectedRowKeys } = this.state;
+      const { id } = record;
+
+      const index = selectedRowKeys.indexOf(id);
+
+      if (index > -1) {
+        selectedRowKeys.splice(index, 1);
+        selectedRowKeys = [...selectedRowKeys];
+      } else {
+        selectedRowKeys = [...selectedRowKeys, id];
+      }
+
+      this.setState({ selectedRowKeys })
+    },
+  })
+
   render() {
     document.title = 'Users';
 
@@ -356,6 +407,7 @@ class UserList extends Component {
 
     // columns with filteredInfo and sortedInfo
     const columnsInfo = this.getColumns(filteredInfo, sortedInfo, isColumnsFixed);
+
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       filteredValue: columnsInfo[index].filteredValue,
@@ -415,8 +467,9 @@ class UserList extends Component {
             </Button>
           </Tooltip>
           <Tooltip placement="topLeft" title='Fixed columns'>
-            <Button type='dashed'>
+            <Button type='dashed' onClick={this.onClickToggleFixed}>
               <Checkbox
+                checked={this.state.isColumnsFixed}
                 defaultChecked={this.state.isColumnsFixed}
                 onChange={this.onChangeColumnsFixed}
               />
@@ -425,9 +478,9 @@ class UserList extends Component {
           <Tooltip placement="topLeft" title='Refresh'>
             <Button
               type='dashed'
-              onClick={this.refreshData}
-              icon={<ReloadOutlined />}
-            />
+              onClick={this.refreshData}>
+              <ReloadOutlined />
+            </Button>
           </Tooltip>
           <Button onClick={this.toggleModalUserForm} type='default' icon={<PlusCircleTwoTone />}>
             Add
@@ -440,7 +493,7 @@ class UserList extends Component {
             onConfirm={this.onDeleteMany}
             disabled={!hasSelected}
           >
-            <Button type="danger" icon={<DeleteTwoTone />} disabled={!hasSelected} loading={this.props.isLoadingDelete}>
+            <Button type="danger" icon={<DeleteOutlined />} disabled={!hasSelected} loading={this.props.isLoadingDelete}>
               Delete
             </Button>
           </Popconfirm>
@@ -453,6 +506,7 @@ class UserList extends Component {
           bordered
           rowSelection={rowSelection}
           components={this.components}
+          onRow={this.onRow}
           columns={columns}
           rowKey={record => record.id}
           dataSource={data}
