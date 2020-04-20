@@ -5,10 +5,28 @@ import {
 } from '@ant-design/icons';
 import * as appAction from '../../action/appAction';
 import { connect } from 'react-redux';
+import responsive from '../../constant/responsive';
 
 class Setting extends Component {
 
-  state = { visible: false };
+  state = {
+    visible: false,
+    isLargeScreen: true,
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.resize);
+    this.resize();
+  }
+
+  resize = () => {
+    const { innerWidth } = window;
+    const isLargeScreen = innerWidth >= responsive.md;
+
+    if (isLargeScreen !== this.state.isLargeScreen) {
+      this.setState({ isLargeScreen });
+    }
+  }
 
   showDrawer = () => {
     this.setState({
@@ -36,19 +54,19 @@ class Setting extends Component {
           closable={true}
           onClose={this.onClose}
           visible={this.state.visible}
-          title="Setting"
+          title='Setting'
         >
           <div>Navigation mode</div>
           <Radio.Group onChange={this.onChangeNavigationMode} defaultValue={this.props.navigationMode}>
-            <Radio.Button value="horizontal">
+            <Radio.Button value='horizontal'>
               Horizontal
             </Radio.Button>
-            <Radio.Button value="vertical">
+            <Radio.Button value='vertical' disabled={!this.state.isLargeScreen}>
               Vertical
             </Radio.Button>
           </Radio.Group>
         </Drawer>
-        <Button onClick={this.showDrawer} className='btn-setting' type="primary" icon={<SettingTwoTone />} />
+        <Button onClick={this.showDrawer} className='btn-setting' type='primary' icon={<SettingTwoTone />} />
       </>
     );
   }
