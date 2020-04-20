@@ -25,7 +25,7 @@ export default class AuthLayout extends Component {
         <Content style={{ padding: '0 50px' }}>
           <Switch>
             {this.getRoutes()}
-            <Redirect from='*' to='/error/404' />
+            <Redirect from='*' to='/auth/login' />
           </Switch>
         </Content>
         <Footer style={{ textAlign: 'center' }}>Copyright ©2020 Created by Ourapp</Footer>

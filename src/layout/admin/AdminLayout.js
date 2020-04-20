@@ -5,32 +5,58 @@ import { Switch, Redirect } from 'react-router-dom';
 import AdminFooter from './AdminFooter';
 import AdminHeader from './AdminHeader';
 import { connect } from 'react-redux';
-import AdminSidebar from './AdminSidebar';
 import { PrivateRoute } from '../../util/get';
-import { toggleMenu } from '../../action/appAction';
-import MediaQuery from 'react-responsive'
+import * as appAction from '../../action/appAction';
+import MainMenu from './MainMenu';
+import responsive from '../../constant/responsive'
 
 const { Content, Sider } = Layout;
 
+const AdminRoutes = adminRoutes.map((prop, key) => {
+  let exact = false;
+
+  if (prop.exact) {
+    exact = prop.exact;
+  }
+
+  return (
+    <PrivateRoute
+      path={'/admin' + prop.path}
+      component={prop.component}
+      key={key}
+      exact={exact}
+    />
+  )
+});
+
 class AdminLayout extends Component {
 
-  getRoutes = () => {
-    return adminRoutes.map((prop, key) => {
-      let exact = false;
+  state = {
+    collapsedWidth: 80,
+    useDrawer: false,
+  }
 
-      if (prop.exact) {
-        exact = prop.exact;
+  componentDidMount() {
+    window.addEventListener("resize", this.resize);
+    this.resize();
+  }
+
+  resize = () => {
+    const { innerWidth } = window;
+    const isLargeScreen = innerWidth >= responsive.md;
+    const collapsedWidth = isLargeScreen ? 80 : 0;
+    const useDrawer = isLargeScreen ? false : true;
+
+    if (collapsedWidth !== this.state.collapsedWidth) {
+      this.setState({ collapsedWidth });
+    }
+
+    if (useDrawer !== this.state.useDrawer) {
+      this.setState({ useDrawer });
+      if (!isLargeScreen) {
+        this.props.changeNavigationMode('horizontal');
       }
-
-      return (
-        <PrivateRoute
-          path={'/admin' + prop.path}
-          component={prop.component}
-          key={key}
-          exact={exact}
-        />
-      )
-    });
+    }
   }
 
   onBreakpoint = (broken) => {
@@ -43,51 +69,65 @@ class AdminLayout extends Component {
     }
   }
 
-  // each device has a different collapsedWidth
-  renderSider = (collapsedWidth) => {
-    return (
+  onCloseSidebarDrawer = () => {
+    this.props.toggleMenu();
+  }
+
+  render() {
+    const sider = (
       <Sider
         trigger={null}
         collapsible
         collapsed={this.props.collapsed}
         breakpoint="lg"
         onBreakpoint={this.onBreakpoint}
-        collapsedWidth={collapsedWidth}
+        collapsedWidth={this.state.collapsedWidth}
       >
-        <AdminSidebar />
+        <div className="logo" />
+        <MainMenu mode='inline' />
       </Sider>
-    )
-  }
+    );
 
-  onCloseSidebarDrawer = () => {
-    this.props.toggleMenu();
-  }
+    const siderWithDrawer = this.state.useDrawer ?
+      (
+        <Drawer
+          width={'auto'}
+          bodyStyle={{ padding: '0', backgroundColor: '#001529' }}
+          placement='left'
+          closable={false}
+          visible={!this.props.collapsed}
+          onClose={this.onCloseSidebarDrawer}
+        >
+          {sider}
+        </Drawer>
+      ) : sider;
 
-  render() {
+    if (this.props.navigationMode === 'horizontal' && this.state.useDrawer === false) {
+      return (
+        <Layout style={{ minHeight: '100vh' }}>
+          <AdminHeader mode='horizontal' />
+          <Layout className='site-layout site-layout-horizontal'>
+            <Content style={{ margin: '5px 16px' }}>
+              <Switch>
+                {AdminRoutes}
+                <Redirect from='*' to='/admin/error/404' />
+              </Switch>
+            </Content>
+            <AdminFooter />
+          </Layout>
+        </Layout>
+      );
+    }
+
     return (
       <Layout style={{ minHeight: '100vh' }}>
-        <MediaQuery minWidth={768}>
-          {this.renderSider(80)}
-        </MediaQuery>
-        <MediaQuery maxWidth={767}>
-          <Drawer
-            width={'auto'}
-            bodyStyle={{ padding: '0', backgroundColor: '#001529' }}
-            placement='left'
-            closable={false}
-            visible={!this.props.collapsed}
-            onClose={this.onCloseSidebarDrawer}
-          >
-            {this.renderSider(0)}
-          </Drawer>
-        </MediaQuery>
-
-        <Layout className='site-layout'>
-          <AdminHeader />
-          <Content style={{ margin: '0 16px' }}>
+        {siderWithDrawer}
+        <Layout className='site-layout site-layout-vertical'>
+          <AdminHeader mode='vertical' />
+          <Content style={{ margin: '5px 16px' }}>
             <Switch>
-              {this.getRoutes()}
-              <Redirect from='*' to='/error/404' />
+              {AdminRoutes}
+              <Redirect from='*' to='/admin/error/404' />
             </Switch>
           </Content>
           <AdminFooter />
@@ -98,15 +138,20 @@ class AdminLayout extends Component {
 }
 
 const mapStateToProps = state => {
+  const { collapsed, navigationMode } = state.app;
   return {
-    collapsed: state.app.collapsed,
+    collapsed,
+    navigationMode,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     toggleMenu: () => {
-      dispatch(toggleMenu());
+      dispatch(appAction.toggleMenu());
+    },
+    changeNavigationMode: (navigationMode) => {
+      dispatch(appAction.changeNavigationMode(navigationMode));
     }
   }
 }

@@ -2,6 +2,7 @@
 export const actionTypes = {
   // app
   TOGGLE_MENU: 'TOGGLE_MENU',
+  CHANGE_NAVIGATION_MODE: 'CHANGE_NAVIGATION_MODE',
 
   // user
   USERS_FAILURE: 'USERS_FAILURE',

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
+import 'ant-design-pro/dist/ant-design-pro.css';
 import './index.css';
 // import * as serviceWorker from './serviceWorker';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
@@ -66,7 +67,7 @@ ReactDOM.render(
       <Switch>
         <Route path='/admin' render={props => <AdminLayout {...props} />} />
         <Route path='/auth' render={props => <AuthLayout {...props} />} />
-        <Redirect from='/' to='/error/404' />
+        <Redirect from='/' to='/admin/error/404' />
       </Switch>
     </BrowserRouter>
   </Provider>,

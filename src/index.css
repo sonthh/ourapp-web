@@ -1,3 +1,5 @@
+/* toggle sidebar button */
+
 .trigger {
   font-size: 18px;
   line-height: 64px;
@@ -12,13 +14,40 @@
 
 .logo {
   height: 32px;
-  background: rgba(255, 255, 255, 0.2);
+  background: #1e8efa;
   margin: 16px;
 }
+
+.main-menu {}
+
+.logo-header {
+  width: 32px;
+  height: 32px;
+  background: #1e8efa;
+  margin: 16px;
+}
+
+.header {
+  display: flex;
+}
+
+.site-layout-horizontal {
+  margin-top: 66px;
+}
+
+.btn-setting {
+  position: fixed;
+  right: 0px;
+  top: 50%;
+}
+
+/* layout background */
 
 .site-layout .site-layout-background {
   background: #fff;
 }
+
+/* ant table */
 
 .ant-table {
   font-size: 13px;
@@ -32,9 +61,13 @@ th {
   padding: 10px 16px;
 }
 
+/* notification icon */
+
 .notificationIcon:hover {
   background-color: #f9f9fc;
 }
+
+/* resizeable table */
 
 .react-resizable {
   position: relative;
@@ -47,11 +80,11 @@ th {
   height: 100%;
   bottom: 0;
   right: -5px;
-  cursor: url(https://cdn3.iconfinder.com/data/icons/interface/100/scale_width_1-512.png), col-resize;
+  cursor: url(https://res.cloudinary.com/ourapp-upload/image/upload/c_scale,w_18/v1587197628/resize_s3txc4.png), col-resize;
   z-index: 1;
 }
 
-/*============================*/
+/* scrollbar */
 
 @media screen and (min-width: 992px) {
   ::-webkit-scrollbar-track {
@@ -71,4 +104,26 @@ th {
   }
 }
 
-/*======================*/
+/* end scrollbar */
+
+.notice-icon {
+  padding: 0 15px;
+  cursor: pointer;
+  transition: all .3s;
+}
+
+.notice-icon:hover, .menu-avatar-wrapper:hover {
+  background: rgba(0, 0, 0, .025);
+}
+
+.menu-avatar-wrapper {
+  display: inline-block;
+  cursor: pointer;
+  padding: 0 15px;
+}
+
+.menu-avatar .menu-item-avatar {
+  padding-right: 50px;
+}
+
+/* .menu-avatar {} */

@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
-import { Layout, Menu, Dropdown, Avatar, Row, Col, Badge } from 'antd';
+import { Layout, Menu, Dropdown, Avatar, Row, Col } from 'antd';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   SettingOutlined,
   UserOutlined,
   LogoutOutlined,
-  BellTwoTone,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { toggleMenu } from '../../action/appAction';
 import { logout } from '../../util/auth';
 import { Redirect, Link } from 'react-router-dom';
 import { getCurrentUser } from '../../util/auth';
+import Notice from '../../component/common/Notice';
+import MainMenu from './MainMenu';
 
 const { Header } = Layout;
 
@@ -41,8 +42,8 @@ class AdminHeader extends Component {
   }
 
   userMenu = (currentUser) => (
-    <Menu>
-      <Menu.Item>
+    <Menu className='menu-avatar'>
+      <Menu.Item className='menu-item-avatar'>
         <UserOutlined />
         <Link style={{ display: 'inline' }} to='/admin/profile'><span>{currentUser.username}</span></Link>
       </Menu.Item>
@@ -54,15 +55,6 @@ class AdminHeader extends Component {
       <Menu.Item onClick={this.onLogout}>
         <LogoutOutlined />
         <span>Logout</span>
-      </Menu.Item>
-    </Menu>
-  );
-
-  notificationMenu = (
-    <Menu>
-      <Menu.Item>
-        <UserOutlined />
-        <span>Profile</span>
       </Menu.Item>
     </Menu>
   );
@@ -80,28 +72,37 @@ class AdminHeader extends Component {
     }
     const currentUser = getCurrentUser();
 
-    return (
-      <Header className='site-layout-background' style={{ padding: 0 }}>
-        <Row justify='space-between' >
+    let headerStyle = { padding: 0 };
+    // mode: vertical
+    let leftHeader = (
+      <Col>
+        {this.renderToggleIcon()}
+      </Col>
+    );
+    if (this.props.mode === 'horizontal') {
+      headerStyle = { ...headerStyle, position: 'fixed', zIndex: 1, width: '100%' };
+      leftHeader = (
+        <>
           <Col>
-            {this.renderToggleIcon()}
+            <div className='logo-header' />
           </Col>
           <Col>
-            <Dropdown trigger={['click']} style overlay={this.notificationMenu} placement="bottomRight">
-              <Badge count={5}>
-                <BellTwoTone
-                  className='notificationIcon'
-                  style={{
-                    fontSize: '22px', alignItems: 'center', borderRadius: '50%',
-                    cursor: 'pointer', transition: 'color 0.3s', color: '#1890ff',
-                    padding: '8px',
-                  }}
-                />
-              </Badge>
-            </Dropdown>
+            <MainMenu mode='horizontal' />
+          </Col>
+        </>
+      );
+    }
+
+    return (
+      <Header style={headerStyle} className='site-layout-background'>
+        <Row justify='space-between'>
+          {leftHeader}
+          <Col>
+            <Notice />
             <Dropdown trigger={['click']} overlay={this.userMenu(currentUser)} placement="bottomRight">
-              <Avatar style={{ lineHeight: '64px', cursor: 'pointer', marginLeft: '20px' }}
-                src={currentUser.avatar} />
+              <div className='menu-avatar-wrapper'>
+                <Avatar style={{ top: '-4px' }} size='small' src={currentUser.avatar} />
+              </div>
             </Dropdown>
           </Col>
         </Row>

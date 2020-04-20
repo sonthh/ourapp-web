@@ -3,6 +3,7 @@ import Profile from './page/admin/Profile';
 import ProfileSetting from './page/admin/ProfileSetting';
 import Login from './page/auth/Login';
 import UserList from './page/admin/user/UserList';
+import ErrorPage from './page/admin/error/ErrorPage';
 
 export const adminRoutes = [
   {
@@ -21,6 +22,10 @@ export const adminRoutes = [
   {
     path: '/user/list',
     component: UserList,
+  },
+  {
+    path: '/error/:errorCode',
+    component: ErrorPage,
   },
 ];
 
