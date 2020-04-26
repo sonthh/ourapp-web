@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import Exception from 'ant-design-pro/lib/Exception';
 import CountDown from 'ant-design-pro/lib/CountDown';
 import { time } from '../../../constant/time'
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 const timeToRedirect = time.timeToRedirect;
 
@@ -25,7 +25,9 @@ export default class ErrorPage extends Component {
     }
 
     setTimeout(() => {
-      this.props.history.push('/admin/dashboard');
+      if (window.location.href.includes('/admin/error/')) {
+        this.props.history.push('/admin/dashboard');
+      }
     }, timeToRedirect);
   }
 
@@ -43,7 +45,7 @@ export default class ErrorPage extends Component {
     );
 
     if (!errorCodes.includes(errorCode)) {
-      errorCode = '404';
+      return (<Redirect to='/admin/error/404' />);
     }
 
     if (errorCode === '403') {

@@ -54,10 +54,11 @@ export const delteManyUsers = (ids) => {
   }
 }
 
-export const toggleModalUserForm = () => {
+export const toggleModalUserForm = (isAddForm = true) => {
   return async (dispatch) => {
     dispatch({
       type: actionTypes.TOGGLE_MODAL_USER_FORM,
+      payloads: { isAddForm },
     });
   }
 }
@@ -92,9 +93,9 @@ export const findOneUser = (id) => {
 export const createOneUser = (userRequest) => {
 
   return async (dispatch) => {
-    // dispatch({
-    //   type: actionTypes.FIND_ONE_USER_REQUEST,
-    // });
+    dispatch({
+      type: actionTypes.CREATE_ONE_USER_REQUEST,
+    });
 
     try {
       const user = await userService.createOneUser(userRequest);
@@ -104,14 +105,10 @@ export const createOneUser = (userRequest) => {
         payloads: { user },
       });
     } catch (error) {
-      console.log(error);
-
-      // const errorData = error.response;
-
-      // dispatch({
-      //   type: actionTypes.USERS_FAILURE,
-      //   payloads: { error: errorData },
-      // });
+      dispatch({
+        type: actionTypes.CREATE_ONE_USER_FAILURE,
+        payloads: { error },
+      });
     }
   }
 }

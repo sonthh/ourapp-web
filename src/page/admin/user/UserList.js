@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import * as userAction from '../../../action/userAction';
+import * as roleAction from '../../../action/roleAction';
 import { getFilterObject } from '../../../util/get';
 import { checkIsEmptyObj } from '../../../util/check';
 import { getDateFormat } from '../../../util/date';
@@ -52,8 +53,8 @@ class UserList extends Component {
       if (error) {
         notification.error({
           message: 'Notification',
-          description: error.message,
-          duration: 0,
+          description: 'Something went wrong',
+          duration: 2.5,
         });
       }
     }
@@ -156,13 +157,15 @@ class UserList extends Component {
     });
   }
 
-  toggleModalUserForm = () => {
-    this.props.toggleModalUserForm();
+  onAddUser = () => {
+    this.props.toggleModalUserForm(true);
+    this.props.findManyRoles();
   }
 
   onEditUser = (id) => {
-    this.props.toggleModalUserForm();
+    this.props.toggleModalUserForm(false);
     this.props.findOneUser(id);
+    this.props.findManyRoles();
   }
 
   // filteredInfo, sortedInfo from state
@@ -482,7 +485,7 @@ class UserList extends Component {
               <ReloadOutlined />
             </Button>
           </Tooltip>
-          <Button onClick={this.toggleModalUserForm} type='default' icon={<PlusCircleTwoTone />}>
+          <Button onClick={this.onAddUser} type='default' icon={<PlusCircleTwoTone />}>
             Add
           </Button>
           <UserEdit />
@@ -532,11 +535,14 @@ const mapDispatchToProps = (dispatch) => {
     deleteManyUsers: (ids) => {
       dispatch(userAction.delteManyUsers(ids));
     },
-    toggleModalUserForm: () => {
-      dispatch(userAction.toggleModalUserForm());
+    toggleModalUserForm: (isAddForm) => {
+      dispatch(userAction.toggleModalUserForm(isAddForm));
     },
     findOneUser: (id) => {
       dispatch(userAction.findOneUser(id));
+    },
+    findManyRoles: () => {
+      dispatch(roleAction.findManyRoles());
     },
   }
 }
