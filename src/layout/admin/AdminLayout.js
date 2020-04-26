@@ -102,6 +102,7 @@ class AdminLayout extends Component {
         </Drawer>
       ) : sider;
 
+    // horizonal is not for mobile screen
     if (this.props.navigationMode === 'horizontal' && this.state.useDrawer === false) {
       return (
         <Layout style={{ minHeight: '100vh' }}>

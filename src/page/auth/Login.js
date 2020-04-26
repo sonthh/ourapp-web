@@ -27,13 +27,19 @@ class Login extends Component {
 
       if (error) {
         return notification.error({
-          message: 'Login faild',
+          message: 'Login failed',
           description: 'Username or password is incorrect!',
         });
       }
 
       if (token && isAuthenticated) {
         saveAuthData({ token, isAuthenticated, username, avatar });
+
+        notification.success({
+          duration: 2.5,
+          message: `Hi ${username}`,
+          description: 'Wellcom back!',
+        });
       }
     }
   }
@@ -56,7 +62,7 @@ class Login extends Component {
           <Form
             name='normal_login'
             className='login-form'
-            initialValues={{ remember: true }}
+            initialValues={{ remember: true, username: 'admin', password: '123456' }}
             onFinish={this.onFinish}
           >
             <Form.Item

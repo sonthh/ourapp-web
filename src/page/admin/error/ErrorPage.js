@@ -3,6 +3,7 @@ import { Button } from 'antd';
 import Exception from 'ant-design-pro/lib/Exception';
 import CountDown from 'ant-design-pro/lib/CountDown';
 import { time } from '../../../constant/time'
+import { Link } from 'react-router-dom';
 
 const timeToRedirect = time.timeToRedirect;
 
@@ -36,7 +37,7 @@ export default class ErrorPage extends Component {
     const targetTime = new Date().getTime() + timeToRedirect;
     const actions = (
       <div>
-        <Button type="primary">Back home</Button>
+        <Button type="primary"><Link to='/admin/dashboard'>Back home</Link></Button>
         <CountDown style={{ fontSize: 20 }} target={targetTime} />
       </div>
     );
