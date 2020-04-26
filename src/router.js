@@ -20,7 +20,7 @@ export const adminRoutes = [
     component: ProfileSetting,
   },
   {
-    path: '/user/list',
+    path: '/user/manage',
     component: UserList,
   },
   {

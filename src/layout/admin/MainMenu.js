@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Menu } from 'antd';
-import { UserOutlined, DashboardOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { menu } from '../../menu';
+import PropTypes from 'prop-types';
 
 const { SubMenu } = Menu;
 
@@ -10,29 +11,38 @@ export default class MainMenu extends Component {
   render() {
     const { mode } = this.props;
 
-    return (
-      <Menu className='main-menu' theme='dark' defaultSelectedKeys={['1']} mode={mode}>
-        <Menu.Item key='1'>
-          <DashboardOutlined />
-          <span>Dashboard</span>
+    const mainMenu = menu.map((menu, menuIndex) => {
+
+      const sub = menu.submenu.map((subMenu, subMenuIndex) => (
+        <Menu.Item key={menu.title + '.' + menuIndex + '.' + subMenuIndex}>
+          {subMenu.icon}
+          <Link to={subMenu.path}>{subMenu.title}</Link>
         </Menu.Item>
+      ));
+
+      return (
         <SubMenu
-          key='sub1'
+          key={menu.title + '.' + menuIndex}
           title={
             <span>
-              <UserOutlined />
-              <span>User</span>
+              {menu.icon}
+              <span>{menu.title}</span>
             </span>
           }
         >
-          <Menu.Item key='3'>
-            <Link to='/admin/user/list'>List</Link>
-          </Menu.Item>
-          <Menu.Item key='4'>
-            <Link to='/admin/user/add'>Add</Link>
-          </Menu.Item>
+          {sub}
         </SubMenu>
+      )
+    })
+
+    return (
+      <Menu className='main-menu' theme='dark' defaultSelectedKeys={['1']} mode={mode}>
+        {mainMenu}
       </Menu>
     );
   }
 }
+
+MainMenu.propTypes = {
+  mode: PropTypes.string.isRequired,
+};
