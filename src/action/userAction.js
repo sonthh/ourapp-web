@@ -17,13 +17,9 @@ export const findManyUsers = (params = {}) => {
         payloads: { dataList },
       });
     } catch (error) {
-      console.log(error);
-
-      const errorData = error.response;
-
       dispatch({
-        type: actionTypes.USERS_FAILURE,
-        payloads: { error: errorData },
+        type: actionTypes.FIND_MANY_USERS_FAILURE,
+        payloads: { error },
       });
     }
   }
@@ -78,8 +74,6 @@ export const findOneUser = (id) => {
         payloads: { user },
       });
     } catch (error) {
-      console.log(error);
-
       const errorData = error.response;
 
       dispatch({
@@ -107,6 +101,31 @@ export const createOneUser = (userRequest) => {
     } catch (error) {
       dispatch({
         type: actionTypes.CREATE_ONE_USER_FAILURE,
+        payloads: { error },
+      });
+    }
+  }
+}
+
+export const updateOneUser = (userRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_ONE_USER_REQUEST,
+    });
+
+    try {
+      const user = await userService.updateOneUser(userRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_ONE_USER_SUCCESS,
+        payloads: { user },
+      });
+    } catch (error) {
+      console.log(error.response);
+      
+      dispatch({
+        type: actionTypes.UPDATE_ONE_USER_FAILURE,
         payloads: { error },
       });
     }

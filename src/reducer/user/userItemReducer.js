@@ -40,7 +40,7 @@ export const userItemReducer = (state = initialState, action) => {
       return {
         ...state,
         isLoadingCreatingUser: false,
-        success: 'CreateUser',
+        success: 'Created a user',
       }
     }
     case actionTypes.CREATE_ONE_USER_FAILURE: {
@@ -55,6 +55,29 @@ export const userItemReducer = (state = initialState, action) => {
         ...state,
         isLoadingCreatingUser: true,
         success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_ONE_USER_REQUEST: {
+      return {
+        ...state,
+        isLoadingUpdatingUser: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_ONE_USER_FAILURE: {
+      return {
+        ...state,
+        error: action.payloads.error,
+        isLoadingUpdatingUser: false,
+      }
+    }
+    case actionTypes.UPDATE_ONE_USER_SUCCESS: {
+      const { user } = action.payloads;
+      return {
+        ...state,
+        isLoadingUpdatingUser: false,
+        success: 'Updated a user',
+        item: user,
       }
     }
     default:

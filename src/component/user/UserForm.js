@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import * as userAction from '../../action/userAction'
 import * as roleAction from '../../action/roleAction'
 
-class UserEdit extends Component {
+class UserForm extends Component {
 
   constructor(props) {
     super(props);
@@ -15,6 +15,7 @@ class UserEdit extends Component {
       visible: false,
       isLoading: false,
       isLoadingCreatingUser: false,
+      isLoadingUpdatingUser: false,
       item: {},
       roleList: [],
     };
@@ -23,7 +24,7 @@ class UserEdit extends Component {
   componentDidMount() { }
 
   componentDidUpdate(prevProps, prevState) {
-    const { isShowModal, isLoading, isLoadingCreatingUser, error, item, roles, success } = this.props;
+    const { isShowModal, isLoading, isLoadingCreatingUser, error, item, roles, success, isLoadingUpdatingUser } = this.props;
 
     if (isShowModal !== undefined && isShowModal !== prevProps.isShowModal) {
       this.setState({
@@ -39,27 +40,35 @@ class UserEdit extends Component {
 
     if (success !== undefined && success !== prevProps.success) {
       this.formRef.current.setFieldsValue({
-        username: '',
-        password: '',
+        username: null,
+        password: null,
         roleIds: [],
-        status: '',
+        status: null,
       });
       notification.success({
-        message: 'Notification',
-        description: 'Created a user.',
+        message: 'SUCCESSS',
+        description: success,
         duration: 2.5,
       });
     }
 
-    if (isLoadingCreatingUser !== undefined && isLoadingCreatingUser !== prevProps.isLoadingCreatingUser) {
+    if (isLoadingCreatingUser !== undefined
+      && isLoadingCreatingUser !== prevProps.isLoadingCreatingUser) {
       this.setState({
         isLoadingCreatingUser,
       });
     }
 
+    if (isLoadingUpdatingUser !== undefined
+      && isLoadingUpdatingUser !== prevProps.isLoadingUpdatingUser) {
+      this.setState({
+        isLoadingUpdatingUser,
+      });
+    }
+
     if (error && error !== prevProps.error) {
       notification.error({
-        message: 'Notification',
+        message: 'ERROR',
         description: 'Something went wrong',
         duration: 2.5,
       });
@@ -72,10 +81,10 @@ class UserEdit extends Component {
 
       if (!item.id && this.formRef && this.formRef.current) {
         this.formRef.current.setFieldsValue({
-          username: '',
-          password: '',
+          username: null,
+          password: null,
           roleIds: [],
-          status: '',
+          status: null,
         });
       }
 
@@ -92,7 +101,7 @@ class UserEdit extends Component {
 
     // roles list: display on modal
     if (roles !== prevProps.roles) {
-      this.setState({ roleList: roles })
+      this.setState({ roleList: roles });
     }
   }
 
@@ -105,8 +114,15 @@ class UserEdit extends Component {
   };
 
   onSubmitForm = (values) => {
-    console.log(values);
-    this.props.createOne(values)
+    const { id } = this.state.item;
+
+    if (id) {
+      this.props.updateOneUser({ ...values, id });
+    }
+
+    if (!id) {
+      this.props.createOneUser(values);
+    }
   }
 
   onFieldChange = (changedFields, allFields) => {
@@ -118,7 +134,7 @@ class UserEdit extends Component {
   }
 
   render() {
-    const { item, roleList } = this.state;
+    const { item, roleList, isLoadingCreatingUser, isLoadingUpdatingUser } = this.state;
     const title = item.id ? 'Edit user' : 'Add user';
 
     const roleOptions = roleList.map(role => ({ label: role.name, value: role.id }));
@@ -129,7 +145,7 @@ class UserEdit extends Component {
       </Button>,
       <Button
         key='submit' type='primary'
-        loading={this.state.isLoadingCreatingUser === true}
+        loading={isLoadingUpdatingUser || isLoadingCreatingUser}
         disabled={this.state.isLoading} onClick={this.handleOk}
         form='userForm' htmlType='submit'
       >
@@ -160,7 +176,7 @@ class UserEdit extends Component {
               name='username'
               label='Username'
             >
-              <Input value={item.username} />
+              <Input value={item.username} disabled={item.id} />
             </Form.Item>
             <Form.Item
               name='password'
@@ -193,7 +209,10 @@ class UserEdit extends Component {
 }
 
 const mapStateToProps = state => {
-  const { isShowModal, item, isLoading, error, isLoadingCreatingUser, success } = state.user.userItem;
+  const {
+    isShowModal, item, isLoading, error, isLoadingCreatingUser,
+    isLoadingUpdatingUser, success
+  } = state.user.userItem;
   const { roles } = state.role;
 
   return {
@@ -201,6 +220,7 @@ const mapStateToProps = state => {
     item,
     isLoading,
     isLoadingCreatingUser,
+    isLoadingUpdatingUser,
     success,
     error,
     roles,
@@ -212,8 +232,11 @@ const mapDispatchToProps = (dispatch) => {
     toggleModalUserForm: () => {
       dispatch(userAction.toggleModalUserForm());
     },
-    createOne: (userRequest) => {
+    createOneUser: (userRequest) => {
       dispatch(userAction.createOneUser(userRequest));
+    },
+    updateOneUser: (userRequest) => {
+      dispatch(userAction.updateOneUser(userRequest));
     },
     findManyRoles: () => {
       dispatch(roleAction.findManyRoles());
@@ -221,4 +244,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserEdit);
+export default connect(mapStateToProps, mapDispatchToProps)(UserForm);

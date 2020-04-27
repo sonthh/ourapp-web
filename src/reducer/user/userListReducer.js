@@ -37,6 +37,15 @@ export const userListReducer = (state = initialState, action) => {
         isLoading: false,
       }
     }
+    case actionTypes.FIND_MANY_USERS_FAILURE: {
+      const { error } = action.payloads;
+      
+      return {
+        ...state,
+        error,
+        isLoading: false,
+      }
+    }
     case actionTypes.DELETE_MANY_USERS_REQUEST: {
 
       return {
@@ -70,6 +79,27 @@ export const userListReducer = (state = initialState, action) => {
       let { content } = dataList;
       content = [user, ...content]
 
+
+      return {
+        ...state,
+        dataList: {
+          ...dataList,
+          content,
+        },
+      }
+    }
+    case actionTypes.UPDATE_ONE_USER_SUCCESS: {
+      const { user } = action.payloads;
+      const { dataList } = state;
+      let { content } = dataList;
+      let index = -1;
+      content.forEach((item, idx) => {
+        if (item.id === user.id) {
+          index = idx;
+          return;
+        }
+      });
+      content[index] = user;
 
       return {
         ...state,

@@ -59,3 +59,16 @@ export const createOneUser = async (userRequest) => {
     return Promise.reject(error);
   }
 }
+
+export const updateOneUser = async (userRequest) => {
+  try {
+    const headers = getHeaders();
+
+    const { data } = await axios
+      .put(`${config.API_URL}/users/${userRequest.id}`, userRequest, { headers });
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}

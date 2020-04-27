@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Table, Button, notification, Popconfirm, message, Tooltip, Typography, Checkbox, Space,
+  Table, Button, notification, Popconfirm, Tooltip, Typography, Checkbox, Space,
 } from 'antd';
 import {
   ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteOutlined, DeleteTwoTone, MailTwoTone,
@@ -13,7 +13,7 @@ import { getFilterObject } from '../../../util/get';
 import { checkIsEmptyObj } from '../../../util/check';
 import { getDateFormat } from '../../../util/date';
 import AvatarAndTitle from '../../../component/common/AvatarAndTitle';
-import UserEdit from '../../../component/user/UserEdit';
+import UserForm from '../../../component/user/UserForm';
 import GenderTag from '../../../component/common/GenderTag';
 import StatusTag from '../../../component/common/StatusTag';
 import { getColumnSearchProps } from '../../../util/table';
@@ -66,7 +66,15 @@ class UserList extends Component {
     }
 
     if (isDeleted !== undefined && isDeleted === true && ids !== prevProps.ids) {
-      message.success(`Deleted ${this.props.ids.length} items`);
+      const { ids } = this.props;
+      const description = `Deleted ${ids.length} user${ids.length > 1 ? 's' : ''}`;
+
+      notification.success({
+        message: 'SUCCESS',
+        description,
+        duration: 2.5,
+      });
+
       this.setState({ selectedRowKeys: [] });
     }
 
@@ -393,7 +401,7 @@ class UserList extends Component {
   })
 
   render() {
-    document.title = 'Users';
+    document.title = 'User';
 
     const { data, pagination, isLoadingTable, selectedRowKeys, isColumnsFixed } = this.state;
 
@@ -488,7 +496,7 @@ class UserList extends Component {
           <Button onClick={this.onAddUser} type='default' icon={<PlusCircleTwoTone />}>
             Add
           </Button>
-          <UserEdit />
+          <UserForm />
 
           <Popconfirm
             placement='bottomLeft'
