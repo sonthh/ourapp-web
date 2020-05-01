@@ -18,7 +18,7 @@
   margin: 16px;
 }
 
-.main-menu {}
+/* .main-menu {} */
 
 .logo-header {
   width: 32px;
@@ -127,3 +127,27 @@ th {
 }
 
 /* .menu-avatar {} */
+
+/* form login  */
+
+.login-form {
+  border: #fff solid 1px;
+  padding: 70px 30px;
+  background-color: #fff;
+}
+.login-form-forgot {
+  float: right;
+}
+.ant-col-rtl .login-form-forgot {
+  float: left;
+}
+.login-form-button {
+  width: 100%;
+}
+.login-form-register{
+  padding-top: 12px;
+  float: right;
+}
+.wrapper{
+  background-image: url('./image/background.jpg');
+}
