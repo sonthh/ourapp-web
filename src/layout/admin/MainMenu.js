@@ -20,15 +20,17 @@ export default class MainMenu extends Component {
         </Menu.Item>
       ));
 
+      const title = (
+        <span>
+          {menu.icon}
+          <span>{menu.title}</span>
+        </span>
+      );
+
       return (
         <SubMenu
           key={menu.title + '.' + menuIndex}
-          title={
-            <span>
-              {menu.icon}
-              <span>{menu.title}</span>
-            </span>
-          }
+          title={title}
         >
           {sub}
         </SubMenu>

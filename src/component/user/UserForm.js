@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import {
-  Modal, Form, Input, Checkbox, Select, Spin, Button, notification,
+  Modal, Form, Input, Checkbox, Select, Spin, Button, notification, Radio, DatePicker,
 } from 'antd';
 import { connect } from 'react-redux';
 import * as userAction from '../../action/userAction'
 import * as roleAction from '../../action/roleAction'
+import moment from 'moment';
+const dateFormat = 'MMMM DD YYYY';
 
 class UserForm extends Component {
 
@@ -91,10 +93,15 @@ class UserForm extends Component {
       // edit form
       if (item.id) {
         const roleIds = item.roles.map(role => role.id);
+        let { birthDay } = item;
+        if (birthDay) {
+          birthDay = moment(item.birthDay);
+        }
 
         this.formRef.current.setFieldsValue({
           ...item,
           roleIds,
+          birthDay,
         });
       }
     }
@@ -138,6 +145,13 @@ class UserForm extends Component {
     const title = item.id ? 'Edit user' : 'Add user';
 
     const roleOptions = roleList.map(role => ({ label: role.name, value: role.id }));
+    const passwordValidate = item.id ?
+      {
+        rules: [{ whitespace: true, min: 6 }],
+      } :
+      {
+        rules: [{ required: true, whitespace: true, min: 6 }],
+      };
 
     const footer = [
       <Button key='back' onClick={this.handleCancel}>
@@ -152,7 +166,6 @@ class UserForm extends Component {
         OK
       </Button >,
     ]
-
     return (
 
       <Modal
@@ -175,18 +188,22 @@ class UserForm extends Component {
             <Form.Item
               name='username'
               label='Username'
+              rules={[{ required: true, whitespace: true, min: 6 }]}
+              validateFirst={true}
             >
               <Input value={item.username} disabled={item.id} />
             </Form.Item>
             <Form.Item
               name='password'
               label='Password'
+              {...passwordValidate}
             >
               <Input type='password' />
             </Form.Item>
             <Form.Item
               name='roleIds'
               label='Roles'
+              rules={[{ required: true, message: 'please select at least a role' }]}
             >
               <Checkbox.Group options={roleOptions} />
             </Form.Item>
@@ -194,11 +211,29 @@ class UserForm extends Component {
             <Form.Item
               name='status'
               label='Status'
+              rules={[{ required: true }]}
             >
               <Select placeholder='User status'>
                 <Select.Option value='ACTIVE'>Active</Select.Option>
                 <Select.Option value='INACTIVE'>Inactive</Select.Option>
               </Select>
+            </Form.Item>
+
+            <Form.Item
+              name='gender'
+              label='Gender'
+            >
+              <Radio.Group>
+                <Radio.Button value="MALE">Male</Radio.Button>
+                <Radio.Button value="FEMALE">Female</Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+
+            <Form.Item
+              name='birthDay'
+              label='Birth day'
+            >
+              <DatePicker format={dateFormat} />
             </Form.Item>
           </Form>
         </Spin>

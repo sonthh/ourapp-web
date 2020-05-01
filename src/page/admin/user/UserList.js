@@ -401,8 +401,6 @@ class UserList extends Component {
   })
 
   render() {
-    document.title = 'User';
-
     const { data, pagination, isLoadingTable, selectedRowKeys, isColumnsFixed } = this.state;
 
     const rowSelection = {

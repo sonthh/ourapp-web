@@ -18,8 +18,6 @@
   margin: 16px;
 }
 
-.main-menu {}
-
 .logo-header {
   width: 32px;
   height: 32px;
@@ -80,7 +78,8 @@ th {
   height: 100%;
   bottom: 0;
   right: -5px;
-  cursor: url(https://res.cloudinary.com/ourapp-upload/image/upload/c_scale,w_18/v1587197628/resize_s3txc4.png), col-resize;
+  cursor: col-resize;
+  /* cursor: url(https://res.cloudinary.com/ourapp-upload/image/upload/c_scale,w_18/v1587197628/resize_s3txc4.png), col-resize; */
   z-index: 1;
 }
 
