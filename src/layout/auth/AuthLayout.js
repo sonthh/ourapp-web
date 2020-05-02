@@ -28,7 +28,7 @@ export default class AuthLayout extends Component {
             <Redirect from='*' to='/auth/login' />
           </Switch>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>Copyright ©2020 Created by Ourapp</Footer>
+        <Footer style={{ textAlign: 'center' }}>Copyright ©2020 Created by team1</Footer>
       </Layout>
     );
   }

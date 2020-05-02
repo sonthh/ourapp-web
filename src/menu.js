@@ -1,5 +1,7 @@
 import React from 'react';
-import { UserOutlined, DashboardOutlined, HomeOutlined, PieChartOutlined, TableOutlined } from '@ant-design/icons';
+import {
+  UserOutlined, DashboardOutlined, HomeOutlined, PieChartOutlined, TableOutlined, TeamOutlined
+} from '@ant-design/icons';
 
 export const menu = [
   {
@@ -34,4 +36,20 @@ export const menu = [
       },
     ],
   },
-]
+  {
+    title: 'Personnel',
+    icon: <TeamOutlined />,
+    submenu: [
+      {
+        title: 'Manage',
+        icon: <TableOutlined />,
+        path: '/admin/personnel/manage',
+      },
+      {
+        title: 'Statistics',
+        icon: <PieChartOutlined />,
+        path: '/admin/personnel/statistics',
+      },
+    ],
+  },
+];

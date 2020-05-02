@@ -7,8 +7,6 @@ import {
   EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
-import * as userAction from '../../../action/userAction';
-import * as roleAction from '../../../action/roleAction';
 import { getFilterObject } from '../../../util/get';
 import { checkIsEmptyObj } from '../../../util/check';
 import { getDateFormat } from '../../../util/date';
@@ -19,10 +17,11 @@ import StatusTag from '../../../component/common/StatusTag';
 import { getColumnSearchProps } from '../../../util/table';
 import { ResizeableTitle } from '../../../component/common/ResizeableTitle';
 import MyAvatar from '../../../component/common/MyAvatar';
+import * as personnelAction from '../../../action/personnelAction';
 
 const Paragraph = Typography.Paragraph;
 
-class UserList extends Component {
+class PersonnelList extends Component {
 
   constructor(props) {
     super(props);
@@ -34,7 +33,7 @@ class UserList extends Component {
       sortedInfo: null,
       data: [],
       pagination: {
-        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} users`,
+        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} personnel`,
         showQuickJumper: true,
       },
       isLoadingTable: true,
@@ -45,7 +44,7 @@ class UserList extends Component {
   }
 
   componentDidMount() {
-    this.props.findManyUsers({});
+    this.props.findManyPersonnel({});
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -102,14 +101,14 @@ class UserList extends Component {
       sortedInfo: sorter,
     });
 
-    this.fetchUsers(pagination, filters, sorter);
+    this.fetchPersonnel(pagination, filters, sorter);
   };
 
-  fetchUsers = (pagination, filters, sorter) => {
+  fetchPersonnel = (pagination, filters, sorter) => {
 
     filters = getFilterObject(
       ['gender', 'username', 'createdBy', 'lastModifiedBy', 'address', 'status',
-        'email', 'identification', 'phoneNumber', 'fullName'],
+        'email', 'identification', 'phoneNumber', 'fullName', 'position', 'degree'],
       filters,
     );
 
@@ -117,7 +116,7 @@ class UserList extends Component {
     const sortBy = (sorter && sorter.order && sorter.field) ? sorter.field : 'id';
     const { current, pageSize } = pagination;
 
-    this.props.findManyUsers({
+    this.props.findManyPersonnel({
       currentPage: current,
       limit: pageSize,
       sortBy,
@@ -138,18 +137,18 @@ class UserList extends Component {
   clearFilters = () => {
     this.setState({ filteredInfo: null });
     const { pagination, sortedInfo } = this.state;
-    this.fetchUsers(pagination, null, sortedInfo);
+    this.fetchPersonnel(pagination, null, sortedInfo);
   };
 
   clearSorters = () => {
     this.setState({ sortedInfo: null });
     const { pagination, filteredInfo } = this.state;
-    this.fetchUsers(pagination, filteredInfo, null);
+    this.fetchPersonnel(pagination, filteredInfo, null);
   };
 
   refreshData = () => {
     const { pagination, filteredInfo, sortedInfo } = this.state;
-    this.fetchUsers(pagination, filteredInfo, sortedInfo)
+    this.fetchPersonnel(pagination, filteredInfo, sortedInfo)
   }
 
   clearFiltersAndSorters = () => {
@@ -159,7 +158,7 @@ class UserList extends Component {
     });
 
     const { pagination } = this.state;
-    this.fetchUsers(pagination, null, null);
+    this.fetchPersonnel(pagination, null, null);
   };
 
   clearSelected = () => {
@@ -183,7 +182,7 @@ class UserList extends Component {
   getColumns = (filteredInfo, sortedInfo, isColumnsFixed = false) => ([
     {
       title: 'Avatar',
-      dataIndex: 'username',
+      dataIndex: ['user', 'username'],
       key: 'avatar',
       width: 75,
       minWidth: 75,
@@ -194,7 +193,7 @@ class UserList extends Component {
     },
     {
       title: 'Username',
-      dataIndex: 'username',
+      dataIndex: ['user', 'username'],
       key: 'username',
       width: 140,
       minWidth: 140,
@@ -205,8 +204,42 @@ class UserList extends Component {
       ),
     },
     {
+      title: 'Position',
+      dataIndex: 'position',
+      key: 'position',
+      width: 140,
+      minWidth: 140,
+      filteredValue: filteredInfo.position || null,
+      ...getColumnSearchProps(this, 'position'),
+      render: position => position || 'No',
+    },
+    {
+      title: 'Degree',
+      dataIndex: 'degree',
+      key: 'degree',
+      width: 140,
+      minWidth: 140,
+      filteredValue: filteredInfo.degree || null,
+      ...getColumnSearchProps(this, 'degree'),
+      render: degree => degree || 'No',
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+      width: 200,
+      minWidth: 200,
+      filteredValue: filteredInfo.description || null,
+      ...getColumnSearchProps(this, 'description'),
+      render: (description) => (
+        description ?
+          <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ', rows: 1 }}>{description}</Paragraph>
+          : 'No'
+      ),
+    },
+    {
       title: 'Full name',
-      dataIndex: 'fullName',
+      dataIndex: ['user', 'fullName'],
       key: 'fullName',
       width: 150,
       minWidth: 150,
@@ -216,7 +249,7 @@ class UserList extends Component {
     },
     {
       title: 'Identification',
-      dataIndex: 'identification',
+      dataIndex: ['user', 'identification'],
       key: 'identification',
       width: 150,
       minWidth: 150,
@@ -226,7 +259,7 @@ class UserList extends Component {
     },
     {
       title: 'Gender',
-      dataIndex: 'gender',
+      dataIndex: ['user', 'gender'],
       key: 'gender',
       width: 95,
       minWidth: 95,
@@ -246,7 +279,7 @@ class UserList extends Component {
     },
     {
       title: 'Status',
-      dataIndex: 'status',
+      dataIndex: ['user', 'status'],
       key: 'status',
       width: 95,
       minWidth: 95,
@@ -266,7 +299,7 @@ class UserList extends Component {
     },
     {
       title: 'Address',
-      dataIndex: 'address',
+      dataIndex: ['user', 'address'],
       key: 'address',
       width: 150,
       minWidth: 150,
@@ -276,7 +309,7 @@ class UserList extends Component {
     },
     {
       title: 'Phone number',
-      dataIndex: 'phoneNumber',
+      dataIndex: ['user', 'phoneNumber'],
       key: 'phoneNumber',
       width: 150,
       minWidth: 150,
@@ -286,7 +319,7 @@ class UserList extends Component {
     },
     {
       title: 'Birthday',
-      dataIndex: 'birthDay',
+      dataIndex: ['user', 'birthDay'],
       key: 'birthDay',
       sorter: true,
       sortOrder: sortedInfo.columnKey === 'birthDay' && sortedInfo.order,
@@ -296,7 +329,7 @@ class UserList extends Component {
     },
     {
       title: 'Email',
-      dataIndex: 'email',
+      dataIndex: ['user', 'email'],
       key: 'email',
       width: 240,
       minWidth: 240,
@@ -566,27 +599,27 @@ class UserList extends Component {
 }
 
 const mapStateToProps = state => {
-  return state.user.userList;
+  return state.personnel.personnelList;
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    findManyUsers: (params = {}) => {
-      dispatch(userAction.findManyUsers(params));
+    findManyPersonnel: (params = {}) => {
+      dispatch(personnelAction.findManyPersonnel(params));
     },
-    deleteManyUsers: (ids) => {
-      dispatch(userAction.delteManyUsers(ids));
-    },
-    toggleModalUserForm: (isAddForm) => {
-      dispatch(userAction.toggleModalUserForm(isAddForm));
-    },
-    findOneUser: (id) => {
-      dispatch(userAction.findOneUser(id));
-    },
-    findManyRoles: () => {
-      dispatch(roleAction.findManyRoles());
-    },
+    // deleteManyUsers: (ids) => {
+    //   dispatch(userAction.delteManyUsers(ids));
+    // },
+    // toggleModalUserForm: (isAddForm) => {
+    //   dispatch(userAction.toggleModalUserForm(isAddForm));
+    // },
+    // findOneUser: (id) => {
+    //   dispatch(userAction.findOneUser(id));
+    // },
+    // findManyRoles: () => {
+    //   dispatch(roleAction.findManyRoles());
+    // },
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserList);
+export default connect(mapStateToProps, mapDispatchToProps)(PersonnelList);

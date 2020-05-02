@@ -26,6 +26,15 @@ export const getFilterObject = (keys = [], filterObject = {}) => {
   return result;
 }
 
+export const getErrorMessage = (error) => {
+
+  if (error.response && error.response.data && error.response.data.errors) {
+    return error.response.data.errors;
+  }
+
+  return null;
+}
+
 export const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={(props) => (
     checkAuth()
