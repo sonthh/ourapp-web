@@ -6,6 +6,9 @@ import { connect } from 'react-redux';
 import * as userAction from '../../action/userAction'
 import * as roleAction from '../../action/roleAction'
 import moment from 'moment';
+import { FcBusinessman, FcBusinesswoman } from 'react-icons/fc';
+import { getErrorMessage } from '../../util/get';
+
 const dateFormat = 'MMMM DD YYYY';
 
 class UserForm extends Component {
@@ -71,7 +74,7 @@ class UserForm extends Component {
     if (error && error !== prevProps.error) {
       notification.error({
         message: 'ERROR',
-        description: 'Something went wrong',
+        description: getErrorMessage(error) || 'Something went wrong',
         duration: 2.5,
       });
     }
@@ -85,8 +88,15 @@ class UserForm extends Component {
         this.formRef.current.setFieldsValue({
           username: null,
           password: null,
+          gender: null,
           roleIds: [],
-          status: null,
+          birthDay: null,
+          fullName: null,
+          address: null,
+          phoneNumber: null,
+          identification: null,
+          email: null,
+          status: 'ACTIVE',
         });
       }
 
@@ -140,6 +150,10 @@ class UserForm extends Component {
     this.formRef.current.setFieldsValue({ ...formValues });
   }
 
+  disabledDate = (current) => {
+    return moment().isBefore(current);
+  }
+
   render() {
     const { item, roleList, isLoadingCreatingUser, isLoadingUpdatingUser } = this.state;
     const title = item.id ? 'Edit user' : 'Add user';
@@ -177,6 +191,7 @@ class UserForm extends Component {
       >
         <Spin spinning={this.state.isLoading}>
           <Form
+            defaultValue={{ status: 'ACTIVE' }}
             ref={this.formRef}
             autoComplete='off'
             labelCol={{ xs: 8 }}
@@ -191,7 +206,7 @@ class UserForm extends Component {
               rules={[{ required: true, whitespace: true, min: 6 }]}
               validateFirst={true}
             >
-              <Input value={item.username} disabled={item.id} />
+              <Input disabled={item.id} />
             </Form.Item>
             <Form.Item
               name='password'
@@ -200,6 +215,7 @@ class UserForm extends Component {
             >
               <Input type='password' />
             </Form.Item>
+
             <Form.Item
               name='roleIds'
               label='Roles'
@@ -220,12 +236,61 @@ class UserForm extends Component {
             </Form.Item>
 
             <Form.Item
+              name='fullName'
+              label='Full name'
+              rules={[{ whitespace: true, min: 6 }]}
+              validateFirst={true}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name='address'
+              label='Address'
+              rules={[{ whitespace: true, min: 6 }]}
+              validateFirst={true}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name='phoneNumber'
+              label='Phone number'
+              rules={[{ whitespace: true, min: 6 }]}
+              validateFirst={true}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name='identification'
+              label='Identification'
+              rules={[{ whitespace: true, min: 6 }]}
+              validateFirst={true}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              name='email'
+              label='Email'
+              rules={[{ whitespace: true, min: 6 }]}
+              validateFirst={true}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
               name='gender'
               label='Gender'
             >
               <Radio.Group>
-                <Radio.Button value="MALE">Male</Radio.Button>
-                <Radio.Button value="FEMALE">Female</Radio.Button>
+                <Radio.Button value='MALE'>
+                  <FcBusinessman />
+                </Radio.Button>
+                <Radio.Button value='FEMALE'>
+                  <FcBusinesswoman />
+                </Radio.Button>
               </Radio.Group>
             </Form.Item>
 
@@ -233,7 +298,7 @@ class UserForm extends Component {
               name='birthDay'
               label='Birth day'
             >
-              <DatePicker format={dateFormat} />
+              <DatePicker format={dateFormat} disabledDate={this.disabledDate} />
             </Form.Item>
           </Form>
         </Spin>

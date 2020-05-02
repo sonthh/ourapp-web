@@ -56,13 +56,13 @@ class Login extends Component {
     }
 
     return (
-      <Row style={{ minHeight: '100%' }} justify='space-around' align='middle'>
-        <Col sm={{ span: 10 }} md={{ span: 8 }} lg={{ span: 8 }} xl={{ span: 7 }}>
+      <Row style={{ minHeight: '100%' }} justify='space-around' align='middle' className='wrapper'>
+        <Col sm={{ span: 10 }} md={{ span: 8 }} lg={{ span: 8 }} xl={{ span: 6 }}>
 
           <Form
             name='normal_login'
             className='login-form'
-            initialValues={{ remember: true, username: 'admin', password: '123456' }}
+            initialValues={{ remember: true }}
             onFinish={this.onFinish}
           >
             <Form.Item
@@ -78,11 +78,7 @@ class Login extends Component {
               name='password'
               rules={[{ required: true, message: 'Please input your Password!' }]}
             >
-              <Input
-                prefix={<LockOutlined className='site-form-item-icon' />}
-                type='password'
-                placeholder='Password'
-              />
+            <Input.Password  prefix={<LockOutlined className='site-form-item-icon' />} placeholder='Password'/>
             </Form.Item>
             <Form.Item>
               <Form.Item name='remember' valuePropName='checked' noStyle>
@@ -96,7 +92,7 @@ class Login extends Component {
               <Button loading={this.state.loading} type='primary' htmlType='submit' className='login-form-button'>
                 Log in
                   </Button>
-              Or <Link to='/auth/forgot'><span className='login-form-forgot'>Register now</span></Link>
+              <Link to='/auth/forgot' className='login-form-register'><span>Don't have account</span></Link>
             </Form.Item>
           </Form>
         </Col>

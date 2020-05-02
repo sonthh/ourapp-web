@@ -122,8 +122,6 @@ export const updateOneUser = (userRequest) => {
         payloads: { user },
       });
     } catch (error) {
-      console.log(error.response);
-      
       dispatch({
         type: actionTypes.UPDATE_ONE_USER_FAILURE,
         payloads: { error },
