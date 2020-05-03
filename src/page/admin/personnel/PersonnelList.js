@@ -11,13 +11,13 @@ import { getFilterObject } from '../../../util/get';
 import { checkIsEmptyObj } from '../../../util/check';
 import { getDateFormat } from '../../../util/date';
 import AvatarAndTitle from '../../../component/common/AvatarAndTitle';
-import UserForm from '../../../component/user/UserForm';
 import GenderTag from '../../../component/common/GenderTag';
 import StatusTag from '../../../component/common/StatusTag';
 import { getColumnSearchProps } from '../../../util/table';
 import { ResizeableTitle } from '../../../component/common/ResizeableTitle';
 import MyAvatar from '../../../component/common/MyAvatar';
 import * as personnelAction from '../../../action/personnelAction';
+import { Link } from 'react-router-dom';
 
 const Paragraph = Typography.Paragraph;
 
@@ -108,7 +108,7 @@ class PersonnelList extends Component {
 
     filters = getFilterObject(
       ['gender', 'username', 'createdBy', 'lastModifiedBy', 'address', 'status',
-        'email', 'identification', 'phoneNumber', 'fullName', 'position', 'degree'],
+        'email', 'identification', 'phoneNumber', 'fullName', 'position', 'degree', 'department'],
       filters,
     );
 
@@ -130,8 +130,8 @@ class PersonnelList extends Component {
   };
 
   onDeleteMany = () => {
-    const { selectedRowKeys } = this.state;
-    this.props.deleteManyUsers(selectedRowKeys);
+    // const { selectedRowKeys } = this.state;
+    // this.props.deleteManyUsers(selectedRowKeys);
   }
 
   clearFilters = () => {
@@ -165,17 +165,6 @@ class PersonnelList extends Component {
     this.setState({
       selectedRowKeys: [],
     });
-  }
-
-  onAddUser = () => {
-    this.props.toggleModalUserForm(true);
-    this.props.findManyRoles();
-  }
-
-  onEditUser = (id) => {
-    this.props.toggleModalUserForm(false);
-    this.props.findOneUser(id);
-    this.props.findManyRoles();
   }
 
   // filteredInfo, sortedInfo from state
@@ -418,12 +407,13 @@ class PersonnelList extends Component {
       fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
         <Space key={id}>
-          <Button
-            onClick={() => this.onEditUser(id)}
-            type='default'
-            icon={<EditTwoTone />}
-            size='small'
-          />
+          <Link to={{ pathname: `/admin/personnel/manage/${id}/edit`, state: { background: this.props.location } }} >
+            <Button
+              type='default'
+              icon={<EditTwoTone />}
+              size='small'
+            />
+          </Link>
           <Button
             type='default'
             icon={<DeleteTwoTone />}
@@ -580,11 +570,11 @@ class PersonnelList extends Component {
               <ReloadOutlined />
             </Button>
           </Tooltip>
-          <Button onClick={this.onAddUser} type='default' icon={<PlusCircleTwoTone />}>
-            Add
+          <Link to={{ pathname: `/admin/personnel/manage/add`, state: { background: this.props.location } }} >
+            <Button type='default' icon={<PlusCircleTwoTone />}>
+              Add
           </Button>
-          <UserForm />
-
+          </Link>
           <Popconfirm
             placement='bottomLeft'
             title={`Are you sure delete ${selectedRowKeys.length} selected items?`}

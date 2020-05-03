@@ -24,16 +24,20 @@ class UserForm extends Component {
       isLoadingUpdatingUser: false,
       item: {},
       roleList: [],
+      modalTitle: '',
     };
   }
 
   componentDidMount() {
+    const { id } = this.props.match.params;
+
     this.setState({
-      visible: true
+      visible: true,
+      modalTitle: id ? 'Update user' : 'Add new user',
     });
+
     this.props.findManyRoles();
 
-    const { id } = this.props.match.params;
     if (id) {
       this.props.findOneUser(id);
     }
@@ -162,9 +166,7 @@ class UserForm extends Component {
   }
 
   render() {
-    const { item, roleList, isLoadingCreatingUser, isLoadingUpdatingUser } = this.state;
-    const title = item.id ? `Edit user: ${item.username}` : 'Create new user';
-
+    const { modalTitle, item, roleList, isLoadingCreatingUser, isLoadingUpdatingUser } = this.state;
     const roleOptions = roleList.map(role => ({ label: role.name, value: role.id }));
     const passwordValidate = item.id ?
       {
@@ -190,7 +192,7 @@ class UserForm extends Component {
     return (
 
       <Modal
-        title={title}
+        title={modalTitle}
         visible={this.state.visible}
         footer={footer}
         onCancel={this.handleCancel}
