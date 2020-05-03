@@ -108,7 +108,7 @@ class PersonnelList extends Component {
 
     filters = getFilterObject(
       ['gender', 'username', 'createdBy', 'lastModifiedBy', 'address', 'status',
-        'email', 'identification', 'phoneNumber', 'fullName', 'position', 'degree', 'department'],
+        'email', 'identification', 'phoneNumber', 'fullName', 'position', 'degree', 'department', 'branch'],
       filters,
     );
 
