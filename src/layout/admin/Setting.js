@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import { Button, Drawer, Radio } from 'antd';
+import { Button, Drawer, Radio, Rate } from 'antd';
 import {
   SettingTwoTone,
 } from '@ant-design/icons';
+import Rating from '@material-ui/lab/Rating';
+import Typography from '@material-ui/core/Typography';
 import * as appAction from '../../action/appAction';
 import { connect } from 'react-redux';
 import responsive from '../../constant/responsive';
+
 
 class Setting extends Component {
 
@@ -56,7 +59,7 @@ class Setting extends Component {
           visible={this.state.visible}
           title='Setting'
         >
-          <div>Navigation mode</div>
+          <Typography component='legend'>Navigation mode</Typography>
           <Radio.Group onChange={this.onChangeNavigationMode} defaultValue={this.props.navigationMode}>
             <Radio.Button value='horizontal'>
               Horizontal
@@ -65,6 +68,16 @@ class Setting extends Component {
               Vertical
             </Radio.Button>
           </Radio.Group>
+
+          <Typography component='legend'>Rating</Typography>
+          <Rating
+            name='simple-controlled'
+            value={3}
+            onChange={(event, newValue) => { }}
+          />
+
+          <Typography component='legend'>Rating</Typography>
+          <Rate allowHalf defaultValue={2.5} />
         </Drawer>
         <Button onClick={this.showDrawer} className='btn-setting' type='primary' icon={<SettingTwoTone />} />
       </>

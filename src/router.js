@@ -5,17 +5,18 @@ import Login from './container/auth/Login';
 import UserList from './container/admin/user/UserList';
 import ErrorPage from './container/admin/error/ErrorPage';
 import PersonnelList from './container/admin/personnel/PersonnelList';
-import UserForm from './container/admin/user/UserForm';
+import UserAdd from './container/admin/user/UserAdd';
+import UserEdit from './container/admin/user/UserEdit';
 import PersonnelForm from './container/admin/personnel/PersonnelForm';
 
 export const adminModalRoutes = [
   {
     path: '/user/manage/:id/edit',
-    component: UserForm,
+    component: UserEdit,
   },
   {
     path: '/user/manage/add',
-    component: UserForm,
+    component: UserAdd,
   },
   {
     path: '/personnel/manage/:id/edit',

@@ -18,7 +18,9 @@ import AuthLayout from './layout/auth/AuthLayout';
 // import * as authService from './service/authService';
 // import { setTokenSentToServer, isTokenSentToServer } from './util/auth';
 
-const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const devToolsCompose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+const composeEnhancer = process.env.NODE_ENV !== 'production' && devToolsCompose ? devToolsCompose : compose;
+
 const store = createStore(rootReducer, composeEnhancer(applyMiddleware(thunk)));
 
 // registerServiceWorker();

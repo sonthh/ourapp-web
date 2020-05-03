@@ -12,39 +12,34 @@ import { getErrorMessage } from '../../../util/get';
 const { TabPane } = Tabs;
 const dateFormat = 'MMMM DD YYYY';
 
-class UserForm extends Component {
+class UserEdit extends Component {
 
   constructor(props) {
     super(props);
     this.formRef = React.createRef();
     this.state = {
-      visible: false,
+      visibleModal: false,
       isLoading: false,
-      isLoadingCreatingUser: false,
-      isLoadingUpdatingUser: false,
+      isUpdatingUser: false,
       item: {},
       roleList: [],
-      modalTitle: '',
     };
   }
 
   componentDidMount() {
-    const { id } = this.props.match.params;
-
     this.setState({
-      visible: true,
-      modalTitle: id ? 'Update user' : 'Add new user',
+      visibleModal: true,
     });
 
+    const { id } = this.props.match.params;
     this.props.findManyRoles();
-
     if (id) {
       this.props.findOneUser(id);
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { isLoading, isLoadingCreatingUser, error, item, roles, success, isLoadingUpdatingUser } = this.props;
+    const { isLoading, error, item, roles, success, isUpdatingUser } = this.props;
 
     if (isLoading !== undefined && isLoading !== prevProps.isLoading) {
       this.setState({
@@ -60,17 +55,10 @@ class UserForm extends Component {
       });
     }
 
-    if (isLoadingCreatingUser !== undefined
-      && isLoadingCreatingUser !== prevProps.isLoadingCreatingUser) {
+    if (isUpdatingUser !== undefined
+      && isUpdatingUser !== prevProps.isUpdatingUser) {
       this.setState({
-        isLoadingCreatingUser,
-      });
-    }
-
-    if (isLoadingUpdatingUser !== undefined
-      && isLoadingUpdatingUser !== prevProps.isLoadingUpdatingUser) {
-      this.setState({
-        isLoadingUpdatingUser,
+        isUpdatingUser,
       });
     }
 
@@ -87,78 +75,41 @@ class UserForm extends Component {
         item,
       });
 
-      if (!item.id && this.formRef && this.formRef.current) {
-        this.formRef.current.setFieldsValue({
-          username: null,
-          password: null,
-          gender: null,
-          roleIds: [],
-          birthDay: null,
-          fullName: null,
-          address: null,
-          phoneNumber: null,
-          identification: null,
-          email: null,
-          status: 'ACTIVE',
-        });
+      const roleIds = item.roles.map(role => role.id);
+
+      let { birthDay } = item;
+      if (birthDay) {
+        birthDay = moment(item.birthDay);
       }
 
-      // edit form
-      if (item.id) {
-        const roleIds = item.roles.map(role => role.id);
-        let { birthDay } = item;
-        if (birthDay) {
-          birthDay = moment(item.birthDay);
-        }
-
-        this.formRef.current.setFieldsValue({
-          ...item,
-          roleIds,
-          birthDay,
-        });
-      }
+      this.formRef.current.setFieldsValue({
+        ...item,
+        roleIds,
+        birthDay,
+      });
     }
 
-    // roles list: display on modal
     if (roles !== prevProps.roles) {
       this.setState({ roleList: roles });
     }
   }
 
-  handleOk = e => { };
+  handleOkModal = e => { };
 
-  handleCancel = e => {
+  handleCancelModal = e => {
     e.stopPropagation();
     this.props.history.goBack();
 
     this.setState({
-      visible: false,
+      visibleModal: false,
     })
   };
 
   onSubmitForm = (values) => {
     const { id } = this.state.item;
-
     if (id) {
       this.props.updateOneUser({ ...values, id });
     }
-
-    if (!id) {
-      this.props.createOneUser(values);
-    }
-  };
-
-  onFieldChange = (changedFields, allFields) => {
-    const formValues = {};
-    allFields.forEach(item => {
-      let { value } = item;
-      if (value === '') {
-        value = null;
-      }
-
-      formValues[item.name[0]] = value;
-    });
-    this.formRef.current.setFieldsValue({ ...formValues });
   };
 
   disabledDate = (current) => {
@@ -166,25 +117,18 @@ class UserForm extends Component {
   };
 
   render() {
-    const { modalTitle, item, roleList, isLoadingCreatingUser, isLoadingUpdatingUser } = this.state;
+    const { item, roleList, isUpdatingUser, isLoading, visibleModal } = this.state;
     const roleOptions = roleList.map(role => ({ label: role.name, value: role.id }));
-    const passwordValidate = item.id ?
-      {
-        rules: [{ whitespace: true, min: 6 }],
-      } :
-      {
-        rules: [{ required: true, whitespace: true, min: 6 }],
-      };
 
     const footer = [
-      <Button key='back' onClick={this.handleCancel}>
+      <Button key='back' onClick={this.handleCancelModal}>
         Cancel
       </Button>,
       <Button
         key='submit' type='primary'
-        loading={isLoadingUpdatingUser || isLoadingCreatingUser}
-        disabled={this.state.isLoading} onClick={this.handleOk}
-        form='userForm' htmlType='submit'
+        loading={isUpdatingUser}
+        disabled={isLoading} onClick={this.handleOkModal}
+        form='userUpdatingForm' htmlType='submit'
       >
         OK
       </Button >,
@@ -192,23 +136,21 @@ class UserForm extends Component {
     return (
 
       <Modal
-        title={modalTitle}
-        visible={this.state.visible}
+        title='Update user'
+        visible={visibleModal}
         footer={footer}
-        onCancel={this.handleCancel}
+        onCancel={this.handleCancelModal}
         onOk={this.onSubmitForm}
         bodyStyle={{ padding: '0px' }}
       >
-        <Spin spinning={this.state.isLoading}>
+        <Spin spinning={isLoading}>
           <Form
-            defaultValue={{ status: 'ACTIVE' }}
             ref={this.formRef}
             autoComplete='off'
             labelCol={{ xs: 6 }}
             wrapperCol={{ xs: 18 }}
-            id='userForm'
+            id='userUpdatingForm'
             onFinish={this.onSubmitForm}
-            onFieldsChange={this.onFieldChange}
           >
             <Tabs type='card'>
               <TabPane className={'tab-pane'} tab='Account' key='1'>
@@ -223,7 +165,7 @@ class UserForm extends Component {
                 <Form.Item
                   name='password'
                   label='Password'
-                  {...passwordValidate}
+                  rules={[{ whitespace: true, min: 6 }]}
                 >
                   <Input type='password' />
                 </Form.Item>
@@ -318,7 +260,6 @@ class UserForm extends Component {
           </Form>
         </Spin>
       </Modal >
-
     );
   }
 }
@@ -335,9 +276,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createOneUser: (userRequest) => {
-      dispatch(userAction.createOneUser(userRequest));
-    },
     updateOneUser: (userRequest) => {
       dispatch(userAction.updateOneUser(userRequest));
     },
@@ -350,4 +288,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserForm);
+export default connect(mapStateToProps, mapDispatchToProps)(UserEdit);
