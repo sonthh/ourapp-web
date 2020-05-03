@@ -5,6 +5,18 @@ import Login from './page/auth/Login';
 import UserList from './page/admin/user/UserList';
 import ErrorPage from './page/admin/error/ErrorPage';
 import PersonnelList from './page/admin/personnel/PersonnelList';
+import UserForm from './component/user/UserForm';
+
+export const adminModalRoutes = [
+  {
+    path: '/user/manage/:id/edit',
+    component: UserForm,
+  },
+  {
+    path: '/user/manage/add',
+    component: UserForm,
+  },
+]
 
 export const adminRoutes = [
   {
@@ -23,6 +35,7 @@ export const adminRoutes = [
   {
     path: '/user/manage',
     component: UserList,
+    exact: true,
   },
   {
     path: '/personnel/manage',

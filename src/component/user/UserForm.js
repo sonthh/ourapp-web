@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Modal, Form, Input, Checkbox, Select, Spin, Button, notification, Radio, DatePicker,
+  Modal, Form, Input, Checkbox, Select, Spin, Button, notification, Radio, DatePicker, Tabs
 } from 'antd';
 import { connect } from 'react-redux';
 import * as userAction from '../../action/userAction'
@@ -9,6 +9,7 @@ import moment from 'moment';
 import { FcBusinessman, FcBusinesswoman } from 'react-icons/fc';
 import { getErrorMessage } from '../../util/get';
 
+const { TabPane } = Tabs;
 const dateFormat = 'MMMM DD YYYY';
 
 class UserForm extends Component {
@@ -26,16 +27,20 @@ class UserForm extends Component {
     };
   }
 
-  componentDidMount() { }
+  componentDidMount() {
+    this.setState({
+      visible: true
+    });
+    this.props.findManyRoles();
+
+    const { id } = this.props.match.params;
+    if (id) {
+      this.props.findOneUser(id);
+    }
+  }
 
   componentDidUpdate(prevProps, prevState) {
-    const { isShowModal, isLoading, isLoadingCreatingUser, error, item, roles, success, isLoadingUpdatingUser } = this.props;
-
-    if (isShowModal !== undefined && isShowModal !== prevProps.isShowModal) {
-      this.setState({
-        visible: isShowModal,
-      });
-    }
+    const { isLoading, isLoadingCreatingUser, error, item, roles, success, isLoadingUpdatingUser } = this.props;
 
     if (isLoading !== undefined && isLoading !== prevProps.isLoading) {
       this.setState({
@@ -44,12 +49,6 @@ class UserForm extends Component {
     }
 
     if (success !== undefined && success !== prevProps.success) {
-      this.formRef.current.setFieldsValue({
-        username: null,
-        password: null,
-        roleIds: [],
-        status: null,
-      });
       notification.success({
         message: 'SUCCESSS',
         description: success,
@@ -122,12 +121,15 @@ class UserForm extends Component {
     }
   }
 
-  handleOk = e => {
-    // this.props.toggleModalUserForm();
-  };
+  handleOk = e => { };
 
   handleCancel = e => {
-    this.props.toggleModalUserForm();
+    e.stopPropagation();
+    this.props.history.goBack();
+
+    this.setState({
+      visible: false,
+    })
   };
 
   onSubmitForm = (values) => {
@@ -145,7 +147,12 @@ class UserForm extends Component {
   onFieldChange = (changedFields, allFields) => {
     const formValues = {};
     allFields.forEach(item => {
-      formValues[item.name[0]] = item.value;
+      let { value } = item;
+      if (value === '') {
+        value = null;
+      }
+
+      formValues[item.name[0]] = value;
     });
     this.formRef.current.setFieldsValue({ ...formValues });
   }
@@ -156,7 +163,7 @@ class UserForm extends Component {
 
   render() {
     const { item, roleList, isLoadingCreatingUser, isLoadingUpdatingUser } = this.state;
-    const title = item.id ? 'Edit user' : 'Add user';
+    const title = item.id ? `Edit user: ${item.username}` : 'Create new user';
 
     const roleOptions = roleList.map(role => ({ label: role.name, value: role.id }));
     const passwordValidate = item.id ?
@@ -188,118 +195,124 @@ class UserForm extends Component {
         footer={footer}
         onCancel={this.handleCancel}
         onOk={this.onSubmitForm}
+        bodyStyle={{ padding: '0px' }}
       >
         <Spin spinning={this.state.isLoading}>
           <Form
             defaultValue={{ status: 'ACTIVE' }}
             ref={this.formRef}
             autoComplete='off'
-            labelCol={{ xs: 8 }}
-            wrapperCol={{ xs: 16 }}
+            labelCol={{ xs: 6 }}
+            wrapperCol={{ xs: 18 }}
             id='userForm'
             onFinish={this.onSubmitForm}
             onFieldsChange={this.onFieldChange}
           >
-            <Form.Item
-              name='username'
-              label='Username'
-              rules={[{ required: true, whitespace: true, min: 6 }]}
-              validateFirst={true}
-            >
-              <Input disabled={item.id} />
-            </Form.Item>
-            <Form.Item
-              name='password'
-              label='Password'
-              {...passwordValidate}
-            >
-              <Input type='password' />
-            </Form.Item>
+            <Tabs type='card'>
+              <TabPane className={'tab-pane'} tab='Account' key='1'>
+                <Form.Item
+                  name='username'
+                  label='Username'
+                  rules={[{ required: true, whitespace: true, min: 6 }]}
+                  validateFirst={true}
+                >
+                  <Input disabled={item.id} />
+                </Form.Item>
+                <Form.Item
+                  name='password'
+                  label='Password'
+                  {...passwordValidate}
+                >
+                  <Input type='password' />
+                </Form.Item>
 
-            <Form.Item
-              name='roleIds'
-              label='Roles'
-              rules={[{ required: true, message: 'please select at least a role' }]}
-            >
-              <Checkbox.Group options={roleOptions} />
-            </Form.Item>
+                <Form.Item
+                  name='roleIds'
+                  label='Roles'
+                  rules={[{ required: true, message: 'please select at least a role' }]}
+                >
+                  <Checkbox.Group options={roleOptions} />
+                </Form.Item>
 
-            <Form.Item
-              name='status'
-              label='Status'
-              rules={[{ required: true }]}
-            >
-              <Select placeholder='User status'>
-                <Select.Option value='ACTIVE'>Active</Select.Option>
-                <Select.Option value='INACTIVE'>Inactive</Select.Option>
-              </Select>
-            </Form.Item>
+                <Form.Item
+                  name='status'
+                  label='Status'
+                  rules={[{ required: true }]}
+                >
+                  <Select placeholder='User status'>
+                    <Select.Option value='ACTIVE'>Active</Select.Option>
+                    <Select.Option value='INACTIVE'>Inactive</Select.Option>
+                  </Select>
+                </Form.Item>
+              </TabPane>
+              <TabPane className={'tab-pane'} tab='Info' key='2'>
+                <Form.Item
+                  name='fullName'
+                  label='Full name'
+                  rules={[{ whitespace: true, min: 6 }]}
+                  validateFirst={true}
+                >
+                  <Input />
+                </Form.Item>
 
-            <Form.Item
-              name='fullName'
-              label='Full name'
-              rules={[{ whitespace: true, min: 6 }]}
-              validateFirst={true}
-            >
-              <Input />
-            </Form.Item>
+                <Form.Item
+                  name='address'
+                  label='Address'
+                  rules={[{ whitespace: true, min: 6 }]}
+                  validateFirst={true}
+                >
+                  <Input />
+                </Form.Item>
 
-            <Form.Item
-              name='address'
-              label='Address'
-              rules={[{ whitespace: true, min: 6 }]}
-              validateFirst={true}
-            >
-              <Input />
-            </Form.Item>
+                <Form.Item
+                  name='phoneNumber'
+                  label='Phone number'
+                  rules={[{ whitespace: true, min: 6 }]}
+                  validateFirst={true}
+                >
+                  <Input />
+                </Form.Item>
 
-            <Form.Item
-              name='phoneNumber'
-              label='Phone number'
-              rules={[{ whitespace: true, min: 6 }]}
-              validateFirst={true}
-            >
-              <Input />
-            </Form.Item>
+                <Form.Item
+                  name='identification'
+                  label='Identification'
+                  rules={[{ whitespace: true, min: 6 }]}
+                  validateFirst={true}
+                >
+                  <Input />
+                </Form.Item>
 
-            <Form.Item
-              name='identification'
-              label='Identification'
-              rules={[{ whitespace: true, min: 6 }]}
-              validateFirst={true}
-            >
-              <Input />
-            </Form.Item>
+                <Form.Item
+                  name='email'
+                  label='Email'
+                  rules={[{ whitespace: true, min: 6 }]}
+                  validateFirst={true}
+                >
+                  <Input />
+                </Form.Item>
 
-            <Form.Item
-              name='email'
-              label='Email'
-              rules={[{ whitespace: true, min: 6 }]}
-              validateFirst={true}
-            >
-              <Input />
-            </Form.Item>
+                <Form.Item
+                  name='gender'
+                  label='Gender'
+                >
+                  <Radio.Group>
+                    <Radio.Button value='MALE'>
+                      <FcBusinessman />
+                    </Radio.Button>
+                    <Radio.Button value='FEMALE'>
+                      <FcBusinesswoman />
+                    </Radio.Button>
+                  </Radio.Group>
+                </Form.Item>
 
-            <Form.Item
-              name='gender'
-              label='Gender'
-            >
-              <Radio.Group>
-                <Radio.Button value='MALE'>
-                  <FcBusinessman />
-                </Radio.Button>
-                <Radio.Button value='FEMALE'>
-                  <FcBusinesswoman />
-                </Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-
-            <Form.Item
-              name='birthDay'
-              label='Birth day'
-            >
-              <DatePicker format={dateFormat} disabledDate={this.disabledDate} />
-            </Form.Item>
+                <Form.Item
+                  name='birthDay'
+                  label='Birth day'
+                >
+                  <DatePicker format={dateFormat} disabledDate={this.disabledDate} />
+                </Form.Item>
+              </TabPane>
+            </Tabs>
           </Form>
         </Spin>
       </Modal >
@@ -309,29 +322,17 @@ class UserForm extends Component {
 }
 
 const mapStateToProps = state => {
-  const {
-    isShowModal, item, isLoading, error, isLoadingCreatingUser,
-    isLoadingUpdatingUser, success
-  } = state.user.userItem;
+  const { userItem } = state.user;
   const { roles } = state.role;
 
   return {
-    isShowModal,
-    item,
-    isLoading,
-    isLoadingCreatingUser,
-    isLoadingUpdatingUser,
-    success,
-    error,
+    ...userItem,
     roles,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    toggleModalUserForm: () => {
-      dispatch(userAction.toggleModalUserForm());
-    },
     createOneUser: (userRequest) => {
       dispatch(userAction.createOneUser(userRequest));
     },
@@ -340,7 +341,10 @@ const mapDispatchToProps = (dispatch) => {
     },
     findManyRoles: () => {
       dispatch(roleAction.findManyRoles());
-    }
+    },
+    findOneUser: (id) => {
+      dispatch(userAction.findOneUser(id));
+    },
   }
 }
 

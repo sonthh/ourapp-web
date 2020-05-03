@@ -136,19 +136,28 @@ th {
   padding: 70px 30px;
   background-color: #fff;
 }
+
 .login-form-forgot {
   float: right;
 }
+
 .ant-col-rtl .login-form-forgot {
   float: left;
 }
+
 .login-form-button {
   width: 100%;
 }
-.login-form-register{
+
+.login-form-register {
   padding-top: 12px;
   float: right;
 }
-.wrapper{
+
+.wrapper {
   background-image: url('./image/background.jpg');
+}
+
+.tab-pane {
+  padding: 12px;
 }

@@ -8,17 +8,16 @@ import {
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import * as userAction from '../../../action/userAction';
-import * as roleAction from '../../../action/roleAction';
 import { getFilterObject } from '../../../util/get';
 import { checkIsEmptyObj } from '../../../util/check';
 import { getDateFormat } from '../../../util/date';
 import AvatarAndTitle from '../../../component/common/AvatarAndTitle';
-import UserForm from '../../../component/user/UserForm';
 import GenderTag from '../../../component/common/GenderTag';
 import StatusTag from '../../../component/common/StatusTag';
 import { getColumnSearchProps } from '../../../util/table';
 import { ResizeableTitle } from '../../../component/common/ResizeableTitle';
 import MyAvatar from '../../../component/common/MyAvatar';
+import { Link } from 'react-router-dom';
 
 const Paragraph = Typography.Paragraph;
 
@@ -166,17 +165,6 @@ class UserList extends Component {
     this.setState({
       selectedRowKeys: [],
     });
-  }
-
-  onAddUser = () => {
-    this.props.toggleModalUserForm(true);
-    this.props.findManyRoles();
-  }
-
-  onEditUser = (id) => {
-    this.props.toggleModalUserForm(false);
-    this.props.findOneUser(id);
-    this.props.findManyRoles();
   }
 
   // filteredInfo, sortedInfo from state
@@ -365,12 +353,13 @@ class UserList extends Component {
       fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
         <Space key={id}>
-          <Button
-            onClick={() => this.onEditUser(id)}
-            type='default'
-            icon={<EditTwoTone />}
-            size='small'
-          />
+          <Link to={{ pathname: `/admin/user/manage/${id}/edit`, state: { background: this.props.location } }} >
+            <Button
+              type='default'
+              icon={<EditTwoTone />}
+              size='small'
+            />
+          </Link>
           <Button
             type='default'
             icon={<DeleteTwoTone />}
@@ -450,6 +439,8 @@ class UserList extends Component {
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
 
+    const { location } = this.props;
+
     // columns with filteredInfo and sortedInfo
     const columnsInfo = this.getColumns(filteredInfo, sortedInfo, isColumnsFixed);
 
@@ -527,10 +518,11 @@ class UserList extends Component {
               <ReloadOutlined />
             </Button>
           </Tooltip>
-          <Button onClick={this.onAddUser} type='default' icon={<PlusCircleTwoTone />}>
-            Add
+          <Link to={{ pathname: '/admin/user/manage/add', state: { background: location } }} >
+            <Button type='default' icon={<PlusCircleTwoTone />}>
+              Add
           </Button>
-          <UserForm />
+          </Link>
 
           <Popconfirm
             placement='bottomLeft'
@@ -566,7 +558,10 @@ class UserList extends Component {
 }
 
 const mapStateToProps = state => {
-  return state.user.userList;
+  const { userList } = state.user;
+  return {
+    ...userList
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -576,15 +571,6 @@ const mapDispatchToProps = (dispatch) => {
     },
     deleteManyUsers: (ids) => {
       dispatch(userAction.delteManyUsers(ids));
-    },
-    toggleModalUserForm: (isAddForm) => {
-      dispatch(userAction.toggleModalUserForm(isAddForm));
-    },
-    findOneUser: (id) => {
-      dispatch(userAction.findOneUser(id));
-    },
-    findManyRoles: () => {
-      dispatch(roleAction.findManyRoles());
     },
   }
 }

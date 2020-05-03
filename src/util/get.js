@@ -28,7 +28,7 @@ export const getFilterObject = (keys = [], filterObject = {}) => {
 
 export const getErrorMessage = (error) => {
 
-  if (error.response && error.response.data && error.response.data.errors) {
+  if (error && error.response && error.response.data && error.response.data.errors) {
     return error.response.data.errors;
   }
 

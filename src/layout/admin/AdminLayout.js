@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Layout, Drawer } from 'antd';
-import { adminRoutes } from '../../router';
+import { adminRoutes, adminModalRoutes } from '../../router';
 import { Switch, Redirect } from 'react-router-dom';
 import AdminFooter from './AdminFooter';
 import AdminHeader from './AdminHeader';
@@ -12,7 +12,7 @@ import responsive from '../../constant/responsive'
 
 const { Content, Sider } = Layout;
 
-const AdminRoutes = adminRoutes.map((prop, key) => {
+const createAdminRoutes = (routes) => (routes.map((prop, key) => {
   let exact = false;
 
   if (prop.exact) {
@@ -27,7 +27,10 @@ const AdminRoutes = adminRoutes.map((prop, key) => {
       exact={exact}
     />
   )
-});
+}));
+
+const AdminRoutes = createAdminRoutes(adminRoutes);
+const AdminModalRoutes = createAdminRoutes(adminModalRoutes);
 
 class AdminLayout extends Component {
 
@@ -37,7 +40,7 @@ class AdminLayout extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener("resize", this.resize);
+    window.addEventListener('resize', this.resize);
     this.resize();
   }
 
@@ -79,11 +82,11 @@ class AdminLayout extends Component {
         trigger={null}
         collapsible
         collapsed={this.props.collapsed}
-        breakpoint="lg"
+        breakpoint='lg'
         onBreakpoint={this.onBreakpoint}
         collapsedWidth={this.state.collapsedWidth}
       >
-        <div className="logo" />
+        <div className='logo' />
         <MainMenu mode='inline' />
       </Sider>
     );
@@ -102,6 +105,10 @@ class AdminLayout extends Component {
         </Drawer>
       ) : sider;
 
+
+    const { location } = this.props; // modal route
+    const background = location.state && location.state.background // background route
+
     // horizonal layout is not for mobile screen
     if (this.props.navigationMode === 'horizontal' && this.state.useDrawer === false) {
       return (
@@ -109,10 +116,19 @@ class AdminLayout extends Component {
           <AdminHeader mode='horizontal' />
           <Layout className='site-layout site-layout-horizontal'>
             <Content style={{ margin: '5px 16px' }}>
-              <Switch>
+              <Switch location={background || location}>
                 {AdminRoutes}
                 <Redirect from='*' to='/admin/error/404' />
               </Switch>
+
+              {/* Show the modal when a background page is set */}
+              {
+                background ?
+                  <Switch location={location}>
+                    {AdminModalRoutes}
+                  </Switch>
+                  : null
+              }
             </Content>
             <AdminFooter />
           </Layout>
@@ -126,10 +142,17 @@ class AdminLayout extends Component {
         <Layout className='site-layout site-layout-vertical'>
           <AdminHeader mode='vertical' />
           <Content style={{ margin: '5px 16px' }}>
-            <Switch>
+            <Switch location={background || location}>
               {AdminRoutes}
               <Redirect from='*' to='/admin/error/404' />
             </Switch>
+            {
+              background ?
+                <Switch location={location}>
+                  {AdminModalRoutes}
+                </Switch>
+                : null
+            }
           </Content>
           <AdminFooter />
         </Layout>

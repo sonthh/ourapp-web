@@ -3,25 +3,11 @@ import { actionTypes } from '../../constant/actionTypes';
 
 const initialState = {
   isLoading: false,
-  isShowModal: false,
   item: {},
 }
 
 export const userItemReducer = (state = initialState, action) => {
   switch (action.type) {
-    case actionTypes.TOGGLE_MODAL_USER_FORM: {
-      let { item } = state;
-
-      if (action.payloads.isAddForm === true) {
-        item = {};
-      }
-
-      return {
-        ...state,
-        item,
-        isShowModal: !state.isShowModal,
-      }
-    }
     case actionTypes.FIND_ONE_USER_REQUEST: {
       return {
         ...state,
