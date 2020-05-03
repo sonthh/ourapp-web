@@ -5,4 +5,4 @@ export const setAll = (obj, val) => {
   Object.keys(object).forEach(key => object[key] = val);
 
   return object;
-}
+};

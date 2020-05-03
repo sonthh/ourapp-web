@@ -64,7 +64,7 @@ class AdminHeader extends Component {
       return (<MenuUnfoldOutlined className='trigger' onClick={this.toggle} />);
     }
     return (<MenuFoldOutlined className='trigger' onClick={this.toggle} />);
-  }
+  };
 
   render() {
     if (this.state.logout) {

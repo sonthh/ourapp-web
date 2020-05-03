@@ -24,5 +24,5 @@ export const findManyPersonnel = (params = {}) => {
         payloads: { error },
       });
     }
-  }
-}
+  };
+};

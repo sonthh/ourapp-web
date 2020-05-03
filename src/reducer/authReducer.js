@@ -4,7 +4,7 @@ import { actionTypes } from '../constant/actionTypes';
 const initialState = {
   isLoading: false,
   isAuthenticated: false,
-}
+};
 
 export const authReducer = (state = initialState, action) => {
 
@@ -38,4 +38,4 @@ export const authReducer = (state = initialState, action) => {
     default:
       return state;
   }
-}
+};

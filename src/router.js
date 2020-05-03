@@ -6,6 +6,7 @@ import UserList from './container/admin/user/UserList';
 import ErrorPage from './container/admin/error/ErrorPage';
 import PersonnelList from './container/admin/personnel/PersonnelList';
 import UserForm from './container/admin/user/UserForm';
+import PersonnelForm from './container/admin/personnel/PersonnelForm';
 
 export const adminModalRoutes = [
   {
@@ -16,7 +17,15 @@ export const adminModalRoutes = [
     path: '/user/manage/add',
     component: UserForm,
   },
-]
+  {
+    path: '/personnel/manage/:id/edit',
+    component: PersonnelForm,
+  },
+  {
+    path: '/personnel/manage/add',
+    component: PersonnelForm,
+  },
+];
 
 export const adminRoutes = [
   {

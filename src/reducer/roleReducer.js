@@ -5,7 +5,7 @@ const initialState = {
   isLoading: false,
   roles: [],
   role: {},
-}
+};
 
 export const roleReducer = (state = initialState, action) => {
 
@@ -29,4 +29,4 @@ export const roleReducer = (state = initialState, action) => {
     default:
       return state;
   }
-}
+};

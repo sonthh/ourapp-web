@@ -1,18 +1,13 @@
-import React, { Component } from 'react';
-import {
-  Modal, Form, Input, Checkbox, Select, Spin, Button, notification, Radio, DatePicker, Tabs
-} from 'antd';
-import { connect } from 'react-redux';
-import * as userAction from '../../../action/userAction'
-import * as roleAction from '../../../action/roleAction'
+import { Button, Form, Modal, notification, Select, Spin, Tabs } from 'antd';
 import moment from 'moment';
-import { FcBusinessman, FcBusinesswoman } from 'react-icons/fc';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { getErrorMessage } from '../../../util/get';
+const { Option } = Select;
 
 const { TabPane } = Tabs;
-const dateFormat = 'MMMM DD YYYY';
 
-class UserForm extends Component {
+class PersonnelForm extends Component {
 
   constructor(props) {
     super(props);
@@ -33,14 +28,14 @@ class UserForm extends Component {
 
     this.setState({
       visible: true,
-      modalTitle: id ? 'Update user' : 'Add new user',
+      modalTitle: id ? 'Update personnel' : 'Add new a personnel',
     });
 
-    this.props.findManyRoles();
+    // this.props.findManyRoles();
 
-    if (id) {
-      this.props.findOneUser(id);
-    }
+    // if (id) {
+    //   this.props.findOneUser(id);
+    // }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -137,15 +132,15 @@ class UserForm extends Component {
   };
 
   onSubmitForm = (values) => {
-    const { id } = this.state.item;
+    // const { id } = this.state.item;
 
-    if (id) {
-      this.props.updateOneUser({ ...values, id });
-    }
+    // if (id) {
+    //   this.props.updateOneUser({ ...values, id });
+    // }
 
-    if (!id) {
-      this.props.createOneUser(values);
-    }
+    // if (!id) {
+    //   this.props.createOneUser(values);
+    // }
   };
 
   onFieldChange = (changedFields, allFields) => {
@@ -166,15 +161,7 @@ class UserForm extends Component {
   };
 
   render() {
-    const { modalTitle, item, roleList, isLoadingCreatingUser, isLoadingUpdatingUser } = this.state;
-    const roleOptions = roleList.map(role => ({ label: role.name, value: role.id }));
-    const passwordValidate = item.id ?
-      {
-        rules: [{ whitespace: true, min: 6 }],
-      } :
-      {
-        rules: [{ required: true, whitespace: true, min: 6 }],
-      };
+    const { modalTitle, isLoadingCreatingUser, isLoadingUpdatingUser } = this.state;
 
     const footer = [
       <Button key='back' onClick={this.handleCancel}>
@@ -211,107 +198,65 @@ class UserForm extends Component {
             onFieldsChange={this.onFieldChange}
           >
             <Tabs type='card'>
-              <TabPane className={'tab-pane'} tab='Account' key='1'>
-                <Form.Item
-                  name='username'
-                  label='Username'
-                  rules={[{ required: true, whitespace: true, min: 6 }]}
-                  validateFirst={true}
-                >
-                  <Input disabled={item.id} />
-                </Form.Item>
-                <Form.Item
-                  name='password'
-                  label='Password'
-                  {...passwordValidate}
-                >
-                  <Input type='password' />
-                </Form.Item>
-
-                <Form.Item
-                  name='roleIds'
-                  label='Roles'
-                  rules={[{ required: true, message: 'please select at least a role' }]}
-                >
-                  <Checkbox.Group options={roleOptions} />
-                </Form.Item>
-
+              <TabPane className={'tab-pane'} tab='Choose user' key='1'>
                 <Form.Item
                   name='status'
-                  label='Status'
+                  label='User'
                   rules={[{ required: true }]}
                 >
-                  <Select placeholder='User status'>
-                    <Select.Option value='ACTIVE'>Active</Select.Option>
-                    <Select.Option value='INACTIVE'>Inactive</Select.Option>
+                  <Select
+                    showSearch
+                    placeholder="Select a person"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Option value="jack">Jack</Option>
+                    <Option value="lucy">Lucy</Option>
+                    <Option value="tom">Tom</Option>
                   </Select>
                 </Form.Item>
               </TabPane>
               <TabPane className={'tab-pane'} tab='Info' key='2'>
                 <Form.Item
-                  name='fullName'
-                  label='Full name'
-                  rules={[{ whitespace: true, min: 6 }]}
+                  name='position'
+                  label='Postion'
+                  rules={[{ required: true }]}
                   validateFirst={true}
                 >
-                  <Input />
+                  <Select
+                    showSearch
+                    placeholder="Select a position"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Option value="jack">Manager</Option>
+                    <Option value="lucy">Personnel</Option>
+                    <Option value="tom">Officer</Option>
+                  </Select>
                 </Form.Item>
 
                 <Form.Item
-                  name='address'
-                  label='Address'
-                  rules={[{ whitespace: true, min: 6 }]}
+                  name='department'
+                  label='Department'
+                  rules={[{ required: true }]}
                   validateFirst={true}
                 >
-                  <Input />
-                </Form.Item>
-
-                <Form.Item
-                  name='phoneNumber'
-                  label='Phone number'
-                  rules={[{ whitespace: true, min: 6 }]}
-                  validateFirst={true}
-                >
-                  <Input />
-                </Form.Item>
-
-                <Form.Item
-                  name='identification'
-                  label='Identification'
-                  rules={[{ whitespace: true, min: 6 }]}
-                  validateFirst={true}
-                >
-                  <Input />
-                </Form.Item>
-
-                <Form.Item
-                  name='email'
-                  label='Email'
-                  rules={[{ whitespace: true, min: 6 }]}
-                  validateFirst={true}
-                >
-                  <Input />
-                </Form.Item>
-
-                <Form.Item
-                  name='gender'
-                  label='Gender'
-                >
-                  <Radio.Group>
-                    <Radio.Button value='MALE'>
-                      <FcBusinessman />
-                    </Radio.Button>
-                    <Radio.Button value='FEMALE'>
-                      <FcBusinesswoman />
-                    </Radio.Button>
-                  </Radio.Group>
-                </Form.Item>
-
-                <Form.Item
-                  name='birthDay'
-                  label='Birth day'
-                >
-                  <DatePicker format={dateFormat} disabledDate={this.disabledDate} />
+                  <Select
+                    showSearch
+                    placeholder="Select a department"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    <Option value="jack">HR</Option>
+                    <Option value="lucy">IT</Option>
+                    <Option value="tom">Marketing</Option>
+                  </Select>
                 </Form.Item>
               </TabPane>
             </Tabs>
@@ -324,30 +269,13 @@ class UserForm extends Component {
 }
 
 const mapStateToProps = state => {
-  const { userItem } = state.user;
-  const { roles } = state.role;
-
   return {
-    ...userItem,
-    roles,
-  };
+  }
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createOneUser: (userRequest) => {
-      dispatch(userAction.createOneUser(userRequest));
-    },
-    updateOneUser: (userRequest) => {
-      dispatch(userAction.updateOneUser(userRequest));
-    },
-    findManyRoles: () => {
-      dispatch(roleAction.findManyRoles());
-    },
-    findOneUser: (id) => {
-      dispatch(userAction.findOneUser(id));
-    },
-  };
+  }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserForm);
+export default connect(mapStateToProps, mapDispatchToProps)(PersonnelForm);

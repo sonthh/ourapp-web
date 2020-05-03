@@ -6,7 +6,7 @@ const initialState = {
   isDeleted: false,
   isLoadingDelete: false,
   dataList: {},
-}
+};
 
 export const userListReducer = (state = initialState, action) => {
 
@@ -112,4 +112,4 @@ export const userListReducer = (state = initialState, action) => {
     default:
       return state;
   }
-}
+};

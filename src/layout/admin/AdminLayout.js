@@ -8,11 +8,11 @@ import { connect } from 'react-redux';
 import { PrivateRoute } from '../../util/get';
 import * as appAction from '../../action/appAction';
 import MainMenu from './MainMenu';
-import responsive from '../../constant/responsive'
+import responsive from '../../constant/responsive';
 
 const { Content, Sider } = Layout;
 
-const createAdminRoutes = (routes) => (routes.map((prop, key) => {
+const createPrivateRoutes = (routes) => (routes.map((prop, key) => {
   let exact = false;
 
   if (prop.exact) {
@@ -26,18 +26,15 @@ const createAdminRoutes = (routes) => (routes.map((prop, key) => {
       key={key}
       exact={exact}
     />
-  )
+  );
 }));
-
-const AdminRoutes = createAdminRoutes(adminRoutes);
-const AdminModalRoutes = createAdminRoutes(adminModalRoutes);
 
 class AdminLayout extends Component {
 
   state = {
     collapsedWidth: 80,
     useDrawer: false,
-  }
+  };
 
   componentDidMount() {
     window.addEventListener('resize', this.resize);
@@ -60,7 +57,7 @@ class AdminLayout extends Component {
         this.props.changeNavigationMode('horizontal');
       }
     }
-  }
+  };
 
   onBreakpoint = (broken) => {
     if (broken === true && this.props.collapsed === false) {
@@ -106,8 +103,21 @@ class AdminLayout extends Component {
       ) : sider;
 
 
-    const { location } = this.props; // modal route
-    const background = location.state && location.state.background // background route
+    const { location } = this.props; // modal route or main route only
+    const background = location.state && location.state.background // background route if has modal
+
+    const AdminRoutes = (
+      <Switch location={background || location}>
+        {createPrivateRoutes(adminRoutes)}
+        <Redirect from='*' to='/admin/error/404' />
+      </Switch>
+    );
+
+    const AdminModalRoutes = (!background ? null :
+      <Switch location={location}>
+        {createPrivateRoutes(adminModalRoutes)}
+      </Switch>
+    );
 
     // horizonal layout is not for mobile screen
     if (this.props.navigationMode === 'horizontal' && this.state.useDrawer === false) {
@@ -116,19 +126,8 @@ class AdminLayout extends Component {
           <AdminHeader mode='horizontal' />
           <Layout className='site-layout site-layout-horizontal'>
             <Content style={{ margin: '5px 16px' }}>
-              <Switch location={background || location}>
-                {AdminRoutes}
-                <Redirect from='*' to='/admin/error/404' />
-              </Switch>
-
-              {/* Show the modal when a background page is set */}
-              {
-                background ?
-                  <Switch location={location}>
-                    {AdminModalRoutes}
-                  </Switch>
-                  : null
-              }
+              {AdminRoutes}
+              {AdminModalRoutes}
             </Content>
             <AdminFooter />
           </Layout>
@@ -136,23 +135,15 @@ class AdminLayout extends Component {
       );
     }
 
+    // vertical layout
     return (
       <Layout style={{ minHeight: '100vh' }}>
         {siderWithDrawer}
         <Layout className='site-layout site-layout-vertical'>
           <AdminHeader mode='vertical' />
           <Content style={{ margin: '5px 16px' }}>
-            <Switch location={background || location}>
-              {AdminRoutes}
-              <Redirect from='*' to='/admin/error/404' />
-            </Switch>
-            {
-              background ?
-                <Switch location={location}>
-                  {AdminModalRoutes}
-                </Switch>
-                : null
-            }
+            {AdminRoutes}
+            {AdminModalRoutes}
           </Content>
           <AdminFooter />
         </Layout>
@@ -167,7 +158,7 @@ const mapStateToProps = state => {
     collapsed,
     navigationMode,
   }
-}
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -178,6 +169,6 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(appAction.changeNavigationMode(navigationMode));
     }
   }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminLayout);

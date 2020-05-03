@@ -104,15 +104,15 @@ class Login extends Component {
 const mapStateToProps = state => {
   return {
     auth: state.auth,
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
     passwordLogin: (loginData) => {
       dispatch(authAction.passwordLogin(loginData));
     },
-  }
-}
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

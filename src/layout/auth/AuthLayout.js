@@ -7,17 +7,13 @@ const { Content, Footer } = Layout;
 
 export default class AuthLayout extends Component {
 
-  getRoutes = () => {
-    return authRoutes.map((prop, key) => {
-      return (
-        <Route
-          path={'/auth' + prop.path}
-          component={prop.component}
-          key={key}
-        />
-      );
-    });
-  }
+  getRoutes = () => (authRoutes.map((prop, key) =>
+    <Route
+      path={'/auth' + prop.path}
+      component={prop.component}
+      key={key}
+    />
+  ));
 
   render() {
     return (

@@ -12,7 +12,7 @@ class Setting extends Component {
   state = {
     visible: false,
     isLargeScreen: true,
-  }
+  };
 
   componentDidMount() {
     window.addEventListener('resize', this.resize);
@@ -26,7 +26,7 @@ class Setting extends Component {
     if (isLargeScreen !== this.state.isLargeScreen) {
       this.setState({ isLargeScreen });
     }
-  }
+  };
 
   showDrawer = () => {
     this.setState({
@@ -43,7 +43,7 @@ class Setting extends Component {
   onChangeNavigationMode = (e) => {
     const mode = e.target.value;
     this.props.changeNavigationMode(mode);
-  }
+  };
 
   render() {
     return (
@@ -75,15 +75,15 @@ class Setting extends Component {
 const mapStateToProps = state => {
   return {
     navigationMode: state.app.navigationMode,
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
     changeNavigationMode: (navigationMode) => {
       dispatch(appAction.changeNavigationMode(navigationMode));
     }
-  }
-}
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Setting);

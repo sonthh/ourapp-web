@@ -6,7 +6,7 @@ const initialState = {
   isDeleted: false,
   isLoadingDelete: false,
   dataList: {},
-}
+};
 
 export const personnelListReducer = (state = initialState, action) => {
 
@@ -25,7 +25,7 @@ export const personnelListReducer = (state = initialState, action) => {
         ...state,
         dataList,
         isLoading: false,
-      }
+      };
     }
     case actionTypes.FIND_MANY_PERSONNEL_FAILURE: {
       const { error } = action.payloads;
@@ -34,9 +34,9 @@ export const personnelListReducer = (state = initialState, action) => {
         ...state,
         error,
         isLoading: false,
-      }
+      };
     }
     default:
       return state;
   }
-}
+};

@@ -11,7 +11,7 @@ export const passwordLogin = async (loginData) => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};
 
 export const userMe = async () => {
   const headers = getHeaders();
@@ -26,7 +26,7 @@ export const userMe = async () => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};
 
 export const subscribeFirebaseToken = async (token) => {
   const headers = getHeaders();
@@ -39,5 +39,5 @@ export const subscribeFirebaseToken = async (token) => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};
 

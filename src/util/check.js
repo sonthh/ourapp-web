@@ -19,4 +19,4 @@ export const checkIsEmptyObj = (obj) => {
   }
 
   return false;
-}
+};

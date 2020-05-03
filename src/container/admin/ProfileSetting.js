@@ -8,7 +8,7 @@ export default class ProfileSetting extends Component {
 
   state = {
     position: 'left',
-  }
+  };
 
   componentDidMount() {
     window.addEventListener("resize", this.resize);
@@ -23,7 +23,7 @@ export default class ProfileSetting extends Component {
     if (position !== this.state.position) {
       this.setState({ position });
     }
-  }
+  };
 
   render() {
     return (

@@ -15,8 +15,8 @@ export const findManyRoles = () => {
     } catch (error) {
       console.log(error);
     }
-  }
-}
+  };
+};
 
 export const findOneRole = (id) => {
 
@@ -31,5 +31,5 @@ export const findOneRole = (id) => {
     } catch (error) {
       console.log(error);
     }
-  }
-}
+  };
+};

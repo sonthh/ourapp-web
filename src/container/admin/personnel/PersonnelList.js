@@ -610,14 +610,14 @@ class PersonnelList extends Component {
 
 const mapStateToProps = state => {
   return state.personnel.personnelList;
-}
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
     findManyPersonnel: (params = {}) => {
       dispatch(personnelAction.findManyPersonnel(params));
     },
-  }
-}
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(PersonnelList);

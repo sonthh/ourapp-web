@@ -4,7 +4,7 @@ import { actionTypes } from '../../constant/actionTypes';
 const initialState = {
   isLoading: false,
   item: {},
-}
+};
 
 export const userItemReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -69,4 +69,4 @@ export const userItemReducer = (state = initialState, action) => {
     default:
       return state;
   }
-}
+};

@@ -12,54 +12,54 @@ import thunk from 'redux-thunk'
 import { createStore, applyMiddleware, compose } from 'redux';
 import { rootReducer } from './reducer/rootReducer';
 import AuthLayout from './layout/auth/AuthLayout';
-import { registerServiceWorker } from './config/register-sw';
-import { messaging } from './config/init-fcm';
-import { notification } from 'antd';
-import * as authService from './service/authService';
-import { setTokenSentToServer, isTokenSentToServer } from './util/auth';
+// import { registerServiceWorker } from './config/register-sw';
+// import { messaging } from './config/init-fcm';
+// import { notification } from 'antd';
+// import * as authService from './service/authService';
+// import { setTokenSentToServer, isTokenSentToServer } from './util/auth';
 
 const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(rootReducer, composeEnhancer(applyMiddleware(thunk)));
 
-registerServiceWorker();
+// registerServiceWorker();
 
-messaging.requestPermission()
-  .then(async function () {
-    if (!isTokenSentToServer()) {
-      const token = await messaging.getToken();
-      await authService.subscribeFirebaseToken(token);
-      console.log('subscribed token');
-      setTokenSentToServer(true);
-    } else {
-      console.log(`Token already sent to server so won't send it again unless it changes`);
-    }
-  })
-  .catch(function (err) {
-    setTokenSentToServer(false);
-    console.log("Unable to get permission to notify.");
-  });
+// messaging.requestPermission()
+//   .then(async function () {
+//     if (!isTokenSentToServer()) {
+//       const token = await messaging.getToken();
+//       await authService.subscribeFirebaseToken(token);
+//       console.log('subscribed token');
+//       setTokenSentToServer(true);
+//     } else {
+//       console.log(`Token already sent to server so won't send it again unless it changes`);
+//     }
+//   })
+//   .catch(function (err) {
+//     setTokenSentToServer(false);
+//     console.log("Unable to get permission to notify.");
+//   });
 
-messaging.onTokenRefresh(() => {
-  messaging
-    .getToken()
-    .then(async (refreshedToken) => {
-      console.log('Token refreshed.');
-      await authService.subscribeFirebaseToken(refreshedToken);
-      setTokenSentToServer(true);
-    })
-    .catch(err => {
-      console.log('Unable to retrieve refreshed token ');
-    });
-});
+// messaging.onTokenRefresh(() => {
+//   messaging
+//     .getToken()
+//     .then(async (refreshedToken) => {
+//       console.log('Token refreshed.');
+//       await authService.subscribeFirebaseToken(refreshedToken);
+//       setTokenSentToServer(true);
+//     })
+//     .catch(err => {
+//       console.log('Unable to retrieve refreshed token ');
+//     });
+// });
 
-messaging.onMessage((payloads) => {  
-  const { notification: notificationData } = payloads;
-  const { title, body } = notificationData;
-  notification.info({
-    message: title,
-    description: body,
-  });
-});
+// messaging.onMessage((payloads) => {  
+//   const { notification: notificationData } = payloads;
+//   const { title, body } = notificationData;
+//   notification.info({
+//     message: title,
+//     description: body,
+//   });
+// });
 
 ReactDOM.render(
   <Provider store={store}>

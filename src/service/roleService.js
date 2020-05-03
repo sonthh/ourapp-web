@@ -15,7 +15,7 @@ export const findManyRoles = async () => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};
 
 export const findOneRole = async (id) => {
   try {
@@ -30,4 +30,4 @@ export const findOneRole = async (id) => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};

@@ -24,8 +24,8 @@ export const passwordLogin = (loginData) => {
         payloads: { error: errorData },
       });
     }
-  }
-}
+  };
+};
 
 export const userMe = () => {
 
@@ -49,5 +49,5 @@ export const userMe = () => {
         payloads: { error: errorData },
       });
     }
-  }
-}
+  };
+};

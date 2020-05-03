@@ -20,7 +20,6 @@ import MyAvatar from '../../../component/common/MyAvatar';
 import { Link } from 'react-router-dom';
 
 const Paragraph = Typography.Paragraph;
-
 class UserList extends Component {
 
   constructor(props) {
@@ -123,7 +122,7 @@ class UserList extends Component {
       sortDirection,
       ...filters,
     });
-  }
+  };
 
   onSelectChange = selectedRowKeys => {
     this.setState({ selectedRowKeys });
@@ -132,7 +131,7 @@ class UserList extends Component {
   onDeleteMany = () => {
     const { selectedRowKeys } = this.state;
     this.props.deleteManyUsers(selectedRowKeys);
-  }
+  };
 
   clearFilters = () => {
     this.setState({ filteredInfo: null });
@@ -149,7 +148,7 @@ class UserList extends Component {
   refreshData = () => {
     const { pagination, filteredInfo, sortedInfo } = this.state;
     this.fetchUsers(pagination, filteredInfo, sortedInfo)
-  }
+  };
 
   clearFiltersAndSorters = () => {
     this.setState({
@@ -165,7 +164,7 @@ class UserList extends Component {
     this.setState({
       selectedRowKeys: [],
     });
-  }
+  };
 
   // filteredInfo, sortedInfo from state
   getColumns = (filteredInfo, sortedInfo, isColumnsFixed = false) => ([
@@ -399,13 +398,13 @@ class UserList extends Component {
     });
 
     localStorage.setItem('isColumnsFixed', isColumnsFixed);
-  }
+  };
 
   onClickToggleFixed = () => {
     this.setState({
       isColumnsFixed: !this.state.isColumnsFixed,
     });
-  }
+  };
 
   onRow = (record, rowIndex) => ({
     onDoubleClick: event => {
@@ -423,7 +422,7 @@ class UserList extends Component {
 
       this.setState({ selectedRowKeys })
     },
-  })
+  });
 
   render() {
     const { data, pagination, isLoadingTable, selectedRowKeys, isColumnsFixed } = this.state;
@@ -561,8 +560,8 @@ const mapStateToProps = state => {
   const { userList } = state.user;
   return {
     ...userList
-  }
-}
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -572,7 +571,7 @@ const mapDispatchToProps = (dispatch) => {
     deleteManyUsers: (ids) => {
       dispatch(userAction.delteManyUsers(ids));
     },
-  }
-}
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserList);

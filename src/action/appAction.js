@@ -8,7 +8,7 @@ export const toggleMenu = () => {
       type: actionTypes.TOGGLE_MENU,
     });
   }
-}
+};
 
 export const changeNavigationMode = (navigationMode) => {
 
@@ -18,4 +18,4 @@ export const changeNavigationMode = (navigationMode) => {
       payloads: { navigationMode },
     });
   }
-}
+};

@@ -7,7 +7,7 @@ const initialState = {
   isLoading: false,
   error: undefined,
   navigationMode: setting.navigationMode,
-}
+};
 
 export const appReducer = (state = initialState, action) => {
 
@@ -31,4 +31,4 @@ export const appReducer = (state = initialState, action) => {
     default:
       return state;
   }
-}
+};

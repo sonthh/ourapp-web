@@ -16,4 +16,4 @@ export const findManyPersonnel = async (params = {}) => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};

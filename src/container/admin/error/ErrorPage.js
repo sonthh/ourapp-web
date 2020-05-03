@@ -11,7 +11,7 @@ export default class ErrorPage extends Component {
 
   state = {
     errorCode: '404',
-  }
+  };
 
   componentDidMount() {
     const { match } = this.props;

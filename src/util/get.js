@@ -24,7 +24,7 @@ export const getFilterObject = (keys = [], filterObject = {}) => {
   }
 
   return result;
-}
+};
 
 export const getErrorMessage = (error) => {
 
@@ -33,7 +33,7 @@ export const getErrorMessage = (error) => {
   }
 
   return null;
-}
+};
 
 export const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={(props) => (

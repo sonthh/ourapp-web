@@ -22,8 +22,8 @@ export const findManyUsers = (params = {}) => {
         payloads: { error },
       });
     }
-  }
-}
+  };
+};
 
 export const delteManyUsers = (ids) => {
 
@@ -47,8 +47,8 @@ export const delteManyUsers = (ids) => {
         payloads: { error: errorData },
       });
     }
-  }
-}
+  };
+};
 
 export const toggleModalUserForm = (isAddForm = true) => {
   return async (dispatch) => {
@@ -56,8 +56,8 @@ export const toggleModalUserForm = (isAddForm = true) => {
       type: actionTypes.TOGGLE_MODAL_USER_FORM,
       payloads: { isAddForm },
     });
-  }
-}
+  };
+};
 
 export const findOneUser = (id) => {
 
@@ -81,8 +81,8 @@ export const findOneUser = (id) => {
         payloads: { error: errorData },
       });
     }
-  }
-}
+  };
+};
 
 export const createOneUser = (userRequest) => {
 
@@ -104,8 +104,8 @@ export const createOneUser = (userRequest) => {
         payloads: { error },
       });
     }
-  }
-}
+  };
+};
 
 export const updateOneUser = (userRequest) => {
 
@@ -127,5 +127,5 @@ export const updateOneUser = (userRequest) => {
         payloads: { error },
       });
     }
-  }
-}
+  };
+};

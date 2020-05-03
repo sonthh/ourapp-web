@@ -16,7 +16,7 @@ export const findManyUsers = async (params = {}) => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};
 
 export const findOneUser = async (id) => {
   try {
@@ -31,7 +31,7 @@ export const findOneUser = async (id) => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};
 
 export const deleteManyUsers = async (ids) => {
   try {
@@ -44,7 +44,7 @@ export const deleteManyUsers = async (ids) => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};
 
 
 export const createOneUser = async (userRequest) => {
@@ -58,7 +58,7 @@ export const createOneUser = async (userRequest) => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};
 
 export const updateOneUser = async (userRequest) => {
   try {
@@ -71,4 +71,4 @@ export const updateOneUser = async (userRequest) => {
   } catch (error) {
     return Promise.reject(error);
   }
-}
+};
