@@ -617,18 +617,6 @@ const mapDispatchToProps = (dispatch) => {
     findManyPersonnel: (params = {}) => {
       dispatch(personnelAction.findManyPersonnel(params));
     },
-    // deleteManyUsers: (ids) => {
-    //   dispatch(userAction.delteManyUsers(ids));
-    // },
-    // toggleModalUserForm: (isAddForm) => {
-    //   dispatch(userAction.toggleModalUserForm(isAddForm));
-    // },
-    // findOneUser: (id) => {
-    //   dispatch(userAction.findOneUser(id));
-    // },
-    // findManyRoles: () => {
-    //   dispatch(roleAction.findManyRoles());
-    // },
   }
 }
 

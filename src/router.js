@@ -1,11 +1,11 @@
-import Dashboard from './page/admin/Dashboard';
-import Profile from './page/admin/Profile';
-import ProfileSetting from './page/admin/ProfileSetting';
-import Login from './page/auth/Login';
-import UserList from './page/admin/user/UserList';
-import ErrorPage from './page/admin/error/ErrorPage';
-import PersonnelList from './page/admin/personnel/PersonnelList';
-import UserForm from './component/user/UserForm';
+import Dashboard from './container/admin/Dashboard';
+import Profile from './container/admin/Profile';
+import ProfileSetting from './container/admin/ProfileSetting';
+import Login from './container/auth/Login';
+import UserList from './container/admin/user/UserList';
+import ErrorPage from './container/admin/error/ErrorPage';
+import PersonnelList from './container/admin/personnel/PersonnelList';
+import UserForm from './container/admin/user/UserForm';
 
 export const adminModalRoutes = [
   {
