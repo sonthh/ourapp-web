@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './index.scss';
 import {
   Table, Button, notification, Popconfirm, Tooltip, Typography, Checkbox, Space,
 } from 'antd';
@@ -7,20 +8,21 @@ import {
   EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
-import * as userAction from '../../../action/userAction';
-import { getFilterObject } from '../../../util/get';
-import { checkIsEmptyObj } from '../../../util/check';
-import { getDateFormat } from '../../../util/date';
-import AvatarAndTitle from '../../../component/common/AvatarAndTitle';
-import GenderTag from '../../../component/common/GenderTag';
-import StatusTag from '../../../component/common/StatusTag';
-import { getColumnSearchProps } from '../../../util/table';
-import { ResizeableTitle } from '../../../component/common/ResizeableTitle';
-import MyAvatar from '../../../component/common/MyAvatar';
+import { getFilterObject } from '../../../../util/get';
+import { checkIsEmptyObj } from '../../../../util/check';
+import { getDateFormat } from '../../../../util/date';
+import AvatarAndTitle from '../../../../component/common/AvatarAndTitle';
+import GenderTag from '../../../../component/common/GenderTag';
+import StatusTag from '../../../../component/common/StatusTag';
+import { getColumnSearchProps } from '../../../../util/table';
+import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
+import MyAvatar from '../../../../component/common/MyAvatar';
+import * as personnelAction from '../../../../action/personnelAction';
 import { Link } from 'react-router-dom';
 
 const Paragraph = Typography.Paragraph;
-class UserList extends Component {
+
+class PersonnelList extends Component {
 
   constructor(props) {
     super(props);
@@ -32,7 +34,7 @@ class UserList extends Component {
       sortedInfo: null,
       data: [],
       pagination: {
-        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} users`,
+        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} personnel`,
         showQuickJumper: true,
       },
       isLoadingTable: true,
@@ -43,7 +45,7 @@ class UserList extends Component {
   }
 
   componentDidMount() {
-    this.props.findManyUsers({});
+    this.props.findManyPersonnel({});
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -100,14 +102,14 @@ class UserList extends Component {
       sortedInfo: sorter,
     });
 
-    this.fetchUsers(pagination, filters, sorter);
+    this.fetchPersonnel(pagination, filters, sorter);
   };
 
-  fetchUsers = (pagination, filters, sorter) => {
+  fetchPersonnel = (pagination, filters, sorter) => {
 
     filters = getFilterObject(
       ['gender', 'username', 'createdBy', 'lastModifiedBy', 'address', 'status',
-        'email', 'identification', 'phoneNumber', 'fullName'],
+        'email', 'identification', 'phoneNumber', 'fullName', 'position', 'degree', 'department', 'branch'],
       filters,
     );
 
@@ -115,40 +117,40 @@ class UserList extends Component {
     const sortBy = (sorter && sorter.order && sorter.field) ? sorter.field : 'id';
     const { current, pageSize } = pagination;
 
-    this.props.findManyUsers({
+    this.props.findManyPersonnel({
       currentPage: current,
       limit: pageSize,
       sortBy,
       sortDirection,
       ...filters,
     });
-  };
+  }
 
   onSelectChange = selectedRowKeys => {
     this.setState({ selectedRowKeys });
   };
 
   onDeleteMany = () => {
-    const { selectedRowKeys } = this.state;
-    this.props.deleteManyUsers(selectedRowKeys);
-  };
+    // const { selectedRowKeys } = this.state;
+    // this.props.deleteManyUsers(selectedRowKeys);
+  }
 
   clearFilters = () => {
     this.setState({ filteredInfo: null });
     const { pagination, sortedInfo } = this.state;
-    this.fetchUsers(pagination, null, sortedInfo);
+    this.fetchPersonnel(pagination, null, sortedInfo);
   };
 
   clearSorters = () => {
     this.setState({ sortedInfo: null });
     const { pagination, filteredInfo } = this.state;
-    this.fetchUsers(pagination, filteredInfo, null);
+    this.fetchPersonnel(pagination, filteredInfo, null);
   };
 
   refreshData = () => {
     const { pagination, filteredInfo, sortedInfo } = this.state;
-    this.fetchUsers(pagination, filteredInfo, sortedInfo)
-  };
+    this.fetchPersonnel(pagination, filteredInfo, sortedInfo)
+  }
 
   clearFiltersAndSorters = () => {
     this.setState({
@@ -157,20 +159,20 @@ class UserList extends Component {
     });
 
     const { pagination } = this.state;
-    this.fetchUsers(pagination, null, null);
+    this.fetchPersonnel(pagination, null, null);
   };
 
   clearSelected = () => {
     this.setState({
       selectedRowKeys: [],
     });
-  };
+  }
 
   // filteredInfo, sortedInfo from state
   getColumns = (filteredInfo, sortedInfo, isColumnsFixed = false) => ([
     {
       title: 'Avatar',
-      dataIndex: 'username',
+      dataIndex: ['user', 'username'],
       key: 'avatar',
       width: 75,
       minWidth: 75,
@@ -180,8 +182,82 @@ class UserList extends Component {
       ),
     },
     {
+      title: 'Full name',
+      dataIndex: ['user', 'fullName'],
+      key: 'fullName',
+      width: 150,
+      minWidth: 150,
+      filteredValue: filteredInfo.fullName || null,
+      ...getColumnSearchProps(this, 'fullName'),
+      render: fullName => fullName || 'No',
+    },
+    {
+      title: 'Position',
+      dataIndex: 'position',
+      key: 'position',
+      width: 140,
+      minWidth: 140,
+      filteredValue: filteredInfo.position || null,
+      ...getColumnSearchProps(this, 'position'),
+      render: position => position || 'No',
+    },
+    {
+      title: 'Department',
+      dataIndex: ['department', 'name'],
+      key: 'department',
+      width: 240,
+      minWidth: 240,
+      filteredValue: filteredInfo.department || null,
+      ...getColumnSearchProps(this, 'department'),
+      render: department => department || 'No',
+    },
+    {
+      title: 'Branch',
+      dataIndex: ['department', 'branch', 'name'],
+      key: 'branch',
+      width: 140,
+      minWidth: 140,
+      filteredValue: filteredInfo.branch || null,
+      ...getColumnSearchProps(this, 'branch'),
+      render: branch => branch || 'No',
+    },
+    {
+      title: 'Degree',
+      dataIndex: 'degree',
+      key: 'degree',
+      width: 140,
+      minWidth: 140,
+      filteredValue: filteredInfo.degree || null,
+      ...getColumnSearchProps(this, 'degree'),
+      render: degree => degree || 'No',
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description',
+      key: 'description',
+      width: 200,
+      minWidth: 200,
+      filteredValue: filteredInfo.description || null,
+      ...getColumnSearchProps(this, 'description'),
+      render: (description) => (
+        description ?
+          <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ', rows: 1 }}>{description}</Paragraph>
+          : 'No'
+      ),
+    },
+    {
+      title: 'Birthday',
+      dataIndex: ['user', 'birthDay'],
+      key: 'birthDay',
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === 'birthDay' && sortedInfo.order,
+      width: 140,
+      minWidth: 140,
+      render: birthDay => getDateFormat(birthDay) || 'No',
+    },
+    {
       title: 'Username',
-      dataIndex: 'username',
+      dataIndex: ['user', 'username'],
       key: 'username',
       width: 140,
       minWidth: 140,
@@ -192,18 +268,8 @@ class UserList extends Component {
       ),
     },
     {
-      title: 'Full name',
-      dataIndex: 'fullName',
-      key: 'fullName',
-      width: 150,
-      minWidth: 150,
-      filteredValue: filteredInfo.fullName || null,
-      ...getColumnSearchProps(this, 'fullName'),
-      render: fullName => fullName || 'No',
-    },
-    {
       title: 'Identification',
-      dataIndex: 'identification',
+      dataIndex: ['user', 'identification'],
       key: 'identification',
       width: 150,
       minWidth: 150,
@@ -213,7 +279,7 @@ class UserList extends Component {
     },
     {
       title: 'Gender',
-      dataIndex: 'gender',
+      dataIndex: ['user', 'gender'],
       key: 'gender',
       width: 95,
       minWidth: 95,
@@ -233,7 +299,7 @@ class UserList extends Component {
     },
     {
       title: 'Status',
-      dataIndex: 'status',
+      dataIndex: ['user', 'status'],
       key: 'status',
       width: 95,
       minWidth: 95,
@@ -253,7 +319,7 @@ class UserList extends Component {
     },
     {
       title: 'Address',
-      dataIndex: 'address',
+      dataIndex: ['user', 'address'],
       key: 'address',
       width: 150,
       minWidth: 150,
@@ -263,7 +329,7 @@ class UserList extends Component {
     },
     {
       title: 'Phone number',
-      dataIndex: 'phoneNumber',
+      dataIndex: ['user', 'phoneNumber'],
       key: 'phoneNumber',
       width: 150,
       minWidth: 150,
@@ -272,18 +338,8 @@ class UserList extends Component {
       render: phoneNumber => phoneNumber || 'No',
     },
     {
-      title: 'Birthday',
-      dataIndex: 'birthDay',
-      key: 'birthDay',
-      sorter: true,
-      sortOrder: sortedInfo.columnKey === 'birthDay' && sortedInfo.order,
-      width: 140,
-      minWidth: 140,
-      render: birthDay => getDateFormat(birthDay) || 'No',
-    },
-    {
       title: 'Email',
-      dataIndex: 'email',
+      dataIndex: ['user', 'email'],
       key: 'email',
       width: 240,
       minWidth: 240,
@@ -352,7 +408,7 @@ class UserList extends Component {
       fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
         <Space key={id}>
-          <Link to={{ pathname: `/admin/user/manage/${id}/edit`, state: { background: this.props.location } }} >
+          <Link to={{ pathname: `/admin/personnel/manage/${id}/edit`, state: { background: this.props.location } }} >
             <Button
               type='default'
               icon={<EditTwoTone />}
@@ -398,13 +454,13 @@ class UserList extends Component {
     });
 
     localStorage.setItem('isColumnsFixed', isColumnsFixed);
-  };
+  }
 
   onClickToggleFixed = () => {
     this.setState({
       isColumnsFixed: !this.state.isColumnsFixed,
     });
-  };
+  }
 
   onRow = (record, rowIndex) => ({
     onDoubleClick: event => {
@@ -422,7 +478,7 @@ class UserList extends Component {
 
       this.setState({ selectedRowKeys })
     },
-  });
+  })
 
   render() {
     const { data, pagination, isLoadingTable, selectedRowKeys, isColumnsFixed } = this.state;
@@ -437,8 +493,6 @@ class UserList extends Component {
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
-
-    const { location } = this.props;
 
     // columns with filteredInfo and sortedInfo
     const columnsInfo = this.getColumns(filteredInfo, sortedInfo, isColumnsFixed);
@@ -517,12 +571,11 @@ class UserList extends Component {
               <ReloadOutlined />
             </Button>
           </Tooltip>
-          <Link to={{ pathname: '/admin/user/manage/add', state: { background: location } }} >
+          <Link to={{ pathname: `/admin/personnel/manage/add`, state: { background: this.props.location } }} >
             <Button type='default' icon={<PlusCircleTwoTone />}>
               Add
           </Button>
           </Link>
-
           <Popconfirm
             placement='bottomLeft'
             title={`Are you sure delete ${selectedRowKeys.length} selected items?`}
@@ -557,21 +610,15 @@ class UserList extends Component {
 }
 
 const mapStateToProps = state => {
-  const { userList } = state.user;
-  return {
-    ...userList
-  };
+  return state.personnel.personnelList;
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    findManyUsers: (params = {}) => {
-      dispatch(userAction.findManyUsers(params));
-    },
-    deleteManyUsers: (ids) => {
-      dispatch(userAction.delteManyUsers(ids));
+    findManyPersonnel: (params = {}) => {
+      dispatch(personnelAction.findManyPersonnel(params));
     },
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserList);
+export default connect(mapStateToProps, mapDispatchToProps)(PersonnelList);

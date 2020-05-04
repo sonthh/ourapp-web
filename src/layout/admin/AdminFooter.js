@@ -10,7 +10,7 @@ export default class AdminFooter extends Component {
     return (
       <>
         <Setting />
-        <Footer style={{ textAlign: 'center' }}>Copyright ©{new Date().getFullYear()} Created by team 1</Footer>
+        <Footer style={{ textAlign: 'center' }}>Copyright ©{new Date().getFullYear()} Created by Team 1</Footer>
       </>
     );
   }

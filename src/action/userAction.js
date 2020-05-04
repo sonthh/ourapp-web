@@ -25,6 +25,30 @@ export const findManyUsers = (params = {}) => {
   };
 };
 
+export const delteOneUser = (id) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.DELETE_ONE_USER_REQUEST,
+      payloads: { id },
+    });
+
+    try {
+      const isDeleted = await userService.deleteOneUser(id);
+
+      dispatch({
+        type: actionTypes.DELETE_ONE_USER_SUCCESS,
+        payloads: { isDeleted, id },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.DELETE_ONE_USER_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
 export const delteManyUsers = (ids) => {
 
   return async (dispatch) => {
@@ -47,15 +71,6 @@ export const delteManyUsers = (ids) => {
         payloads: { error: errorData },
       });
     }
-  };
-};
-
-export const toggleModalUserForm = (isAddForm = true) => {
-  return async (dispatch) => {
-    dispatch({
-      type: actionTypes.TOGGLE_MODAL_USER_FORM,
-      payloads: { isAddForm },
-    });
   };
 };
 

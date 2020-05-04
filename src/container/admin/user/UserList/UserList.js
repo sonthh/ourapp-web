@@ -1,27 +1,27 @@
 import React, { Component } from 'react';
+import './index.scss';
 import {
   Table, Button, notification, Popconfirm, Tooltip, Typography, Checkbox, Space,
 } from 'antd';
 import {
-  ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteOutlined, DeleteTwoTone, MailTwoTone,
+  ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteOutlined, DeleteTwoTone,
   EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
-import { getFilterObject } from '../../../util/get';
-import { checkIsEmptyObj } from '../../../util/check';
-import { getDateFormat } from '../../../util/date';
-import AvatarAndTitle from '../../../component/common/AvatarAndTitle';
-import GenderTag from '../../../component/common/GenderTag';
-import StatusTag from '../../../component/common/StatusTag';
-import { getColumnSearchProps } from '../../../util/table';
-import { ResizeableTitle } from '../../../component/common/ResizeableTitle';
-import MyAvatar from '../../../component/common/MyAvatar';
-import * as personnelAction from '../../../action/personnelAction';
+import * as userAction from '../../../../action/userAction';
+import { getFilterObject } from '../../../../util/get';
+import { checkIsEmptyObj } from '../../../../util/check';
+import { getDateFormat } from '../../../../util/date';
+import AvatarAndTitle from '../../../../component/common/AvatarAndTitle';
+import GenderTag from '../../../../component/common/GenderTag';
+import StatusTag from '../../../../component/common/StatusTag';
+import { getColumnSearchProps } from '../../../../util/table';
+import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
+import MyAvatar from '../../../../component/common/MyAvatar';
 import { Link } from 'react-router-dom';
 
 const Paragraph = Typography.Paragraph;
-
-class PersonnelList extends Component {
+class UserList extends Component {
 
   constructor(props) {
     super(props);
@@ -33,7 +33,7 @@ class PersonnelList extends Component {
       sortedInfo: null,
       data: [],
       pagination: {
-        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} personnel`,
+        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} users`,
         showQuickJumper: true,
       },
       isLoadingTable: true,
@@ -44,11 +44,11 @@ class PersonnelList extends Component {
   }
 
   componentDidMount() {
-    this.props.findManyPersonnel({});
+    this.props.findManyUsers({});
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { error, isLoading, isDeleted, ids, dataList } = this.props;
+    const { error, isLoading, isDeletedManyUser, isDeletedOneUser, deletedIds, deletedId, dataList } = this.props;
 
     if (error && error !== prevProps.error) {
       if (error) {
@@ -66,9 +66,22 @@ class PersonnelList extends Component {
       })
     }
 
-    if (isDeleted !== undefined && isDeleted === true && ids !== prevProps.ids) {
-      const { ids } = this.props;
-      const description = `Deleted ${ids.length} user${ids.length > 1 ? 's' : ''}`;
+    if (isDeletedOneUser !== undefined && isDeletedOneUser === true
+      && deletedId !== prevProps.deletedId) {
+
+      const description = `Deleted successfully`;
+      notification.success({
+        message: 'SUCCESS',
+        description,
+        duration: 2.5,
+      });
+    }
+
+    if (isDeletedManyUser !== undefined && isDeletedManyUser === true
+      && deletedIds !== prevProps.deletedIds) {
+
+      const { deletedIds } = this.props;
+      const description = `Deleted ${deletedIds.length} user${deletedIds.length > 1 ? 's' : ''} successfully`;
 
       notification.success({
         message: 'SUCCESS',
@@ -91,7 +104,7 @@ class PersonnelList extends Component {
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-    console.log(filters, sorter);
+    // console.log(filters, sorter);
 
     const { current } = pagination;
 
@@ -101,14 +114,14 @@ class PersonnelList extends Component {
       sortedInfo: sorter,
     });
 
-    this.fetchPersonnel(pagination, filters, sorter);
+    this.fetchUsers(pagination, filters, sorter);
   };
 
-  fetchPersonnel = (pagination, filters, sorter) => {
+  fetchUsers = (pagination, filters, sorter) => {
 
     filters = getFilterObject(
       ['gender', 'username', 'createdBy', 'lastModifiedBy', 'address', 'status',
-        'email', 'identification', 'phoneNumber', 'fullName', 'position', 'degree', 'department', 'branch'],
+        'email', 'identification', 'phoneNumber', 'fullName'],
       filters,
     );
 
@@ -116,40 +129,44 @@ class PersonnelList extends Component {
     const sortBy = (sorter && sorter.order && sorter.field) ? sorter.field : 'id';
     const { current, pageSize } = pagination;
 
-    this.props.findManyPersonnel({
+    this.props.findManyUsers({
       currentPage: current,
       limit: pageSize,
       sortBy,
       sortDirection,
       ...filters,
     });
-  }
+  };
 
   onSelectChange = selectedRowKeys => {
     this.setState({ selectedRowKeys });
   };
 
+  handleDeleteOneUser = (id) => {
+    this.props.deleteOneUser(id);
+  };
+
   onDeleteMany = () => {
-    // const { selectedRowKeys } = this.state;
-    // this.props.deleteManyUsers(selectedRowKeys);
-  }
+    const { selectedRowKeys } = this.state;
+    this.props.deleteManyUsers(selectedRowKeys);
+  };
 
   clearFilters = () => {
     this.setState({ filteredInfo: null });
     const { pagination, sortedInfo } = this.state;
-    this.fetchPersonnel(pagination, null, sortedInfo);
+    this.fetchUsers(pagination, null, sortedInfo);
   };
 
   clearSorters = () => {
     this.setState({ sortedInfo: null });
     const { pagination, filteredInfo } = this.state;
-    this.fetchPersonnel(pagination, filteredInfo, null);
+    this.fetchUsers(pagination, filteredInfo, null);
   };
 
   refreshData = () => {
     const { pagination, filteredInfo, sortedInfo } = this.state;
-    this.fetchPersonnel(pagination, filteredInfo, sortedInfo)
-  }
+    this.fetchUsers(pagination, filteredInfo, sortedInfo)
+  };
 
   clearFiltersAndSorters = () => {
     this.setState({
@@ -158,20 +175,20 @@ class PersonnelList extends Component {
     });
 
     const { pagination } = this.state;
-    this.fetchPersonnel(pagination, null, null);
+    this.fetchUsers(pagination, null, null);
   };
 
   clearSelected = () => {
     this.setState({
       selectedRowKeys: [],
     });
-  }
+  };
 
   // filteredInfo, sortedInfo from state
   getColumns = (filteredInfo, sortedInfo, isColumnsFixed = false) => ([
     {
       title: 'Avatar',
-      dataIndex: ['user', 'username'],
+      dataIndex: 'username',
       key: 'avatar',
       width: 75,
       minWidth: 75,
@@ -181,82 +198,8 @@ class PersonnelList extends Component {
       ),
     },
     {
-      title: 'Full name',
-      dataIndex: ['user', 'fullName'],
-      key: 'fullName',
-      width: 150,
-      minWidth: 150,
-      filteredValue: filteredInfo.fullName || null,
-      ...getColumnSearchProps(this, 'fullName'),
-      render: fullName => fullName || 'No',
-    },
-    {
-      title: 'Position',
-      dataIndex: 'position',
-      key: 'position',
-      width: 140,
-      minWidth: 140,
-      filteredValue: filteredInfo.position || null,
-      ...getColumnSearchProps(this, 'position'),
-      render: position => position || 'No',
-    },
-    {
-      title: 'Department',
-      dataIndex: ['department', 'name'],
-      key: 'department',
-      width: 240,
-      minWidth: 240,
-      filteredValue: filteredInfo.department || null,
-      ...getColumnSearchProps(this, 'department'),
-      render: department => department || 'No',
-    },
-    {
-      title: 'Branch',
-      dataIndex: ['department', 'branch', 'name'],
-      key: 'branch',
-      width: 140,
-      minWidth: 140,
-      filteredValue: filteredInfo.branch || null,
-      ...getColumnSearchProps(this, 'branch'),
-      render: branch => branch || 'No',
-    },
-    {
-      title: 'Degree',
-      dataIndex: 'degree',
-      key: 'degree',
-      width: 140,
-      minWidth: 140,
-      filteredValue: filteredInfo.degree || null,
-      ...getColumnSearchProps(this, 'degree'),
-      render: degree => degree || 'No',
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-      width: 200,
-      minWidth: 200,
-      filteredValue: filteredInfo.description || null,
-      ...getColumnSearchProps(this, 'description'),
-      render: (description) => (
-        description ?
-          <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ', rows: 1 }}>{description}</Paragraph>
-          : 'No'
-      ),
-    },
-    {
-      title: 'Birthday',
-      dataIndex: ['user', 'birthDay'],
-      key: 'birthDay',
-      sorter: true,
-      sortOrder: sortedInfo.columnKey === 'birthDay' && sortedInfo.order,
-      width: 140,
-      minWidth: 140,
-      render: birthDay => getDateFormat(birthDay) || 'No',
-    },
-    {
       title: 'Username',
-      dataIndex: ['user', 'username'],
+      dataIndex: 'username',
       key: 'username',
       width: 140,
       minWidth: 140,
@@ -267,8 +210,18 @@ class PersonnelList extends Component {
       ),
     },
     {
+      title: 'Full name',
+      dataIndex: 'fullName',
+      key: 'fullName',
+      width: 150,
+      minWidth: 150,
+      filteredValue: filteredInfo.fullName || null,
+      ...getColumnSearchProps(this, 'fullName'),
+      render: fullName => fullName || 'No',
+    },
+    {
       title: 'Identification',
-      dataIndex: ['user', 'identification'],
+      dataIndex: 'identification',
       key: 'identification',
       width: 150,
       minWidth: 150,
@@ -278,7 +231,7 @@ class PersonnelList extends Component {
     },
     {
       title: 'Gender',
-      dataIndex: ['user', 'gender'],
+      dataIndex: 'gender',
       key: 'gender',
       width: 95,
       minWidth: 95,
@@ -298,7 +251,7 @@ class PersonnelList extends Component {
     },
     {
       title: 'Status',
-      dataIndex: ['user', 'status'],
+      dataIndex: 'status',
       key: 'status',
       width: 95,
       minWidth: 95,
@@ -318,7 +271,7 @@ class PersonnelList extends Component {
     },
     {
       title: 'Address',
-      dataIndex: ['user', 'address'],
+      dataIndex: 'address',
       key: 'address',
       width: 150,
       minWidth: 150,
@@ -328,7 +281,7 @@ class PersonnelList extends Component {
     },
     {
       title: 'Phone number',
-      dataIndex: ['user', 'phoneNumber'],
+      dataIndex: 'phoneNumber',
       key: 'phoneNumber',
       width: 150,
       minWidth: 150,
@@ -337,8 +290,18 @@ class PersonnelList extends Component {
       render: phoneNumber => phoneNumber || 'No',
     },
     {
+      title: 'Birthday',
+      dataIndex: 'birthDay',
+      key: 'birthDay',
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === 'birthDay' && sortedInfo.order,
+      width: 140,
+      minWidth: 140,
+      render: birthDay => getDateFormat(birthDay) || 'No',
+    },
+    {
       title: 'Email',
-      dataIndex: ['user', 'email'],
+      dataIndex: 'email',
       key: 'email',
       width: 240,
       minWidth: 240,
@@ -401,29 +364,32 @@ class PersonnelList extends Component {
     {
       title: 'Operations',
       key: 'operation',
-      width: 120,
-      minWidth: 120,
+      width: 100,
+      minWidth: 100,
       dataIndex: 'id',
       fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
         <Space key={id}>
-          <Link to={{ pathname: `/admin/personnel/manage/${id}/edit`, state: { background: this.props.location } }} >
+          <Link to={{ pathname: `/admin/user/manage/${id}/edit`, state: { background: this.props.location } }} >
             <Button
               type='default'
               icon={<EditTwoTone />}
               size='small'
             />
           </Link>
-          <Button
-            type='default'
-            icon={<DeleteTwoTone />}
-            size='small'
-          />
-          <Button
-            type='default'
-            icon={<MailTwoTone />}
-            size='small'
-          />
+          <Popconfirm
+            icon={<DeleteOutlined />}
+            placement='bottomRight'
+            title={`Are you sure delete this item?`}
+            onConfirm={() => this.handleDeleteOneUser(id)}
+          >
+            <Button
+              loading={this.props.isDeletingOneUser && this.props.isDeletingOneUserId === id}
+              type='default'
+              icon={<DeleteTwoTone />}
+              size='small'
+            />
+          </Popconfirm>
         </Space>
       ),
     },
@@ -453,13 +419,13 @@ class PersonnelList extends Component {
     });
 
     localStorage.setItem('isColumnsFixed', isColumnsFixed);
-  }
+  };
 
   onClickToggleFixed = () => {
     this.setState({
       isColumnsFixed: !this.state.isColumnsFixed,
     });
-  }
+  };
 
   onRow = (record, rowIndex) => ({
     onDoubleClick: event => {
@@ -477,7 +443,7 @@ class PersonnelList extends Component {
 
       this.setState({ selectedRowKeys })
     },
-  })
+  });
 
   render() {
     const { data, pagination, isLoadingTable, selectedRowKeys, isColumnsFixed } = this.state;
@@ -492,6 +458,8 @@ class PersonnelList extends Component {
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
+
+    const { location } = this.props;
 
     // columns with filteredInfo and sortedInfo
     const columnsInfo = this.getColumns(filteredInfo, sortedInfo, isColumnsFixed);
@@ -570,18 +538,20 @@ class PersonnelList extends Component {
               <ReloadOutlined />
             </Button>
           </Tooltip>
-          <Link to={{ pathname: `/admin/personnel/manage/add`, state: { background: this.props.location } }} >
+          <Link to={{ pathname: '/admin/user/manage/add', state: { background: location } }} >
             <Button type='default' icon={<PlusCircleTwoTone />}>
               Add
           </Button>
           </Link>
+
           <Popconfirm
+            icon={<DeleteOutlined />}
             placement='bottomLeft'
             title={`Are you sure delete ${selectedRowKeys.length} selected items?`}
             onConfirm={this.onDeleteMany}
             disabled={!hasSelected}
           >
-            <Button type='danger' icon={<DeleteOutlined />} disabled={!hasSelected} loading={this.props.isLoadingDelete}>
+            <Button type='danger' icon={<DeleteOutlined />} disabled={!hasSelected} loading={this.props.isDeletingManyUser}>
               Delete
             </Button>
           </Popconfirm>
@@ -609,15 +579,24 @@ class PersonnelList extends Component {
 }
 
 const mapStateToProps = state => {
-  return state.personnel.personnelList;
+  const { userList } = state.user;
+  return {
+    ...userList
+  };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    findManyPersonnel: (params = {}) => {
-      dispatch(personnelAction.findManyPersonnel(params));
+    findManyUsers: (params = {}) => {
+      dispatch(userAction.findManyUsers(params));
+    },
+    deleteManyUsers: (ids) => {
+      dispatch(userAction.delteManyUsers(ids));
+    },
+    deleteOneUser: (id) => {
+      dispatch(userAction.delteOneUser(id));
     },
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PersonnelList);
+export default connect(mapStateToProps, mapDispatchToProps)(UserList);

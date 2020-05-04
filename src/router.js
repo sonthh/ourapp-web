@@ -1,12 +1,12 @@
 import Dashboard from './container/admin/Dashboard';
 import Profile from './container/admin/Profile';
 import ProfileSetting from './container/admin/ProfileSetting';
-import Login from './container/auth/Login';
-import UserList from './container/admin/user/UserList';
+import Login from './container/auth/Login/Login';
+import UserList from './container/admin/user/UserList/UserList';
 import ErrorPage from './container/admin/error/ErrorPage';
-import PersonnelList from './container/admin/personnel/PersonnelList';
-import UserAdd from './container/admin/user/UserAdd';
-import UserEdit from './container/admin/user/UserEdit';
+import PersonnelList from './container/admin/personnel/PersonnelList/PersonnelList';
+import UserAdd from './container/admin/user/UserAdd/UserAdd';
+import UserEdit from './container/admin/user/UserEdit/UserEdit';
 import PersonnelForm from './container/admin/personnel/PersonnelForm';
 
 export const adminModalRoutes = [

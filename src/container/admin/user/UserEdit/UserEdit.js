@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
+import './index.scss';
 import {
   Modal, Form, Input, Checkbox, Select, Spin, Button, notification, Radio, DatePicker, Tabs
 } from 'antd';
 import { connect } from 'react-redux';
-import * as userAction from '../../../action/userAction'
-import * as roleAction from '../../../action/roleAction'
+import * as userAction from '../../../../action/userAction';
+import * as roleAction from '../../../../action/roleAction';
 import moment from 'moment';
 import { FcBusinessman, FcBusinesswoman } from 'react-icons/fc';
-import { getErrorMessage } from '../../../util/get';
+import { getErrorMessage } from '../../../../util/get';
 
 const { TabPane } = Tabs;
 const dateFormat = 'MMMM DD YYYY';
@@ -130,7 +131,7 @@ class UserEdit extends Component {
         disabled={isLoading} onClick={this.handleOkModal}
         form='userUpdatingForm' htmlType='submit'
       >
-        OK
+        Edit
       </Button >,
     ]
     return (

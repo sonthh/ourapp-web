@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Drawer, Radio, Rate } from 'antd';
+import { Button, Drawer, Radio, Rate, Avatar } from 'antd';
 import {
   SettingTwoTone,
 } from '@ant-design/icons';
-import Rating from '@material-ui/lab/Rating';
-import Typography from '@material-ui/core/Typography';
 import * as appAction from '../../action/appAction';
 import { connect } from 'react-redux';
 import responsive from '../../constant/responsive';
@@ -59,7 +57,7 @@ class Setting extends Component {
           visible={this.state.visible}
           title='Setting'
         >
-          <Typography component='legend'>Navigation mode</Typography>
+          <div>Navigation mode</div>
           <Radio.Group onChange={this.onChangeNavigationMode} defaultValue={this.props.navigationMode}>
             <Radio.Button value='horizontal'>
               Horizontal
@@ -69,15 +67,16 @@ class Setting extends Component {
             </Radio.Button>
           </Radio.Group>
 
-          <Typography component='legend'>Rating</Typography>
-          <Rating
-            name='simple-controlled'
-            value={3}
-            onChange={(event, newValue) => { }}
-          />
-
-          <Typography component='legend'>Rating</Typography>
+          <div>Rating</div>
           <Rate allowHalf defaultValue={2.5} />
+
+          <div>Team1 members</div>
+          <div>
+            <Avatar src="https://res.cloudinary.com/ourapp-upload/image/upload/v1588564716/67403831_2356011294616988_4352344051870072832_o_uixydl.jpg" />
+            <Avatar src="https://res.cloudinary.com/ourapp-upload/image/upload/v1588564799/53899643_2012404435732649_5572488971549671424_n_whci1t.jpg" />
+            <Avatar src="https://res.cloudinary.com/ourapp-upload/image/upload/v1588564892/58462971_1150803888432699_5280383882061938688_n_wpauci.jpg" />
+            <Avatar src="https://res.cloudinary.com/ourapp-upload/image/upload/v1588564892/60449197_1180051765507833_4261348095893176320_n_c7y7tm.jpg" />
+          </div>
         </Drawer>
         <Button onClick={this.showDrawer} className='btn-setting' type='primary' icon={<SettingTwoTone />} />
       </>

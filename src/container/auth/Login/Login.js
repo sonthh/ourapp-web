@@ -3,14 +3,15 @@ import { Form, Input, Button, Checkbox, Row, Col, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import * as authAction from '../../action/authAction';
-import { checkAuth, saveAuthData } from '../../util/auth';
+import * as authAction from '../../../action/authAction';
+import { checkAuth, saveAuthData } from '../../../util/auth';
+import './index.scss';
 
 class Login extends Component {
 
   state = {
     loading: false,
-  }
+  };
 
   onFinish = values => {
     const { username, password } = values;
@@ -56,13 +57,14 @@ class Login extends Component {
     }
 
     return (
-      <Row style={{ minHeight: '100%' }} justify='space-around' align='middle' className='wrapper'>
+      <Row style={{ minHeight: '100%' }} justify='space-around' align='middle' className='wrapper LoginContainer'>
         <Col sm={{ span: 10 }} md={{ span: 8 }} lg={{ span: 8 }} xl={{ span: 6 }}>
 
           <Form
+            autoComplete='off'
             name='normal_login'
             className='login-form'
-            initialValues={{ remember: true }}
+            initialValues={{ remember: true, username: 'admin', password: '123456' }}
             onFinish={this.onFinish}
           >
             <Form.Item
@@ -78,7 +80,7 @@ class Login extends Component {
               name='password'
               rules={[{ required: true, message: 'Please input your Password!' }]}
             >
-            <Input.Password  prefix={<LockOutlined className='site-form-item-icon' />} placeholder='Password'/>
+              <Input.Password prefix={<LockOutlined className='site-form-item-icon' />} placeholder='Password' />
             </Form.Item>
             <Form.Item>
               <Form.Item name='remember' valuePropName='checked' noStyle>

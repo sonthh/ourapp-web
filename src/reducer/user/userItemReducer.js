@@ -28,7 +28,7 @@ export const userItemReducer = (state = initialState, action) => {
       return {
         ...state,
         isCreatingUser: false,
-        success: 'Created a user',
+        success: 'Created successfully',
         item: user,
       }
     }
@@ -65,7 +65,7 @@ export const userItemReducer = (state = initialState, action) => {
       return {
         ...state,
         isUpdatingUser: false,
-        success: 'Updated a user',
+        success: 'Updated successfully',
         item: user,
       }
     }

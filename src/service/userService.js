@@ -46,6 +46,19 @@ export const deleteManyUsers = async (ids) => {
   }
 };
 
+export const deleteOneUser = async (id) => {
+  try {
+    const headers = getHeaders();
+
+    const { data } = await axios
+      .delete(`${config.API_URL}/users/${id}`, { headers });
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 
 export const createOneUser = async (userRequest) => {
   try {
