@@ -3,6 +3,7 @@ import './index.scss';
 import {
   Modal, Form, Input, Checkbox, Select, Spin, Button, notification, Radio, DatePicker, Tabs
 } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import * as userAction from '../../../../action/userAction';
 import * as roleAction from '../../../../action/roleAction';
@@ -131,7 +132,10 @@ class UserEdit extends Component {
         bodyStyle={{ padding: '0px' }}
         className={'UserEditContainer'}
       >
-        <Spin spinning={isLoading}>
+        <Spin
+          spinning={isLoading}
+          indicator={<LoadingOutlined />}
+          size='large'>
           <Form
             ref={this.formRef}
             autoComplete='off'

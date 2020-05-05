@@ -4,12 +4,13 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as authAction from '../../../action/authAction';
-import { checkAuth, saveAuthData } from '../../../util/auth';
+import { saveAuthData, checkAuth } from '../../../util/auth';
 import './index.scss';
 
 class Login extends Component {
 
   state = {
+    isAuthenticated: false,
     loading: false,
   };
 
@@ -19,34 +20,32 @@ class Login extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.auth && this.props.auth !== prevProps.auth) {
-      const { token, error, isLoading, isAuthenticated, username, avatar } = this.props.auth;
+    const { error, isAuthenticated, authData } = this.props;
 
-      if (isLoading !== undefined) {
-        this.setState({ loading: isLoading });
-      }
+    if (error && error !== prevProps.error) {
+      return notification.error({
+        message: 'Login failed',
+        description: 'Username or password is incorrect!',
+      });
+    }
 
-      if (error) {
-        return notification.error({
-          message: 'Login failed',
-          description: 'Username or password is incorrect!',
-        });
-      }
+    if (authData && authData !== prevProps.authData) {
+      const { username, avatar, token } = authData;
 
-      if (token && isAuthenticated) {
-        saveAuthData({ token, isAuthenticated, username, avatar });
+      this.setState({ isAuthenticated });
 
-        notification.success({
-          duration: 2.5,
-          message: `Hi ${username}`,
-          description: 'Wellcom back!',
-        });
-      }
+      saveAuthData({ token, isAuthenticated, username, avatar });
+
+      notification.success({
+        duration: 2.5,
+        message: `Hi ${username}`,
+        description: 'Wellcom back!',
+      });
     }
   }
 
   render() {
-    if (checkAuth()) {
+    if (this.state.isAuthenticated || checkAuth()) {
       const { state } = this.props.location;
 
       if (state && state.from) {
@@ -55,6 +54,8 @@ class Login extends Component {
 
       return <Redirect to='/admin/dashboard' />
     }
+
+    const { isLoading } = this.props;
 
     return (
       <Row style={{ minHeight: '100%' }} justify='space-around' align='middle' className='wrapper LoginContainer'>
@@ -91,7 +92,7 @@ class Login extends Component {
             </Form.Item>
 
             <Form.Item>
-              <Button loading={this.state.loading} type='primary' htmlType='submit' className='login-form-button'>
+              <Button loading={isLoading} type='primary' htmlType='submit' className='login-form-button'>
                 Log in
                   </Button>
               <Link to='/auth/forgot' className='login-form-register'><span>Don't have account</span></Link>
@@ -103,9 +104,9 @@ class Login extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = ({ auth }) => {
   return {
-    auth: state.auth,
+    ...auth,
   };
 };
 

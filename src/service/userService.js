@@ -85,3 +85,30 @@ export const updateOneUser = async (userRequest) => {
     return Promise.reject(error);
   }
 };
+
+export const updateMyAvatar = async (formData) => {
+  try {
+    const headers = getHeaders();
+
+    const { data } = await axios
+      .post(`${config.API_URL}/users/me/avatar`, formData, { headers });
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const findUserMe = async () => {
+  try {
+    const headers = getHeaders();
+
+    const { data } = await axios
+      .get(`${config.API_URL}/users/me`, { headers });
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+

@@ -14,7 +14,7 @@ export const passwordLogin = (loginData) => {
 
       dispatch({
         type: actionTypes.PASSWORD_LOGIN_SUCCESS,
-        payloads: authData,
+        payloads: { authData },
       });
     } catch (error) {
       const errorData = error.response;

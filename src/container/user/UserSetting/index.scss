@@ -1,0 +1,13 @@
+.UserSettingContainer {
+  .avatar-uploader {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .avatar-uploader > div {
+    border-radius: 50%;
+    width: 160px;
+    height: 160px;
+  }
+}

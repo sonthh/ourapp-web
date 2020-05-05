@@ -144,3 +144,49 @@ export const updateOneUser = (userRequest) => {
     }
   };
 };
+
+export const updateMyAvatar = (formData) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_MY_AVATAR_REQUEST,
+    });
+
+    try {
+      const avatarUrl = await userService.updateMyAvatar(formData);
+      
+      dispatch({
+        type: actionTypes.UPDATE_MY_AVATAR_SUCCESS,
+        payloads: { avatarUrl },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_MY_AVATAR_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const findUserMe = () => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.FIND_USER_ME_REQUEST,
+    });
+
+    try {
+      const userMe = await userService.findUserMe();
+      
+      dispatch({
+        type: actionTypes.FIND_USER_ME_SUCCESS,
+        payloads: { userMe },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.FIND_USER_ME_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};

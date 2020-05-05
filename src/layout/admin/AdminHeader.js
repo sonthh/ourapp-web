@@ -9,11 +9,11 @@ import {
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { toggleMenu } from '../../action/appAction';
-import { logout } from '../../util/auth';
+import { logout, getCurrentUser } from '../../util/auth';
 import { Redirect, Link } from 'react-router-dom';
-import { getCurrentUser } from '../../util/auth';
 import Notice from '../../component/common/Notice';
 import MainMenu from './MainMenu';
+import PropTypes from 'prop-types';
 
 const { Header } = Layout;
 
@@ -21,6 +21,7 @@ class AdminHeader extends Component {
 
   state = {
     logout: false,
+    authData: getCurrentUser(),
   }
 
   toggle = () => {
@@ -33,31 +34,12 @@ class AdminHeader extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.currentUser && this.props.currentUser !== prevProps.currentUser) {
-      const { currentUser } = this.props;
-      const { username, avatar } = currentUser;
+    const { authData } = this.props;
 
-      localStorage.setItem('currentUser', JSON.stringify({ username, avatar }));
+    if (authData && authData !== prevProps.authData) {
+      this.setState({ authData: authData });
     }
   }
-
-  userMenu = (currentUser) => (
-    <Menu className='menu-avatar'>
-      <Menu.Item className='menu-item-avatar'>
-        <UserOutlined />
-        <Link style={{ display: 'inline' }} to='/admin/profile'><span>{currentUser.username}</span></Link>
-      </Menu.Item>
-      <Menu.Item>
-        <SettingOutlined />
-        <Link style={{ display: 'inline' }} to='/admin/profile/setting'><span>Setting</span></Link>
-      </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item onClick={this.onLogout}>
-        <LogoutOutlined />
-        <span>Logout</span>
-      </Menu.Item>
-    </Menu>
-  );
 
   renderToggleIcon = () => {
     if (this.props.collapsed) {
@@ -70,7 +52,9 @@ class AdminHeader extends Component {
     if (this.state.logout) {
       return <Redirect to={'/auth/login'} />
     }
-    const currentUser = getCurrentUser();
+
+    const { mode } = this.props;
+    const { authData } = this.state;
 
     let headerStyle = { padding: 0 };
     // mode: vertical
@@ -79,7 +63,10 @@ class AdminHeader extends Component {
         {this.renderToggleIcon()}
       </Col>
     );
-    if (this.props.mode === 'horizontal') {
+
+    console.log(mode);
+    
+    if (mode === 'horizontal') {
       headerStyle = { ...headerStyle, position: 'fixed', zIndex: 1, width: '100%' };
       leftHeader = (
         <>
@@ -93,15 +80,38 @@ class AdminHeader extends Component {
       );
     }
 
+    const userMenu = (
+      <Menu className='menu-avatar'>
+        <Menu.Item className='menu-item-avatar'>
+          <UserOutlined />
+          <Link
+            style={{ display: 'inline' }}
+            to={{ pathname: `/admin/profile/${authData.username}` }}
+          >
+            <span>{authData.username}</span>
+          </Link>
+        </Menu.Item>
+        <Menu.Item>
+          <SettingOutlined />
+          <Link style={{ display: 'inline' }} to='/admin/setting'><span>Setting</span></Link>
+        </Menu.Item>
+        <Menu.Divider />
+        <Menu.Item onClick={this.onLogout}>
+          <LogoutOutlined />
+          <span>Logout</span>
+        </Menu.Item>
+      </Menu>
+    );
+
     return (
       <Header style={headerStyle} className='site-layout-background'>
         <Row justify='space-between'>
           {leftHeader}
           <Col>
             <Notice />
-            <Dropdown trigger={['click']} overlay={this.userMenu(currentUser)} placement="bottomRight">
+            <Dropdown trigger={['click']} overlay={userMenu} placement="bottomRight">
               <div className='menu-avatar-wrapper'>
-                <Avatar style={{ top: '-4px' }} size='small' src={currentUser.avatar} />
+                <Avatar style={{ top: '-4px' }} size='small' src={authData.avatar} />
               </div>
             </Dropdown>
           </Col>
@@ -111,18 +121,23 @@ class AdminHeader extends Component {
   }
 }
 
-const mapStateToProps = state => {
+AdminHeader.propTypes = {
+  mode: PropTypes.string,
+};
+
+const mapStateToProps = ({ app, auth }) => {
+  const { authData } = auth;
+  const { collapsed } = app;
   return {
-    collapsed: state.app.collapsed,
+    collapsed,
+    authData,
   }
-}
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    toggleMenu: () => {
-      dispatch(toggleMenu());
-    }
+    toggleMenu: () => dispatch(toggleMenu()),
   }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminHeader);

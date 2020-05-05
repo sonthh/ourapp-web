@@ -43,7 +43,7 @@ class AdminLayout extends Component {
 
   resize = () => {
     const { innerWidth } = window;
-    const isLargeScreen = innerWidth >= responsive.md;
+    const isLargeScreen = innerWidth > responsive.md;
     const collapsedWidth = isLargeScreen ? 80 : 0;
     const useDrawer = isLargeScreen ? false : true;
 

@@ -1,6 +1,6 @@
 import Dashboard from './container/admin/Dashboard';
-import Profile from './container/admin/Profile';
-import ProfileSetting from './container/admin/ProfileSetting';
+import UserProfile from './container/user/UserProfile/UserProfile';
+import UserSetting from './container/user/UserSetting/UserSetting';
 import Login from './container/auth/Login/Login';
 import UserList from './container/admin/user/UserList/UserList';
 import ErrorPage from './container/admin/error/ErrorPage';
@@ -34,13 +34,13 @@ export const adminRoutes = [
     component: Dashboard,
   },
   {
-    path: '/profile',
-    component: Profile,
+    path: '/profile/:username',
+    component: UserProfile,
     exact: true,
   },
   {
-    path: '/profile/setting',
-    component: ProfileSetting,
+    path: '/setting',
+    component: UserSetting,
   },
   {
     path: '/user/manage',
