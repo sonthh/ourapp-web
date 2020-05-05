@@ -1,0 +1,40 @@
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-inverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.setting-icon {
+  animation: spin 0.5s infinite linear;
+}
+
+.btn-setting:hover .setting-icon {
+  animation: spin-inverse 1s infinite linear;
+}
+
+.SettingDrawer {
+  .ant-drawer-close:hover {
+    animation: spin 0.3s linear;
+  }
+
+  .avatar {
+    transition: 0.4s;
+  }
+
+  .avatar:hover {
+    cursor: pointer;
+    animation: spin 3s infinite linear;
+  }
+}

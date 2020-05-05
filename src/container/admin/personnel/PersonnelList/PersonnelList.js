@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import {
   ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteOutlined, DeleteTwoTone, MailTwoTone,
-  EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone,
+  EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone, LoadingOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { getFilterObject } from '../../../../util/get';
@@ -37,7 +37,6 @@ class PersonnelList extends Component {
         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} personnel`,
         showQuickJumper: true,
       },
-      isLoadingTable: true,
       selectedRowKeys: [],
       columns: this.getColumns({}, {}),
       isColumnsFixed,
@@ -49,7 +48,7 @@ class PersonnelList extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { error, isLoading, isDeleted, ids, dataList } = this.props;
+    const { error, isDeleted, ids, dataList } = this.props;
 
     if (error && error !== prevProps.error) {
       if (error) {
@@ -59,12 +58,6 @@ class PersonnelList extends Component {
           duration: 2.5,
         });
       }
-    }
-
-    if (isLoading !== undefined && isLoading !== prevProps.isLoading) {
-      this.setState({
-        isLoadingTable: isLoading,
-      })
     }
 
     if (isDeleted !== undefined && isDeleted === true && ids !== prevProps.ids) {
@@ -481,7 +474,8 @@ class PersonnelList extends Component {
   })
 
   render() {
-    const { data, pagination, isLoadingTable, selectedRowKeys, isColumnsFixed } = this.state;
+    const { data, pagination, selectedRowKeys, isColumnsFixed } = this.state;
+    const { isLoading } = this.props;
 
     const rowSelection = {
       selectedRowKeys,
@@ -600,7 +594,10 @@ class PersonnelList extends Component {
           rowKey={record => record.id}
           dataSource={data}
           pagination={pagination}
-          loading={isLoadingTable}
+          loading={{
+            spinning: isLoading,
+            indicator: (<LoadingOutlined />),
+          }}
           onChange={this.handleTableChange}
           scroll={{ x: 'max-content' }}
         />

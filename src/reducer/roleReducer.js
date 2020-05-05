@@ -7,11 +7,11 @@ const initialState = {
   role: {},
 };
 
-export const roleReducer = (state = initialState, action) => {
+export const roleReducer = (state = initialState, { type, payloads }) => {
 
-  switch (action.type) {
+  switch (type) {
     case actionTypes.FIND_ONE_ROLE_SUCCESS: {
-      const role = action.payloads.role;
+      const { role } = payloads;
 
       return {
         ...state,
@@ -19,7 +19,7 @@ export const roleReducer = (state = initialState, action) => {
       };
     }
     case actionTypes.FIND_MANY_ROLES_SUCCESS: {
-      const roles = action.payloads.roles;
+      const { roles } = payloads;
 
       return {
         ...state,

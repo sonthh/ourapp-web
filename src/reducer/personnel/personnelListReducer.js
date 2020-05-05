@@ -8,9 +8,9 @@ const initialState = {
   dataList: {},
 };
 
-export const personnelListReducer = (state = initialState, action) => {
+export const personnelListReducer = (state = initialState, { type, payloads }) => {
 
-  switch (action.type) {
+  switch (type) {
     case actionTypes.FIND_MANY_PERSONNEL_REQUEST: {
 
       return {
@@ -19,7 +19,7 @@ export const personnelListReducer = (state = initialState, action) => {
       };
     }
     case actionTypes.FIND_MANY_PERSONNEL_SUCCESS: {
-      const { dataList } = action.payloads;
+      const { dataList } = payloads;
 
       return {
         ...state,
@@ -28,7 +28,7 @@ export const personnelListReducer = (state = initialState, action) => {
       };
     }
     case actionTypes.FIND_MANY_PERSONNEL_FAILURE: {
-      const { error } = action.payloads;
+      const { error } = payloads;
 
       return {
         ...state,

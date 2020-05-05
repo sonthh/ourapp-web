@@ -20,8 +20,6 @@ class UserEdit extends Component {
     this.formRef = React.createRef();
     this.state = {
       visibleModal: false,
-      isLoading: false,
-      isUpdatingUser: false,
       item: {},
       roleList: [],
     };
@@ -40,26 +38,13 @@ class UserEdit extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { isLoading, error, item, roles, success, isUpdatingUser } = this.props;
-
-    if (isLoading !== undefined && isLoading !== prevProps.isLoading) {
-      this.setState({
-        isLoading,
-      });
-    }
+    const { error, item, roles, success } = this.props;
 
     if (success !== undefined && success !== prevProps.success) {
       notification.success({
         message: 'SUCCESSS',
         description: success,
         duration: 2.5,
-      });
-    }
-
-    if (isUpdatingUser !== undefined
-      && isUpdatingUser !== prevProps.isUpdatingUser) {
-      this.setState({
-        isUpdatingUser,
       });
     }
 
@@ -118,7 +103,8 @@ class UserEdit extends Component {
   };
 
   render() {
-    const { item, roleList, isUpdatingUser, isLoading, visibleModal } = this.state;
+    const { item, roleList, visibleModal } = this.state;
+    const { isUpdatingUser, isLoading } = this.props;
     const roleOptions = roleList.map(role => ({ label: role.name, value: role.id }));
 
     const footer = [
@@ -143,6 +129,7 @@ class UserEdit extends Component {
         onCancel={this.handleCancelModal}
         onOk={this.onSubmitForm}
         bodyStyle={{ padding: '0px' }}
+        className={'UserEditContainer'}
       >
         <Spin spinning={isLoading}>
           <Form
@@ -265,9 +252,9 @@ class UserEdit extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  const { userItem } = state.user;
-  const { roles } = state.role;
+const mapStateToProps = ({ user, role }) => {
+  const { userItem } = user;
+  const { roles } = role;
 
   return {
     ...userItem,

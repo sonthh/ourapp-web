@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import {
   ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteOutlined, DeleteTwoTone,
-  EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone,
+  EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone, LoadingOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import * as userAction from '../../../../action/userAction';
@@ -36,7 +36,6 @@ class UserList extends Component {
         showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} users`,
         showQuickJumper: true,
       },
-      isLoadingTable: true,
       selectedRowKeys: [],
       columns: this.getColumns({}, {}),
       isColumnsFixed,
@@ -48,7 +47,7 @@ class UserList extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { error, isLoading, isDeletedManyUser, isDeletedOneUser, deletedIds, deletedId, dataList } = this.props;
+    const { error, isDeletedManyUser, isDeletedOneUser, deletedIds, deletedId, dataList } = this.props;
 
     if (error && error !== prevProps.error) {
       if (error) {
@@ -58,12 +57,6 @@ class UserList extends Component {
           duration: 2.5,
         });
       }
-    }
-
-    if (isLoading !== undefined && isLoading !== prevProps.isLoading) {
-      this.setState({
-        isLoadingTable: isLoading,
-      })
     }
 
     if (isDeletedOneUser !== undefined && isDeletedOneUser === true
@@ -93,8 +86,8 @@ class UserList extends Component {
     }
 
     if (dataList && dataList !== prevProps.dataList) {
-      const { content, totalElements } = dataList;
-      const pagination = { ...this.state.pagination, total: totalElements };
+      const { content, totalElements: total } = dataList;
+      const pagination = { ...this.state.pagination, total };
 
       this.setState({
         data: content,
@@ -104,8 +97,6 @@ class UserList extends Component {
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-    // console.log(filters, sorter);
-
     const { current } = pagination;
 
     this.setState({
@@ -118,7 +109,6 @@ class UserList extends Component {
   };
 
   fetchUsers = (pagination, filters, sorter) => {
-
     filters = getFilterObject(
       ['gender', 'username', 'createdBy', 'lastModifiedBy', 'address', 'status',
         'email', 'identification', 'phoneNumber', 'fullName'],
@@ -127,11 +117,11 @@ class UserList extends Component {
 
     const sortDirection = (sorter && sorter.order && sorter.order === 'ascend') ? 'ASC' : 'DESC';
     const sortBy = (sorter && sorter.order && sorter.field) ? sorter.field : 'id';
-    const { current, pageSize } = pagination;
+    const { current: currentPage, pageSize: limit } = pagination;
 
     this.props.findManyUsers({
-      currentPage: current,
-      limit: pageSize,
+      currentPage,
+      limit,
       sortBy,
       sortDirection,
       ...filters,
@@ -147,8 +137,8 @@ class UserList extends Component {
   };
 
   onDeleteMany = () => {
-    const { selectedRowKeys } = this.state;
-    this.props.deleteManyUsers(selectedRowKeys);
+    const { selectedRowKeys: ids } = this.state;
+    this.props.deleteManyUsers(ids);
   };
 
   clearFilters = () => {
@@ -446,7 +436,8 @@ class UserList extends Component {
   });
 
   render() {
-    const { data, pagination, isLoadingTable, selectedRowKeys, isColumnsFixed } = this.state;
+    const { data, pagination, selectedRowKeys, isColumnsFixed } = this.state;
+    const { isLoading: isLoadingTable, isDeletingManyUser, location } = this.props;
 
     const rowSelection = {
       selectedRowKeys,
@@ -459,11 +450,10 @@ class UserList extends Component {
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
 
-    const { location } = this.props;
-
     // columns with filteredInfo and sortedInfo
     const columnsInfo = this.getColumns(filteredInfo, sortedInfo, isColumnsFixed);
 
+    // resize columns
     const columns = this.state.columns.map((col, index) => ({
       ...col,
       filteredValue: columnsInfo[index].filteredValue,
@@ -525,8 +515,8 @@ class UserList extends Component {
           <Tooltip placement='topLeft' title='Fixed columns'>
             <Button type='dashed' onClick={this.onClickToggleFixed}>
               <Checkbox
-                checked={this.state.isColumnsFixed}
-                defaultChecked={this.state.isColumnsFixed}
+                checked={isColumnsFixed}
+                defaultChecked={isColumnsFixed}
                 onChange={this.onChangeColumnsFixed}
               />
             </Button>
@@ -551,7 +541,7 @@ class UserList extends Component {
             onConfirm={this.onDeleteMany}
             disabled={!hasSelected}
           >
-            <Button type='danger' icon={<DeleteOutlined />} disabled={!hasSelected} loading={this.props.isDeletingManyUser}>
+            <Button type='danger' icon={<DeleteOutlined />} disabled={!hasSelected} loading={isDeletingManyUser}>
               Delete
             </Button>
           </Popconfirm>
@@ -569,7 +559,11 @@ class UserList extends Component {
           rowKey={record => record.id}
           dataSource={data}
           pagination={pagination}
-          loading={isLoadingTable}
+          loading={{
+            spinning: isLoadingTable,
+            indicator: <LoadingOutlined />,
+            size: 'large',
+          }}
           onChange={this.handleTableChange}
           scroll={{ x: 'max-content' }}
         />
@@ -578,8 +572,9 @@ class UserList extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  const { userList } = state.user;
+const mapStateToProps = ({ user }) => {
+  const { userList } = user;
+
   return {
     ...userList
   };

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Layout } from 'antd';
-import Setting from './Setting';
+import Setting from './Setting/Setting';
 
 const { Footer } = Layout;
 

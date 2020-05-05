@@ -22,8 +22,6 @@ class UserAdd extends Component {
     this.formRef = React.createRef();
     this.state = {
       visibleModal: false,
-      isLoading: false,
-      isCreatingUser: false,
       roleList: [],
     };
   }
@@ -36,26 +34,13 @@ class UserAdd extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { isLoading, isCreatingUser, error, item, roles, success } = this.props;
-
-    if (isLoading !== undefined && isLoading !== prevProps.isLoading) {
-      this.setState({
-        isLoading,
-      });
-    }
+    const { error, item, roles, success } = this.props;
 
     if (success !== undefined && success !== prevProps.success) {
       notification.success({
         message: 'SUCCESSS',
         description: success,
         duration: 2.5,
-      });
-    }
-
-    if (isCreatingUser !== undefined
-      && isCreatingUser !== prevProps.isCreatingUser) {
-      this.setState({
-        isCreatingUser,
       });
     }
 
@@ -106,7 +91,8 @@ class UserAdd extends Component {
   };
 
   render() {
-    const { roleList, isCreatingUser, visibleModal } = this.state;
+    const { roleList, visibleModal } = this.state;
+    const { isLoading, isCreatingUser } = this.props;
     const roleOptions = roleList.map(role => ({ label: role.name, value: role.id }));
 
     const footer = [
@@ -116,7 +102,7 @@ class UserAdd extends Component {
       <Button
         key='submit' type='primary'
         loading={isCreatingUser}
-        disabled={this.state.isLoading} onClick={this.handleOkModal}
+        disabled={isLoading} onClick={this.handleOkModal}
         form='userCreatingForm' htmlType='submit'
       >
         Add
@@ -129,6 +115,7 @@ class UserAdd extends Component {
           <title>Add user</title>
         </Helmet>
         <Modal
+          className={'UserAddContainer'}
           title='Add a new user'
           visible={visibleModal}
           footer={footer}
@@ -136,7 +123,7 @@ class UserAdd extends Component {
           onOk={this.onSubmitForm}
           bodyStyle={{ padding: '0px' }}
         >
-          <Spin spinning={this.state.isLoading}>
+          <Spin spinning={isLoading}>
             <Form
               initialValues={{ status: 'ACTIVE' }}
               ref={this.formRef}
@@ -259,9 +246,9 @@ class UserAdd extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  const { userItem } = state.user;
-  const { roles } = state.role;
+const mapStateToProps = ({ user, role }) => {
+  const { userItem } = user;
+  const { roles } = role;
 
   return {
     ...userItem,

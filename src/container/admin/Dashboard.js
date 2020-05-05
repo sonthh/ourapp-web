@@ -3,7 +3,6 @@ import { Breadcrumb } from 'antd';
 
 export default class Dashboard extends Component {
   render() {
-    
     return (
       <>
         <Breadcrumb style={{ margin: '16px 0' }}>

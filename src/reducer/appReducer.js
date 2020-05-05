@@ -9,9 +9,9 @@ const initialState = {
   navigationMode: setting.navigationMode,
 };
 
-export const appReducer = (state = initialState, action) => {
+export const appReducer = (state = initialState, { type, payloads }) => {
 
-  switch (action.type) {
+  switch (type) {
     case actionTypes.TOGGLE_MENU: {
       const collapsed = !state.collapsed;
 
@@ -21,7 +21,7 @@ export const appReducer = (state = initialState, action) => {
       };
     }
     case actionTypes.CHANGE_NAVIGATION_MODE: {
-      const { navigationMode } = action.payloads;
+      const { navigationMode } = payloads;
 
       return {
         ...state,

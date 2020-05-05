@@ -6,8 +6,8 @@ const initialState = {
   item: {},
 };
 
-export const userItemReducer = (state = initialState, action) => {
-  switch (action.type) {
+export const userItemReducer = (state = initialState, { type, payloads }) => {
+  switch (type) {
     case actionTypes.FIND_ONE_USER_REQUEST: {
       return {
         ...state,
@@ -15,7 +15,7 @@ export const userItemReducer = (state = initialState, action) => {
       }
     }
     case actionTypes.FIND_ONE_USER_SUCCESS: {
-      const { user } = action.payloads;
+      const { user } = payloads;
       return {
         ...state,
         isLoading: false,
@@ -23,7 +23,7 @@ export const userItemReducer = (state = initialState, action) => {
       }
     }
     case actionTypes.CREATE_ONE_USER_SUCCESS: {
-      const { user } = action.payloads;
+      const { user } = payloads;
 
       return {
         ...state,
@@ -35,7 +35,7 @@ export const userItemReducer = (state = initialState, action) => {
     case actionTypes.CREATE_ONE_USER_FAILURE: {
       return {
         ...state,
-        error: action.payloads.error,
+        error: payloads.error,
         isCreatingUser: false,
       }
     }
@@ -56,12 +56,12 @@ export const userItemReducer = (state = initialState, action) => {
     case actionTypes.UPDATE_ONE_USER_FAILURE: {
       return {
         ...state,
-        error: action.payloads.error,
+        error: payloads.error,
         isUpdatingUser: false,
       }
     }
     case actionTypes.UPDATE_ONE_USER_SUCCESS: {
-      const { user } = action.payloads;
+      const { user } = payloads;
       return {
         ...state,
         isUpdatingUser: false,

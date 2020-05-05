@@ -8,11 +8,11 @@ const initialState = {
   dataList: {},
 };
 
-export const userListReducer = (state = initialState, action) => {
+export const userListReducer = (state = initialState, { type, payloads }) => {
 
-  switch (action.type) {
+  switch (type) {
     case actionTypes.USERS_FAILURE: {
-      const { error } = action.payloads;
+      const { error } = payloads;
 
       return {
         ...state,
@@ -29,7 +29,7 @@ export const userListReducer = (state = initialState, action) => {
       };
     }
     case actionTypes.FIND_MANY_USERS_SUCCESS: {
-      const { dataList } = action.payloads;
+      const { dataList } = payloads;
 
       return {
         ...state,
@@ -38,7 +38,7 @@ export const userListReducer = (state = initialState, action) => {
       }
     }
     case actionTypes.FIND_MANY_USERS_FAILURE: {
-      const { error } = action.payloads;
+      const { error } = payloads;
 
       return {
         ...state,
@@ -53,7 +53,7 @@ export const userListReducer = (state = initialState, action) => {
       };
     }
     case actionTypes.DELETE_MANY_USERS_SUCCESS: {
-      const { isDeleted, ids } = action.payloads;
+      const { isDeleted, ids } = payloads;
       let { dataList } = state;
       let { content } = dataList;
 
@@ -73,7 +73,7 @@ export const userListReducer = (state = initialState, action) => {
       }
     }
     case actionTypes.DELETE_ONE_USER_REQUEST: {
-      const { id } = action.payloads;
+      const { id } = payloads;
 
       return {
         ...state,
@@ -82,7 +82,7 @@ export const userListReducer = (state = initialState, action) => {
       };
     }
     case actionTypes.DELETE_ONE_USER_FAILURE: {
-      const { error } = action.payloads;
+      const { error } = payloads;
 
       return {
         ...state,
@@ -91,7 +91,7 @@ export const userListReducer = (state = initialState, action) => {
       };
     }
     case actionTypes.DELETE_ONE_USER_SUCCESS: {
-      const { id, isDeleted } = action.payloads;
+      const { id, isDeleted } = payloads;
       let { dataList } = state;
       let { content } = dataList;
 
@@ -109,7 +109,7 @@ export const userListReducer = (state = initialState, action) => {
       }
     }
     case actionTypes.CREATE_ONE_USER_SUCCESS: {
-      const { user } = action.payloads;
+      const { user } = payloads;
       const { dataList } = state;
       let { content } = dataList;
       content = [user, ...content]
@@ -124,7 +124,7 @@ export const userListReducer = (state = initialState, action) => {
       }
     }
     case actionTypes.UPDATE_ONE_USER_SUCCESS: {
-      const { user } = action.payloads;
+      const { user } = payloads;
       const { dataList } = state;
       let { content } = dataList;
       let index = -1;

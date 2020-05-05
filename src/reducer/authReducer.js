@@ -6,16 +6,16 @@ const initialState = {
   isAuthenticated: false,
 };
 
-export const authReducer = (state = initialState, action) => {
+export const authReducer = (state = initialState, { type, payloads }) => {
 
-  switch (action.type) {
+  switch (type) {
     case actionTypes.AUTH_REQUEST:
 
       return {
         isLoading: true,
       };
     case actionTypes.AUTH_FAILURE:
-      const { error } = action.payloads;
+      const { error } = payloads;
 
       return {
         error,
@@ -24,12 +24,12 @@ export const authReducer = (state = initialState, action) => {
     case actionTypes.PASSWORD_LOGIN_SUCCESS:
 
       return {
-        ...action.payloads,
+        ...payloads,
         isLoading: false,
         isAuthenticated: true,
       }
     case actionTypes.FIND_ME_SUCCESS:
-      const { currentUser } = action.payloads;
+      const { currentUser } = payloads;
 
       return {
         currentUser,

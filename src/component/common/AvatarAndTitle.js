@@ -36,3 +36,4 @@ AvatarAndTitle.propTypes = {
   src: PropTypes.string,
   title: PropTypes.string,
 };
+
