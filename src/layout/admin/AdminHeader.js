@@ -63,8 +63,6 @@ class AdminHeader extends Component {
         {this.renderToggleIcon()}
       </Col>
     );
-
-    console.log(mode);
     
     if (mode === 'horizontal') {
       headerStyle = { ...headerStyle, position: 'fixed', zIndex: 1, width: '100%' };

@@ -154,7 +154,7 @@ export const updateMyAvatar = (formData) => {
 
     try {
       const avatarUrl = await userService.updateMyAvatar(formData);
-      
+
       dispatch({
         type: actionTypes.UPDATE_MY_AVATAR_SUCCESS,
         payloads: { avatarUrl },
@@ -177,7 +177,7 @@ export const findUserMe = () => {
 
     try {
       const userMe = await userService.findUserMe();
-      
+
       dispatch({
         type: actionTypes.FIND_USER_ME_SUCCESS,
         payloads: { userMe },
@@ -185,6 +185,29 @@ export const findUserMe = () => {
     } catch (error) {
       dispatch({
         type: actionTypes.FIND_USER_ME_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const updateUserMe = (userRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_USER_ME_REQUEST,
+    });
+
+    try {
+      const userMe = await userService.updateUserMe(userRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_USER_ME_SUCCESS,
+        payloads: { userMe },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_USER_ME_FAILURE,
         payloads: { error },
       });
     }

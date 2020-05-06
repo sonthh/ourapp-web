@@ -113,6 +113,31 @@ export const userItemReducer = (state = initialState, { type, payloads }) => {
         userMe,
       }
     }
+    case actionTypes.UPDATE_USER_ME_REQUEST: {
+      return {
+        ...state,
+        isUpdatingUserMe: true,
+        isUpdatedUserMe: false,
+      }
+    }
+    case actionTypes.UPDATE_USER_ME_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        isUpdatingUserMe: false,
+        isUpdatedUserMe: false,
+        error,
+      }
+    }
+    case actionTypes.UPDATE_USER_ME_SUCCESS: {
+      const { userMe } = payloads;
+      return {
+        ...state,
+        isUpdatingUserMe: false,
+        isUpdatedUserMe: true,
+        userMe,
+      }
+    }
     default:
       return state;
   }

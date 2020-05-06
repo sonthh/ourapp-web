@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import './index.scss';
-import { Tabs, Row, Col, Input, Form, Upload, message, Button, Spin, notification, Avatar } from 'antd';
+import { Tabs, Row, Col, Input, Form, Upload, message, Button, Spin, notification, Avatar, List, Switch } from 'antd';
 import responsive from '../../../constant/responsive'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { getBase64Url } from '../../../util/file';
 import * as userAction from '../../../action/userAction'
 import { connect } from 'react-redux';
 import { saveAuthData, getCurrentUser } from '../../../util/auth';
+import { getErrorMessage } from '../../../util/get';
 
 const { TabPane } = Tabs;
 
@@ -49,7 +50,7 @@ class UserSetting extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { avatarUrl, userMe } = this.props;
+    const { avatarUrl, userMe, isUpdatedUserMe, error } = this.props;
 
     if (avatarUrl && avatarUrl !== prevProps.avatarUrl) {
       this.setState({ avatarUrl, avatarFile: null });
@@ -67,6 +68,14 @@ class UserSetting extends Component {
       }
     }
 
+    if (error && error !== prevProps.error) {
+      notification.error({
+        message: 'ERROR',
+        description: getErrorMessage(error) || 'Something went wrong',
+        duration: 2.5,
+      });
+    }
+
     if (userMe !== prevProps.userMe) {
       this.formRef.current.setFieldsValue({
         ...userMe
@@ -74,6 +83,14 @@ class UserSetting extends Component {
 
       const { avatar: avatarUrl } = userMe;
       this.setState({ avatarUrl });
+    }
+
+    if (isUpdatedUserMe === true && isUpdatedUserMe !== prevProps.isUpdatedUserMe) {
+      notification.success({
+        message: 'SUCCESSS',
+        description: 'Updated info successfully',
+        duration: 2.5,
+      });
     }
   }
 
@@ -94,7 +111,22 @@ class UserSetting extends Component {
       formData.append('avatar', avatarFile);
       this.props.updateMyAvatar(formData);
     }
+
+    this.props.updateUserMe(values);
   }
+
+  list = [
+    {
+      title: 'System Messages',
+      description: 'System messages will be notified in the form of a station letter',
+      actions: [<Switch defaultChecked />],
+    },
+    {
+      title: 'To-do Notification',
+      description: 'The to-do list will be notified in the form of a letter from the station',
+      actions: [<Switch defaultChecked />],
+    },
+  ];
 
   render() {
     const uploadButton = (
@@ -104,7 +136,7 @@ class UserSetting extends Component {
       </div>
     );
     const { avatarUrl } = this.state;
-    const { isUploadingAvatar, isLoading } = this.props;
+    const { isUploadingAvatar, isLoading, isUpdatingUserMe } = this.props;
 
     return (
       <>
@@ -114,7 +146,7 @@ class UserSetting extends Component {
               spinning={isLoading}
               indicator={<LoadingOutlined />}
             >
-              <Row style={{ padding: '20px 35px' }}>
+              <Row style={{ padding: '0 35px' }}>
                 <Col span={24} lg={{ span: 12, order: 2 }}>
                   <Upload
                     name='avatar'
@@ -146,7 +178,7 @@ class UserSetting extends Component {
                   >
                     <Form.Item
                       name='username'
-                      label='Tau chưa css xong'
+                      label='Username'
                       validateFirst={true}
                     >
                       <Input disabled={true} />
@@ -173,7 +205,7 @@ class UserSetting extends Component {
                       <Input />
                     </Form.Item>
                     <Form.Item >
-                      <Button type='primary' htmlType='submit'>
+                      <Button loading={isUpdatingUserMe} type='primary' htmlType='submit'>
                         Update
                     </Button>
                     </Form.Item>
@@ -182,11 +214,70 @@ class UserSetting extends Component {
               </Row>
             </Spin>
           </TabPane>
-          <TabPane tab='Account Binding' key='3'>
-            <h1>SETTING</h1>
+          <TabPane tab='Security Setting' key='3'>
+            <Row style={{ padding: '0 35px' }}>
+              <Col span={24} lg={{ span: 12, order: 1 }}>
+                <Form
+                  autoComplete='off'
+                  // onFinish={this.onSubmitBasicInfo}
+                  layout='vertical'>
+                  <Form.Item
+                    name='currentPassword'
+                    label='Current password'
+                  // hasFeedback
+                  >
+                    <Input.Password />
+                  </Form.Item>
+                  <Form.Item
+                    name='password'
+                    label='Password'
+                  // hasFeedback
+                  >
+                    <Input.Password />
+                  </Form.Item>
+
+                  <Form.Item
+                    name='confirm'
+                    label='Confirm Password'
+                    dependencies={['password']}
+                    // hasFeedback
+                    rules={[
+                      ({ getFieldValue }) => ({
+                        validator(rule, value) {
+                          if (!value || getFieldValue('password') === value) {
+                            return Promise.resolve();
+                          }
+                          return Promise.reject('The two passwords that you entered do not match!');
+                        },
+                      }),
+                    ]}
+                  >
+                    <Input.Password />
+                  </Form.Item>
+                </Form>
+              </Col>
+            </Row>
           </TabPane>
           <TabPane tab='Message Notification' key='4'>
-            <h1>SONDEPTRAI</h1>
+            <Row style={{ padding: '0 35px' }}>
+              <Col span={18}>
+                <List
+                  className="demo-loadmore-list"
+                  itemLayout="horizontal"
+                  dataSource={this.list}
+                  renderItem={item => (
+                    <List.Item
+                      actions={item.actions}
+                    >
+                      <List.Item.Meta
+                        title={item.title}
+                        description={item.description}
+                      />
+                    </List.Item>
+                  )}
+                />
+              </Col>
+            </Row>
           </TabPane>
         </Tabs>
       </>
@@ -206,6 +297,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateMyAvatar: formData => dispatch(userAction.updateMyAvatar(formData)),
     findUserMe: () => dispatch(userAction.findUserMe()),
+    updateUserMe: userRequest => dispatch(userAction.updateUserMe(userRequest)),
   }
 };
 

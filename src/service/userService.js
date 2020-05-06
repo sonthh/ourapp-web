@@ -112,3 +112,16 @@ export const findUserMe = async () => {
   }
 };
 
+export const updateUserMe = async (userRequest) => {
+  try {
+    const headers = getHeaders();
+
+    const { data } = await axios
+      .put(`${config.API_URL}/users/me`, userRequest, { headers });
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
