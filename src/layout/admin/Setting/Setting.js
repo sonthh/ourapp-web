@@ -94,17 +94,16 @@ class Setting extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = ({ app }) => {
+  const { navigationMode } = app;
   return {
-    navigationMode: state.app.navigationMode,
+    navigationMode,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    changeNavigationMode: (navigationMode) => {
-      dispatch(appAction.changeNavigationMode(navigationMode));
-    }
+    changeNavigationMode: (navigationMode) => dispatch(appAction.changeNavigationMode(navigationMode)),
   };
 };
 

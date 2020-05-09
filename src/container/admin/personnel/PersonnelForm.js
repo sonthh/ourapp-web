@@ -269,13 +269,11 @@ class PersonnelForm extends Component {
 }
 
 const mapStateToProps = state => {
-  return {
-  }
+  return {}
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {
-  }
+  return {}
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PersonnelForm);

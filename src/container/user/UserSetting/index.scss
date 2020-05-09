@@ -2,6 +2,10 @@
   padding-top: 20px;
 }
 
+.UserSettingContainer .ant-tabs-left-bar .ant-tabs-tab {
+  text-align: left;
+}
+
 .UserSettingContainer {
   .avatar-uploader {
     display: flex;
@@ -15,4 +19,3 @@
     height: 160px;
   }
 }
-

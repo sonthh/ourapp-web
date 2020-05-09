@@ -119,16 +119,20 @@ class AdminLayout extends Component {
       </Switch>
     );
 
+    const MainContent = (
+      <Content style={{ margin: '5px 16px' }}>
+        {AdminRoutes}
+        {AdminModalRoutes}
+      </Content>
+    );
+
     // horizonal layout is not for mobile screen
     if (this.props.navigationMode === 'horizontal' && this.state.useDrawer === false) {
       return (
         <Layout style={{ minHeight: '100vh' }}>
           <AdminHeader mode='horizontal' />
           <Layout className='site-layout site-layout-horizontal'>
-            <Content style={{ margin: '5px 16px' }}>
-              {AdminRoutes}
-              {AdminModalRoutes}
-            </Content>
+            {MainContent}
             <AdminFooter />
           </Layout>
         </Layout>
@@ -141,10 +145,7 @@ class AdminLayout extends Component {
         {siderWithDrawer}
         <Layout className='site-layout site-layout-vertical'>
           <AdminHeader mode='vertical' />
-          <Content style={{ margin: '5px 16px' }}>
-            {AdminRoutes}
-            {AdminModalRoutes}
-          </Content>
+          {MainContent}
           <AdminFooter />
         </Layout>
       </Layout>
@@ -157,18 +158,14 @@ const mapStateToProps = state => {
   return {
     collapsed,
     navigationMode,
-  }
+  };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    toggleMenu: () => {
-      dispatch(appAction.toggleMenu());
-    },
-    changeNavigationMode: (navigationMode) => {
-      dispatch(appAction.changeNavigationMode(navigationMode));
-    }
-  }
+    toggleMenu: () => dispatch(appAction.toggleMenu()),
+    changeNavigationMode: (navigationMode) => dispatch(appAction.changeNavigationMode(navigationMode)),
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminLayout);

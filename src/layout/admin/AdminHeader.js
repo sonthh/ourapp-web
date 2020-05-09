@@ -4,7 +4,6 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   SettingOutlined,
-  UserOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
@@ -63,7 +62,7 @@ class AdminHeader extends Component {
         {this.renderToggleIcon()}
       </Col>
     );
-    
+
     if (mode === 'horizontal') {
       headerStyle = { ...headerStyle, position: 'fixed', zIndex: 1, width: '100%' };
       leftHeader = (
@@ -80,15 +79,6 @@ class AdminHeader extends Component {
 
     const userMenu = (
       <Menu className='menu-avatar'>
-        <Menu.Item className='menu-item-avatar'>
-          <UserOutlined />
-          <Link
-            style={{ display: 'inline' }}
-            to={{ pathname: `/admin/profile/${authData.username}` }}
-          >
-            <span>{authData.username}</span>
-          </Link>
-        </Menu.Item>
         <Menu.Item>
           <SettingOutlined />
           <Link style={{ display: 'inline' }} to='/admin/setting'><span>Setting</span></Link>
@@ -102,7 +92,10 @@ class AdminHeader extends Component {
     );
 
     return (
-      <Header style={headerStyle} className='site-layout-background'>
+      <Header
+        style={headerStyle}
+        className={`${mode !== 'horizontal' ? 'site-header-background' : ''} AdminHeaderContainer`}
+      >
         <Row justify='space-between'>
           {leftHeader}
           <Col>
@@ -129,13 +122,13 @@ const mapStateToProps = ({ app, auth }) => {
   return {
     collapsed,
     authData,
-  }
+  };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     toggleMenu: () => dispatch(toggleMenu()),
-  }
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminHeader);

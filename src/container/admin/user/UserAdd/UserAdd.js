@@ -258,12 +258,8 @@ const mapStateToProps = ({ user, role }) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createOneUser: (userRequest) => {
-      dispatch(userAction.createOneUser(userRequest));
-    },
-    findManyRoles: () => {
-      dispatch(roleAction.findManyRoles());
-    },
+    createOneUser: (userRequest) => dispatch(userAction.createOneUser(userRequest)),
+    findManyRoles: () => dispatch(roleAction.findManyRoles()),
   };
 };
 

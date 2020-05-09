@@ -268,15 +268,9 @@ const mapStateToProps = ({ user, role }) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateOneUser: (userRequest) => {
-      dispatch(userAction.updateOneUser(userRequest));
-    },
-    findManyRoles: () => {
-      dispatch(roleAction.findManyRoles());
-    },
-    findOneUser: (id) => {
-      dispatch(userAction.findOneUser(id));
-    },
+    updateOneUser: (userRequest) => dispatch(userAction.updateOneUser(userRequest)),
+    findManyRoles: () => dispatch(roleAction.findManyRoles()),
+    findOneUser: (id) => dispatch(userAction.findOneUser(id)),
   };
 };
 

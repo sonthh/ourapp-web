@@ -112,9 +112,7 @@ const mapStateToProps = ({ auth }) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    passwordLogin: (loginData) => {
-      dispatch(authAction.passwordLogin(loginData));
-    },
+    passwordLogin: (loginData) => dispatch(authAction.passwordLogin(loginData)),
   };
 };
 

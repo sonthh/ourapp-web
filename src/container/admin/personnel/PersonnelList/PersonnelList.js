@@ -606,8 +606,9 @@ class PersonnelList extends Component {
   }
 }
 
-const mapStateToProps = state => {
-  return state.personnel.personnelList;
+const mapStateToProps = ({ personnel }) => {
+  const { personnelList } = personnel;
+  return { ...personnelList };
 };
 
 const mapDispatchToProps = (dispatch) => {

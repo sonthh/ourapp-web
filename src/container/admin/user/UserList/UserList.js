@@ -582,15 +582,9 @@ const mapStateToProps = ({ user }) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    findManyUsers: (params = {}) => {
-      dispatch(userAction.findManyUsers(params));
-    },
-    deleteManyUsers: (ids) => {
-      dispatch(userAction.delteManyUsers(ids));
-    },
-    deleteOneUser: (id) => {
-      dispatch(userAction.delteOneUser(id));
-    },
+    findManyUsers: (params = {}) => dispatch(userAction.findManyUsers(params)),
+    deleteManyUsers: (ids) => dispatch(userAction.delteManyUsers(ids)),
+    deleteOneUser: (id) => dispatch(userAction.delteOneUser(id)),
   };
 };
 

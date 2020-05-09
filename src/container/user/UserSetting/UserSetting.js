@@ -216,7 +216,7 @@ class UserSetting extends Component {
           </TabPane>
           <TabPane tab='Security Setting' key='3'>
             <Row style={{ padding: '0 35px' }}>
-              <Col span={24} lg={{ span: 12, order: 1 }}>
+              <Col span={24} lg={{ span: 12 }}>
                 <Form
                   autoComplete='off'
                   // onFinish={this.onSubmitBasicInfo}
@@ -260,7 +260,7 @@ class UserSetting extends Component {
           </TabPane>
           <TabPane tab='Message Notification' key='4'>
             <Row style={{ padding: '0 35px' }}>
-              <Col span={18}>
+              <Col span={24}>
                 <List
                   className="demo-loadmore-list"
                   itemLayout="horizontal"
@@ -298,7 +298,7 @@ const mapDispatchToProps = (dispatch) => {
     updateMyAvatar: formData => dispatch(userAction.updateMyAvatar(formData)),
     findUserMe: () => dispatch(userAction.findUserMe()),
     updateUserMe: userRequest => dispatch(userAction.updateUserMe(userRequest)),
-  }
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserSetting);
