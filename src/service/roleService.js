@@ -1,15 +1,10 @@
-import axios from 'axios';
-import * as config from '../constant/config'
-import { getHeaders } from '../util/auth'
+import axios from './apiConfig';
+import * as config from '../constant/config';
 
 export const findManyRoles = async () => {
   try {
-    const headers = getHeaders();
-
     const { data } = await axios
-      .get(`${config.API_URL}/roles`, {
-        headers,
-      });
+      .get(`${config.API_URL}/roles`);
 
     return data;
   } catch (error) {
@@ -19,12 +14,8 @@ export const findManyRoles = async () => {
 
 export const findOneRole = async (id) => {
   try {
-    const headers = getHeaders();
-
     const { data } = await axios
-      .get(`${config.API_URL}/roles/${id}`, {
-        headers,
-      });
+      .get(`${config.API_URL}/roles/${id}`);
 
     return data;
   } catch (error) {

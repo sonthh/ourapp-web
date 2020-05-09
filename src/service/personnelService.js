@@ -1,16 +1,10 @@
-import axios from 'axios';
-import * as config from '../constant/config'
-import { getHeaders } from '../util/auth'
+import axios from './apiConfig';
+import * as config from '../constant/config';
 
 export const findManyPersonnel = async (params = {}) => {
   try {
-    const headers = getHeaders();
-
     const { data } = await axios
-      .get(`${config.API_URL}/personnel`, {
-        headers,
-        params,
-      });
+      .get(`${config.API_URL}/personnel`, { params });
 
     return data;
   } catch (error) {

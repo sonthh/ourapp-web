@@ -1,6 +1,5 @@
-import axios from 'axios';
-import * as config from '../constant/config'
-import { getHeaders } from '../util/auth'
+import axios from './apiConfig';
+import * as config from '../constant/config';
 
 export const passwordLogin = async (loginData) => {
   try {
@@ -14,13 +13,9 @@ export const passwordLogin = async (loginData) => {
 };
 
 export const userMe = async () => {
-  const headers = getHeaders();
-
   try {
     const { data } = await axios
-      .get(`${config.API_URL}/users/me`, {
-        headers,
-      });
+      .get(`${config.API_URL}/users/me`);
 
     return data;
   } catch (error) {
@@ -29,11 +24,9 @@ export const userMe = async () => {
 };
 
 export const subscribeFirebaseToken = async (token) => {
-  const headers = getHeaders();
-
   try {
     const { data } = await axios
-      .put(`${config.API_URL}/users/me/token/subscribe`, { token }, { headers });
+      .put(`${config.API_URL}/users/me/token/subscribe`, { token });
 
     return data;
   } catch (error) {
