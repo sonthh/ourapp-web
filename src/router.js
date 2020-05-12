@@ -8,6 +8,9 @@ import PersonnelList from './container/admin/personnel/PersonnelList/PersonnelLi
 import UserAdd from './container/admin/user/UserAdd/UserAdd';
 import UserEdit from './container/admin/user/UserEdit/UserEdit';
 import PersonnelForm from './container/admin/personnel/PersonnelForm';
+import BranchList from './container/admin/branch/BranchList/BranchList';
+import BranchAdd from './container/admin/branch/BranchAdd/BranchAdd';
+import BranchEdit from './container/admin/branch/BranchEdit/BranchEdit';
 
 export const adminModalRoutes = [
   {
@@ -26,9 +29,22 @@ export const adminModalRoutes = [
     path: '/personnel/manage/add',
     component: PersonnelForm,
   },
+  {
+    path: '/branch/manage/add',
+    component: BranchAdd,
+  },
+  {
+    path: '/branch/manage/:id/edit',
+    component: BranchEdit,
+  },
 ];
 
 export const adminRoutes = [
+  {
+    path: '/branch/manage',
+    component: BranchList,
+    exact: true,
+  },
   {
     path: '/dashboard',
     component: Dashboard,

@@ -52,4 +52,20 @@ export const menu = [
       },
     ],
   },
+  {
+    title: 'Branch',
+    icon: <TeamOutlined />,
+    submenu: [
+      {
+        title: 'Manage',
+        icon: <TableOutlined />,
+        path: '/admin/branch/manage',
+      },
+      {
+        title: 'Statistics',
+        icon: <PieChartOutlined />,
+        path: '/admin/branch/statistics',
+      },
+    ],
+  },
 ];

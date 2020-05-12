@@ -135,7 +135,7 @@ class UserEdit extends Component {
         <Spin
           spinning={isLoading}
           indicator={<LoadingOutlined />}
-          size='large'>
+        >
           <Form
             ref={this.formRef}
             autoComplete='off'
