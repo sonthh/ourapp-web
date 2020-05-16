@@ -1,6 +1,9 @@
 # Ourapp
 * https://ourapp-frontend.web.app/
+* https://ourapp-frontend.web.app/admin/branch/manage
 
+# Api host
+* https://api-dut.herokuapp.com/api/v1/swagger-ui.html
 # Run App
 ```bash
 npm run start
