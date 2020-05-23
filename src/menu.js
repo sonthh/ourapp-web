@@ -6,65 +6,45 @@ import {
 export const menu = [
   {
     title: 'Home',
-    icon: <HomeOutlined />,
+    icon: null,
     submenu: [
       {
         title: 'Dashboard',
         icon: <DashboardOutlined />,
         path: '/admin/dashboard',
       },
-      {
-        title: 'Statistics',
-        icon: <PieChartOutlined />,
-        path: '/admin/statistics',
-      },
     ],
   },
   {
     title: 'User',
-    icon: <UserOutlined />,
+    icon: null,
     submenu: [
       {
         title: 'Manage',
         icon: <TableOutlined />,
         path: '/admin/user/manage',
       },
-      {
-        title: 'Statistics',
-        icon: <PieChartOutlined />,
-        path: '/admin/user/statistics',
-      },
     ],
   },
   {
-    title: 'Personnel',
-    icon: <TeamOutlined />,
+    title: 'Nhân sự',
+    icon: null,
     submenu: [
       {
         title: 'Manage',
         icon: <TableOutlined />,
         path: '/admin/personnel/manage',
       },
-      {
-        title: 'Statistics',
-        icon: <PieChartOutlined />,
-        path: '/admin/personnel/statistics',
-      },
     ],
   },
   {
-    title: 'Branch',
-    icon: <TeamOutlined />,
+    title: 'Chi nhánh',
+    icon: null,
     submenu: [
       {
         title: 'Manage',
         icon: <TableOutlined />,
         path: '/admin/branch/manage',
-      },
-      {
-        title: 'Statistics',
-        icon: <PieChartOutlined />,
-        path: '/admin/branch/statistics',
       },
     ],
   },
