@@ -7,12 +7,13 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
-import { toggleMenu } from '../../action/appAction';
-import { logout, getCurrentUser } from '../../util/auth';
+import { toggleMenu } from '../../../action/appAction';
+import { logout, getCurrentUser } from '../../../util/auth';
 import { Redirect, Link } from 'react-router-dom';
-import Notice from '../../component/common/Notice';
-import MainMenu from './MainMenu';
+import Notice from '../../../component/common/Notice';
+import MainMenu from '../MainMenu';
 import PropTypes from 'prop-types';
+import './index.scss';
 
 const { Header } = Layout;
 

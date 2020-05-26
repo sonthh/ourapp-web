@@ -1,51 +1,33 @@
-import React from 'react';
-import {
-  UserOutlined, DashboardOutlined, HomeOutlined, PieChartOutlined, TableOutlined, TeamOutlined
-} from '@ant-design/icons';
 
 export const menu = [
   {
-    title: 'Home',
+    title: 'Nhân sự',
     icon: null,
-    submenu: [
-      {
-        title: 'Dashboard',
-        icon: <DashboardOutlined />,
-        path: '/admin/dashboard',
-      },
-    ],
+    path: '/admin/personnel/employees',
+    submenu: [],
+  },
+  {
+    title: 'Chấm công',
+    icon: null,
+    path: '/admin/working-day/timekeeping',
+    submenu: [],
+  },
+  {
+    title: 'Yêu cầu',
+    icon: null,
+    path: '/admin/request',
+    submenu: [],
+  },
+  {
+    title: 'Tiền lương',
+    icon: null,
+    path: '/admin/salary/salary-table',
+    submenu: [],
   },
   {
     title: 'User',
     icon: null,
-    submenu: [
-      {
-        title: 'Manage',
-        icon: <TableOutlined />,
-        path: '/admin/user/manage',
-      },
-    ],
-  },
-  {
-    title: 'Nhân sự',
-    icon: null,
-    submenu: [
-      {
-        title: 'Manage',
-        icon: <TableOutlined />,
-        path: '/admin/personnel/manage',
-      },
-    ],
-  },
-  {
-    title: 'Chi nhánh',
-    icon: null,
-    submenu: [
-      {
-        title: 'Manage',
-        icon: <TableOutlined />,
-        path: '/admin/branch/manage',
-      },
-    ],
+    path: '/admin/user/manage',
+    submenu: [],
   },
 ];

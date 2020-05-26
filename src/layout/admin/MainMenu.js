@@ -27,15 +27,25 @@ export default class MainMenu extends Component {
         </span>
       );
 
+      if (menu.submenu.length > 0) {
+        return (
+          <SubMenu
+            key={menu.title + '.' + menuIndex}
+            title={title}
+          >
+            {sub}
+          </SubMenu>
+        );
+      }
+
       return (
-        <SubMenu
-          key={menu.title + '.' + menuIndex}
-          title={title}
-        >
-          {sub}
-        </SubMenu>
-      )
-    })
+        <Menu.Item key={menu.title + '.' + menuIndex}>
+          {menu.icon}
+          <Link to={menu.path}>{menu.title}</Link>
+        </Menu.Item>
+      );
+
+    });
 
     return (
       <Menu className='main-menu' theme='dark' defaultSelectedKeys={['1']} mode={mode}>

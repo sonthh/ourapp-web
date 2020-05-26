@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Popconfirm, Tooltip, Typography, Checkbox, Space,
+  Table, Button, notification, Popconfirm, Typography, Checkbox, Space, Breadcrumb, Divider, Col, Row,
 } from 'antd';
 import {
-  ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteOutlined, DeleteTwoTone, MailTwoTone,
-  EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone, LoadingOutlined,
+  DeleteOutlined, DeleteTwoTone, MailTwoTone, FilterTwoTone, UsergroupAddOutlined, UnorderedListOutlined,
+  EditTwoTone, ReloadOutlined, PlusCircleTwoTone, LoadingOutlined, UserDeleteOutlined, DownloadOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { getFilterObject } from '../../../../util/get';
@@ -18,8 +18,10 @@ import { getColumnSearchProps } from '../../../../util/table';
 import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
 import MyAvatar from '../../../../component/common/MyAvatar';
 import * as personnelAction from '../../../../action/personnelAction';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
+import { Select } from 'antd';
 
+const { Option } = Select;
 const Paragraph = Typography.Paragraph;
 
 class PersonnelList extends Component {
@@ -40,6 +42,7 @@ class PersonnelList extends Component {
       selectedRowKeys: [],
       columns: this.getColumns({}, {}),
       isColumnsFixed,
+      displayFilter: false,
     };
   }
 
@@ -164,7 +167,7 @@ class PersonnelList extends Component {
   // filteredInfo, sortedInfo from state
   getColumns = (filteredInfo, sortedInfo, isColumnsFixed = false) => ([
     {
-      title: 'Avatar',
+      title: 'Ảnh',
       dataIndex: ['user', 'username'],
       key: 'avatar',
       width: 75,
@@ -175,7 +178,7 @@ class PersonnelList extends Component {
       ),
     },
     {
-      title: 'Full name',
+      title: 'Họ tên',
       dataIndex: ['user', 'fullName'],
       key: 'fullName',
       width: 150,
@@ -185,7 +188,7 @@ class PersonnelList extends Component {
       render: fullName => fullName || 'No',
     },
     {
-      title: 'Position',
+      title: 'Chức danh',
       dataIndex: 'position',
       key: 'position',
       width: 140,
@@ -195,7 +198,7 @@ class PersonnelList extends Component {
       render: position => position || 'No',
     },
     {
-      title: 'Department',
+      title: 'Phòng ban',
       dataIndex: ['department', 'name'],
       key: 'department',
       width: 240,
@@ -205,7 +208,7 @@ class PersonnelList extends Component {
       render: department => department || 'No',
     },
     {
-      title: 'Branch',
+      title: 'Chi nhánh',
       dataIndex: ['department', 'branch', 'name'],
       key: 'branch',
       width: 140,
@@ -239,7 +242,7 @@ class PersonnelList extends Component {
       ),
     },
     {
-      title: 'Birthday',
+      title: 'Sinh nhật',
       dataIndex: ['user', 'birthDay'],
       key: 'birthDay',
       sorter: true,
@@ -455,8 +458,8 @@ class PersonnelList extends Component {
     });
   }
 
-  onRow = (record, rowIndex) => ({
-    onDoubleClick: event => {
+  onRow = (record) => ({
+    onDoubleClick: () => {
       let { selectedRowKeys } = this.state;
       const { id } = record;
 
@@ -473,8 +476,14 @@ class PersonnelList extends Component {
     },
   })
 
+  onToggleDisplayFilter = () => {
+    this.setState({
+      displayFilter: !this.state.displayFilter,
+    });
+  }
+
   render() {
-    const { data, pagination, selectedRowKeys, isColumnsFixed } = this.state;
+    const { data, pagination, selectedRowKeys, isColumnsFixed, displayFilter } = this.state;
     const { isLoading } = this.props;
 
     const rowSelection = {
@@ -505,102 +514,123 @@ class PersonnelList extends Component {
 
     return (
       <>
+        <Breadcrumb className={'MyBreadCrumb'} separator={<Divider type="vertical" />}>
+          <Breadcrumb.Item>
+            <NavLink to={'/admin/personnel/employees'}>Nhân viên</NavLink>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <NavLink to={'/admin/personnel/contracts'}>Hợp đồng</NavLink>
+          </Breadcrumb.Item>
+        </Breadcrumb>
         <div style={{ marginBottom: 16 }}>
-          <Tooltip placement='topLeft' title='Clear sorters'>
+          <Row justify='space-between'>
+            <Col span={24} md={{ span: 12 }}>
+              <Button
+                style={{ marginRight: '2px' }}
+                onClick={this.onToggleDisplayFilter}
+                icon={<FilterTwoTone />}>
+              </Button>
+              <Button
+                style={{ marginRight: '2px' }}
+                onClick={this.refreshData}
+                icon={<ReloadOutlined />}>
+              </Button>
+              <Select
+                defaultValue="-1"
+                onChange={null}
+                style={{ width: 160, top: '-1px' }}
+              >
+                <Option value="1"><UsergroupAddOutlined className='icon-option' />Đang làm việc</Option>
+                <Option value="0"><UserDeleteOutlined className='icon-option' />Nghỉ việc</Option>
+                <Option value="-1"><UnorderedListOutlined className='icon-option' />Tất cả</Option>
+              </Select>
+            </Col>
+            <Col md={{ span: 12 }}
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end'
+              }}
+            >
+              <span style={{ marginRight: '8px', lineHeight: '30px' }}>
+                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+              </span>
+              <Link to={'/admin/personnel/create'} >
+                <Button style={{ marginRight: '2px' }} type='default' icon={<PlusCircleTwoTone />}>
+                  Tạo mới
+                </Button>
+              </Link>
+              <Button style={{ marginRight: '2px' }} type='default' icon={<DownloadOutlined />}>
+                Xuất excel
+                </Button>
+              <Popconfirm
+                placement='bottomLeft'
+                title={`Are you sure delete ${selectedRowKeys.length} selected items?`}
+                onConfirm={this.onDeleteMany}
+                disabled={!hasSelected}
+              >
+                <Button type='danger' icon={<DeleteOutlined />} disabled={!hasSelected} loading={this.props.isLoadingDelete}>
+                  Xóa
+                </Button>
+              </Popconfirm>
+            </Col>
+          </Row>
+        </div>
+        <div className='filter-table-wrapper'>
+          <div className={`filter-wrapper ${displayFilter ? '' : 'd-none'}`} >
             <Button
-              type='dashed'
               onClick={this.clearSorters}
-              icon={<ClearOutlined />}
               disabled={checkIsEmptyObj(sortedInfo) || !sortedInfo.order}
             >
-              <SortAscendingOutlined />
-            </Button>
-          </Tooltip>
-          <Tooltip placement='topLeft' title='Clear filters'>
+              Reset sắp xếp
+              </Button>
             <Button
-              type='dashed'
               onClick={this.clearFilters}
-              icon={<ClearOutlined />}
               disabled={checkIsEmptyObj(filteredInfo)}
             >
-              <FilterOutlined />
-            </Button>
-          </Tooltip>
-          <Tooltip placement='topLeft' title='Clear sorters and filters'>
+              Reset filter
+              </Button>
             <Button
-              type='dashed'
               onClick={this.clearFiltersAndSorters}
-              icon={<ClearOutlined />}
               disabled={
                 checkIsEmptyObj(filteredInfo || checkIsEmptyObj(sortedInfo))
                 || checkIsEmptyObj(filteredInfo) || !sortedInfo.order
               }
             >
-              <FilterOutlined /> {'&'} <SortAscendingOutlined />
+              Reset filter và sắp xếp
             </Button>
-          </Tooltip>
-          <Tooltip placement='topLeft' title='Clear selected'>
             <Button
-              type='dashed'
               onClick={this.clearSelected}
-              icon={<ClearOutlined />}
               disabled={selectedRowKeys.length === 0}
             >
-              <CheckSquareOutlined />
+              Bỏ chọn tất cả
             </Button>
-          </Tooltip>
-          <Tooltip placement='topLeft' title='Fixed columns'>
-            <Button type='dashed' onClick={this.onClickToggleFixed}>
+            <Button onClick={this.onClickToggleFixed}>
               <Checkbox
+                style={{ marginRight: '2px' }}
                 checked={this.state.isColumnsFixed}
                 defaultChecked={this.state.isColumnsFixed}
                 onChange={this.onChangeColumnsFixed}
-              />
+              />Fixed operations
             </Button>
-          </Tooltip>
-          <Tooltip placement='topLeft' title='Refresh'>
-            <Button
-              type='dashed'
-              onClick={this.refreshData}>
-              <ReloadOutlined />
-            </Button>
-          </Tooltip>
-          <Link to={{ pathname: `/admin/personnel/manage/add`, state: { background: this.props.location } }} >
-            <Button type='default' icon={<PlusCircleTwoTone />}>
-              Add
-          </Button>
-          </Link>
-          <Popconfirm
-            placement='bottomLeft'
-            title={`Are you sure delete ${selectedRowKeys.length} selected items?`}
-            onConfirm={this.onDeleteMany}
-            disabled={!hasSelected}
-          >
-            <Button type='danger' icon={<DeleteOutlined />} disabled={!hasSelected} loading={this.props.isLoadingDelete}>
-              Delete
-            </Button>
-          </Popconfirm>
-          <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-          </span>
+          </div>
+          <Table
+            style={{ fontSize: '13px' }}
+            bordered
+            rowSelection={rowSelection}
+            components={this.components}
+            onRow={this.onRow}
+            columns={columns}
+            rowKey={record => record.id}
+            dataSource={data}
+            pagination={pagination}
+            loading={{
+              spinning: isLoading,
+              indicator: (<LoadingOutlined />),
+            }}
+            onChange={this.handleTableChange}
+            scroll={{ x: 'max-content' }}
+          />
         </div>
-        <Table
-          style={{ fontSize: '13px' }}
-          bordered
-          rowSelection={rowSelection}
-          components={this.components}
-          onRow={this.onRow}
-          columns={columns}
-          rowKey={record => record.id}
-          dataSource={data}
-          pagination={pagination}
-          loading={{
-            spinning: isLoading,
-            indicator: (<LoadingOutlined />),
-          }}
-          onChange={this.handleTableChange}
-          scroll={{ x: 'max-content' }}
-        />
       </>
     );
   }

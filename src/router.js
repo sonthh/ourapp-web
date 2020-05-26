@@ -11,6 +11,8 @@ import PersonnelForm from './container/admin/personnel/PersonnelForm';
 import BranchList from './container/admin/branch/BranchList/BranchList';
 import BranchAdd from './container/admin/branch/BranchAdd/BranchAdd';
 import BranchEdit from './container/admin/branch/BranchEdit/BranchEdit';
+import Contract from './container/admin/personnel/Contract/Contract';
+import PersonnelCreate from './container/admin/personnel/PersonnelCreate/PersonnelCreate';
 
 export const adminModalRoutes = [
   {
@@ -64,8 +66,16 @@ export const adminRoutes = [
     exact: true,
   },
   {
-    path: '/personnel/manage',
+    path: '/personnel/create',
+    component: PersonnelCreate,
+  },
+  {
+    path: '/personnel/employees',
     component: PersonnelList,
+  },
+  {
+    path: '/personnel/contracts',
+    component: Contract,
   },
   {
     path: '/error/:errorCode',

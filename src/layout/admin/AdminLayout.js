@@ -3,7 +3,7 @@ import { Layout, Drawer } from 'antd';
 import { adminRoutes, adminModalRoutes } from '../../router';
 import { Switch, Redirect } from 'react-router-dom';
 import AdminFooter from './AdminFooter';
-import AdminHeader from './AdminHeader';
+import AdminHeader from './AdminHeader/AdminHeader';
 import { connect } from 'react-redux';
 import { PrivateRoute } from '../../util/get';
 import * as appAction from '../../action/appAction';
@@ -44,7 +44,7 @@ class AdminLayout extends Component {
   resize = () => {
     const { innerWidth } = window;
     const isLargeScreen = innerWidth > responsive.md;
-    const collapsedWidth = isLargeScreen ? 80 : 0;
+    const collapsedWidth = isLargeScreen ? 0 : 0;
     const useDrawer = isLargeScreen ? false : true;
 
     if (collapsedWidth !== this.state.collapsedWidth) {
@@ -92,7 +92,7 @@ class AdminLayout extends Component {
       (
         <Drawer
           width={'auto'}
-          bodyStyle={{ padding: '0', backgroundColor: '#001529' }}
+          bodyStyle={{ padding: '0', backgroundColor: '#f0f2f5' }}
           placement='left'
           closable={false}
           visible={!this.props.collapsed}
@@ -120,7 +120,7 @@ class AdminLayout extends Component {
     );
 
     const MainContent = (
-      <Content style={{ margin: '5px 16px' }}>
+      <Content style={{ margin: '15px 16px' }}>
         {AdminRoutes}
         {AdminModalRoutes}
       </Content>

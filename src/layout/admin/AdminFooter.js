@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Layout } from 'antd';
+// import { Layout } from 'antd';
 import Setting from './Setting/Setting';
 
-const { Footer } = Layout;
+// const { Footer } = Layout;
 
 export default class AdminFooter extends Component {
 
@@ -10,7 +10,7 @@ export default class AdminFooter extends Component {
     return (
       <>
         <Setting />
-        <Footer style={{ textAlign: 'center' }}>Copyright ©{new Date().getFullYear()} Created by Team 1</Footer>
+        {/* <Footer style={{ textAlign: 'center' }}>Copyright ©{new Date().getFullYear()} Created by Team 1</Footer> */}
       </>
     );
   }

@@ -2,20 +2,20 @@
 
 .trigger {
   font-size: 18px;
-  line-height: 64px;
+  line-height: 50px;
   padding: 0 24px;
   cursor: pointer;
   transition: color 0.3s;
 }
 
 .trigger:hover {
-  color: #1890ff;
+  color: #1d5425;
 }
 
 .logo {
   height: 32px;
-  background: #1e8efa;
-  margin: 16px;
+  background: #42a94a;
+  margin: 9px;
 }
 
 /* .main-menu {} */
@@ -23,8 +23,8 @@
 .logo-header {
   width: 32px;
   height: 32px;
-  background: #1e8efa;
-  margin: 16px;
+  background: #ffffff;
+  margin: 9px;
 }
 
 .header {
@@ -32,7 +32,7 @@
 }
 
 .site-layout-horizontal {
-  margin-top: 66px;
+  margin-top: 50px;
 }
 
 .btn-setting {
@@ -65,7 +65,7 @@ th {
   user-select: none;
 }
 
-.ant-table-tbody>tr>td {
+.ant-table-tbody > tr > td {
   padding: 10px 16px;
 }
 
@@ -118,11 +118,12 @@ th {
 .notice-icon {
   padding: 0 15px;
   cursor: pointer;
-  transition: all .3s;
+  transition: all 0.3s;
 }
 
-.notice-icon:hover, .menu-avatar-wrapper:hover {
-  background: rgba(0, 0, 0, .025);
+.notice-icon:hover,
+.menu-avatar-wrapper:hover {
+  background: rgba(0, 0, 0, 0.025);
 }
 
 .menu-avatar-wrapper {
@@ -141,6 +142,47 @@ th {
   padding: 12px;
 }
 
-// .main-menu {
-//   // background-color: #38d46a;
-// }
+.ant-layout-header {
+  height: 50px;
+  padding: 0 50px;
+  line-height: 50px;
+  background: #001529;
+}
+
+.main-menu {
+  background-color: #24a949;
+}
+
+.ant-menu.ant-menu-dark .ant-menu-item-selected,
+.ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
+  background-color: #1d5425;
+}
+
+.ant-layout-sider {
+  background-color: #f0f2f5;
+}
+
+.MyBreadCrumb {
+  margin-bottom: 14px;
+}
+
+.MyBreadCrumb {
+  span:last-child a,
+  span a {
+    color: #000;
+    font-size: 14px;
+    font-weight: 500 !important;
+  }
+
+  span a:hover {
+    color: #000;
+  }
+
+  span a.active {
+    font-weight: bold !important;
+  }
+}
+
+.icon-option {
+  margin-right: 10px;
+}
