@@ -13,6 +13,8 @@ import BranchAdd from './container/admin/branch/BranchAdd/BranchAdd';
 import BranchEdit from './container/admin/branch/BranchEdit/BranchEdit';
 import Contract from './container/admin/personnel/Contract/Contract';
 import PersonnelCreate from './container/admin/personnel/PersonnelCreate/PersonnelCreate';
+import TimeKeeping from './container/admin/working/TimeKeeping/TimeKeeping';
+import ContractCreate from './container/admin/personnel/ContractCreate/ContractCreate';
 
 export const adminModalRoutes = [
   {
@@ -76,6 +78,15 @@ export const adminRoutes = [
   {
     path: '/personnel/contracts',
     component: Contract,
+    exact: true,
+  },
+  {
+    path: '/personnel/contracts/create',
+    component: ContractCreate,
+  },
+  {
+    path: '/working-day/timekeeping',
+    component: TimeKeeping,
   },
   {
     path: '/error/:errorCode',

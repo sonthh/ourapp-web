@@ -1,4 +1,4 @@
-import { Button, Form, Modal, notification, Select, Spin, Tabs, Row, Col, Upload, Avatar } from 'antd';
+import { Button, Form, Modal, notification, Select, Spin, Tabs, Row, Col, Upload, Avatar, Input, DatePicker, Checkbox, Divider } from 'antd';
 import './index.scss';
 import moment from 'moment';
 import React, { Component } from 'react';
@@ -19,7 +19,11 @@ class PersonnelCreate extends Component {
 
   constructor(props) {
     super(props);
-    //
+    this.state = {
+      displayIDForm: false,
+      displayPassportForm: false,
+      displayBankForm: false,
+    }
   }
 
   componentDidMount() {
@@ -29,8 +33,25 @@ class PersonnelCreate extends Component {
 
   }
 
+  onChangeDisplayIDForm = (e) => {
+    const checked = e.target.checked;
+    this.setState({ displayIDForm: checked })
+  };
+
+  onChangeDisplayPassportForm = (e) => {
+    const checked = e.target.checked;
+    this.setState({ displayPassportForm: checked })
+  };
+
+  onChangeDisplayBankForm = (e) => {
+    const checked = e.target.checked;
+    this.setState({ displayBankForm: checked })
+  };
+
 
   render() {
+    const { displayIDForm, displayPassportForm, displayBankForm } = this.state;
+
     return (
       <>
         <Row style={{ padding: '0 35px' }} className="personnel-header">
@@ -79,13 +100,161 @@ class PersonnelCreate extends Component {
             </div>
           </Col>
         </Row>
-        <Row>
+        <Row style={{ marginBottom: '30px' }}>
           <Tabs defaultActiveKey="1" className='personnel-tabs'>
             <TabPane tab="Hồ sơ" key="1">
 
               <Tabs tabPosition='left' className='personnel-files-tabs'>
                 <TabPane tab="Thông tin cơ bản" key="ttcb">
-                  Content of Tab Pane 1
+                  <Form
+                    layout='vertical'
+                    defaultValue={{}}
+                    // ref={this.formRef}
+                    autoComplete='off'
+                    labelCol={{ xs: 6 }}
+                    wrapperCol={{ xs: 18 }}
+                    id='basicInfoForm'
+                    onFinish={this.onSubmitBasicInfoForm}
+                  >
+                    <Row>
+                      <Col span={24} md={{ span: 12 }}>
+                        <Form.Item label="Tên nhân viên">
+                          <Input />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24} md={{ span: 12 }}>
+                        <Form.Item label="Số điện thoại">
+                          <Input />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24} md={{ span: 12 }}>
+                        <Form.Item label="Email">
+                          <Input />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24} md={{ span: 12 }}>
+                        <Form.Item label="Ngày sinh">
+                          <DatePicker />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24} md={{ span: 12 }}>
+                        <Form.Item label="Giới tính" >
+                          <Select defaultValue='MALE'>
+                            <Select.Option value='MALE'>Nam</Select.Option>
+                            <Select.Option value='FEMALE'>Nữ</Select.Option>
+                            <Select.Option value='OTHER'>Khác</Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={24} md={{ span: 24 }}>
+                        <Form.Item label="Chứng minh / Hộ chiếu" >
+                          <Checkbox onChange={this.onChangeDisplayIDForm}>Chứng minh thư</Checkbox>
+                          <Checkbox onChange={this.onChangeDisplayPassportForm}>Hộ chiếu</Checkbox>
+                        </Form.Item>
+                      </Col>
+                      <Col
+                        className={`${(!displayIDForm && !displayPassportForm) ? 'd-none' : ''}`}
+                        span={24} md={{ span: 24 }}
+                        style={{
+                          border: '1px solid #dee2e6',
+                          padding: '24px',
+                        }}>
+                        <Row className={`${!displayIDForm ? 'd-none' : ''}`}>
+                          <Col md={{ span: 8 }}>
+                            <Form.Item label="Số CMND">
+                              <Input />
+                            </Form.Item>
+                          </Col>
+                          <Col md={{ span: 8 }}>
+                            <Form.Item label="Ngày cấp">
+                              <DatePicker />
+                            </Form.Item>
+                          </Col>
+                          <Col md={{ span: 8 }}>
+                            <Form.Item label="Nơi cấp">
+                              <Input />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row className={`${!displayPassportForm ? 'd-none' : ''}`}>
+                          <Col md={{ span: 6 }}>
+                            <Form.Item label="Số hộ chiếu">
+                              <Input />
+                            </Form.Item>
+                          </Col>
+                          <Col md={{ span: 6 }}>
+                            <Form.Item label="Ngày cấp">
+                              <DatePicker />
+                            </Form.Item>
+                          </Col>
+                          <Col md={{ span: 6 }}>
+                            <Form.Item label="Ngày hết hạn">
+                              <DatePicker />
+                            </Form.Item>
+                          </Col>
+                          <Col md={{ span: 6 }}>
+                            <Form.Item label="Nơi cấp">
+                              <Input />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </Col>
+                      <Col span={24} md={{ span: 12 }}>
+                        <Form.Item label="Phòng ban" >
+                          <Select>
+                            <Select.Option value='MALE'>Kế hoạch</Select.Option>
+                            <Select.Option value='FEMALE'>Maketing</Select.Option>
+                            <Select.Option value='OTHER'>Kỹ thuật</Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={24} md={{ span: 12 }}>
+                        <Form.Item label="Vị trí" >
+                          <Select>
+                            <Select.Option value='MALE'>Dev</Select.Option>
+                            <Select.Option value='FEMALE'>Fresher</Select.Option>
+                            <Select.Option value='OTHER'>Intern</Select.Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col span={24} md={{ span: 24 }}>
+                        <Checkbox onChange={this.onChangeDisplayBankForm}>Thông tin ngân hàng</Checkbox>
+                      </Col>
+                      <Col
+                        className={`${!displayBankForm ? 'd-none' : ''}`}
+                        span={24} md={{ span: 24 }}
+                        style={{
+                          marginTop: '12px',
+                          border: '1px solid #dee2e6',
+                          padding: '24px',
+                        }}>
+                        <Row>
+                          <Col md={{ span: 12 }}>
+                            <Form.Item label="Chủ tài khoản">
+                              <Input />
+                            </Form.Item>
+                          </Col>
+                          <Col md={{ span: 12 }}>
+                            <Form.Item label="Số tài khoản">
+                              <Input />
+                            </Form.Item>
+                          </Col>
+                          <Col md={{ span: 12 }}>
+                            <Form.Item label="Tên ngân hàng">
+                              <Input />
+                            </Form.Item>
+                          </Col>
+                          <Col md={{ span: 12 }}>
+                            <Form.Item label="Chi nhánh">
+                              <Input />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </Col>
+                      <Divider />
+                      <Button type='primary'>Update</Button>
+                    </Row>
+                  </Form>
                 </TabPane>
                 <TabPane tab="Thời gian làm việc" key="ttlv">
                   Content of Tab Pane 2
