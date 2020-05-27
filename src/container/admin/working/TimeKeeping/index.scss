@@ -1,0 +1,17 @@
+// .TimeKeepingTable {
+// }
+
+.TimeKeepingTable-week {
+  .ant-table-thead > tr > th {
+    text-align: center;
+    font-size: 12px;
+  }
+}
+
+.TimeKeepingTable-month {
+  .ant-table-thead > tr > th {
+    padding: 16px 6px;
+    text-align: center;
+    font-size: 12px;
+  }
+}

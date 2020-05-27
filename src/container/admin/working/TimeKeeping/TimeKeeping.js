@@ -10,7 +10,7 @@ import {
 import { connect } from 'react-redux';
 import { getFilterObject } from '../../../../util/get';
 import { checkIsEmptyObj } from '../../../../util/check';
-import { getDateFormat, getArrayDatesOfWeek } from '../../../../util/date';
+import { getDateFormat, getArrayDatesOfWeek, getArrayDatesOfMonth, getDateFormatForTimeKeeping } from '../../../../util/date';
 import AvatarAndTitle from '../../../../component/common/AvatarAndTitle';
 import GenderTag from '../../../../component/common/GenderTag';
 import StatusTag from '../../../../component/common/StatusTag';
@@ -20,12 +20,11 @@ import MyAvatar from '../../../../component/common/MyAvatar';
 import * as personnelAction from '../../../../action/personnelAction';
 import { Link, NavLink } from 'react-router-dom';
 import { Select } from 'antd';
-import locale from 'antd/es/date-picker/locale/vi_VN';
 import moment from 'moment';
 
 const { Option } = Select;
 const Paragraph = Typography.Paragraph;
-
+const { Title, Text } = Typography
 class TimeKeeping extends Component {
 
   constructor(props) {
@@ -47,7 +46,9 @@ class TimeKeeping extends Component {
       columns: this.getColumns(days, {}, {}),
       isColumnsFixed,
       displayFilter: false,
-      datesOfWeek: days,
+      days,
+      type: 'week',
+      pickerFormat: 'Tuần w-YYYY',
     };
   }
 
@@ -149,8 +150,8 @@ class TimeKeeping extends Component {
   };
 
   refreshData = () => {
-    const { pagination, filteredInfo, sortedInfo } = this.state;
-    this.fetchPersonnel(pagination, filteredInfo, sortedInfo)
+    // const { pagination, filteredInfo, sortedInfo } = this.state;
+    // this.fetchPersonnel(pagination, filteredInfo, sortedInfo)
   }
 
   clearFiltersAndSorters = () => {
@@ -170,7 +171,7 @@ class TimeKeeping extends Component {
   }
 
   // filteredInfo, sortedInfo from state
-  getColumns = (datesOfWeek, filteredInfo, sortedInfo) => {
+  getColumns = (days, filteredInfo, sortedInfo) => {
     let firstColumn = [
       {
         title: null,
@@ -179,13 +180,11 @@ class TimeKeeping extends Component {
           <div>Search</div>
         ),
       }
-    ]
-    const columns = datesOfWeek.map((day, index) => {
-      let T = day.getDay();
-      T === 0 ? (T = 'CN') : (T = 'T' + (T + 1));
+    ];
 
+    const columns = days.map((day, index) => {
       return {
-        title: T + ' ' + moment(day).format('D/M'),
+        title: days.length === 7 ? getDateFormatForTimeKeeping(day, 'week') : getDateFormatForTimeKeeping(day, 'month'),
         // dataIndex: '',
         key: index,
         // width: 160,
@@ -256,8 +255,30 @@ class TimeKeeping extends Component {
   }
 
   onDatePickerChange = (date, dateString) => {
-    const days = getArrayDatesOfWeek(date);
-    this.setState({ datesOfWeek: days })
+    const { type } = this.state;
+    if (type === 'week') {
+      const days = getArrayDatesOfWeek(date);
+      this.setState({ days });
+    }
+
+    if (type === 'month') {
+      const days = getArrayDatesOfMonth(date);
+      this.setState({ days });
+    }
+  }
+
+  onChangeType = (value) => {
+    this.setState({ type: value });
+
+    if (value === 'week') {
+      const days = getArrayDatesOfWeek(moment());
+      this.setState({ days, pickerFormat: 'Tuần w-YYYY' });
+    }
+
+    if (value === 'month') {
+      const days = getArrayDatesOfMonth(moment());
+      this.setState({ days, pickerFormat: 'TM-YYYY' });
+    }
   }
 
   render() {
@@ -266,12 +287,12 @@ class TimeKeeping extends Component {
 
     const hasSelected = selectedRowKeys.length > 0;
 
-    let { sortedInfo, filteredInfo, datesOfWeek } = this.state;
+    let { sortedInfo, filteredInfo, days, type, pickerFormat } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
 
     // columns with filteredInfo and sortedInfo
-    const columns = this.getColumns(datesOfWeek, filteredInfo, sortedInfo);
+    const columns = this.getColumns(days, filteredInfo, sortedInfo);
 
     return (
       <>
@@ -292,12 +313,16 @@ class TimeKeeping extends Component {
                 style={{
                   width: 200,
                   top: -1,
+                  marginRight: 2,
                 }}
-                value={moment()}
-                format='Tuần w-YYYY'
-                locale={locale}
+                defaultValue={moment()}
+                format={pickerFormat}
                 onChange={this.onDatePickerChange}
-                picker="week" />
+                picker={type} />
+              <Select defaultValue='week' style={{ top: -1, width: 150 }} onChange={this.onChangeType}>
+                <Select.Option value='week'>Theo tuần</Select.Option>
+                <Select.Option value='month'>Theo tháng</Select.Option>
+              </Select>
             </Col>
             <Col md={{ span: 12 }}
               style={{
@@ -315,19 +340,22 @@ class TimeKeeping extends Component {
           </Row>
         </div>
         <div className='filter-table-wrapper'>
-          <div className={`filter-wrapper ${displayFilter ? '' : 'd-none'}`} >
-            <Button
-              onClick={this.clearSorters}
-              disabled={checkIsEmptyObj(sortedInfo) || !sortedInfo.order}
-            >
-              Reset sắp xếp
-              </Button>
-            <Button
-              onClick={this.clearFilters}
-              disabled={checkIsEmptyObj(filteredInfo)}
-            >
-              Reset filter
-              </Button>
+          <div
+            style={{
+              width: 210,
+              paddingTop: 1,
+            }}
+            className={`filter-wrapper ${displayFilter ? '' : 'd-none'}`} >
+            <Select defaultValue='1'
+              style={{
+                top: -1,
+                width: 200,
+                marginBottom: 4,
+              }}>
+              <Select.Option value='1'>Phòng IT</Select.Option>
+              <Select.Option value='2'>Phòng Nhân sự</Select.Option>
+              <Select.Option value='3'>Phòng Kỹ thuật</Select.Option>
+            </Select>
             <Button
               onClick={this.clearFiltersAndSorters}
               disabled={
@@ -335,24 +363,19 @@ class TimeKeeping extends Component {
                 || checkIsEmptyObj(filteredInfo) || !sortedInfo.order
               }
             >
-              Reset filter và sắp xếp
+              Reset
             </Button>
             <Button
-              onClick={this.clearSelected}
-              disabled={selectedRowKeys.length === 0}
+              type='primary'
+              style={{
+                textAlign: 'center !important'
+              }}
             >
-              Bỏ chọn tất cả
-            </Button>
-            <Button onClick={this.onClickToggleFixed}>
-              <Checkbox
-                style={{ marginRight: '2px' }}
-                checked={this.state.isColumnsFixed}
-                defaultChecked={this.state.isColumnsFixed}
-                onChange={this.onChangeColumnsFixed}
-              />Fixed operations
+              Áp dụng
             </Button>
           </div>
           <Table
+            className={`TimeKeepingTable TimeKeepingTable-${type}`}
             style={{ fontSize: '13px', width: '100%' }}
             bordered
             components={this.components}

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Popconfirm, Tooltip, Typography, Checkbox, Space,
+  Table, Button, notification, Popconfirm, Tooltip, Typography, Checkbox, Space, Row, Col,
 } from 'antd';
 import {
-  ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteOutlined, DeleteTwoTone,
+  ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteOutlined, DeleteTwoTone, FilterTwoTone,
   EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone, LoadingOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
@@ -39,6 +39,7 @@ class UserList extends Component {
       selectedRowKeys: [],
       columns: this.getColumns({}, {}),
       isColumnsFixed,
+      displayFilter: false,
     };
   }
 
@@ -435,8 +436,14 @@ class UserList extends Component {
     },
   });
 
+  onToggleDisplayFilter = () => {
+    this.setState({
+      displayFilter: !this.state.displayFilter,
+    });
+  }
+
   render() {
-    const { data, pagination, selectedRowKeys, isColumnsFixed } = this.state;
+    const { data, pagination, selectedRowKeys, isColumnsFixed, displayFilter } = this.state;
     const { isLoading: isLoadingTable, isDeletingManyUser, location } = this.props;
 
     const rowSelection = {
@@ -469,103 +476,103 @@ class UserList extends Component {
     return (
       <>
         <div style={{ marginBottom: 16 }}>
-          <Tooltip placement='topLeft' title='Clear sorters'>
+          <Row justify='space-between'>
+            <Col span={24} md={{ span: 12 }}>
+              <Button
+                style={{ marginRight: '2px' }}
+                onClick={this.onToggleDisplayFilter}
+                icon={<FilterTwoTone />}
+              />
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={this.refreshData}
+              />
+            </Col>
+            <Col md={{ span: 12 }}
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end'
+              }}
+            >
+              <span style={{ marginRight: '8px', lineHeight: '30px' }}>
+                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+              </span>
+              <Link to={{ pathname: '/admin/user/manage/add', state: { background: location } }} >
+                <Button style={{ marginRight: 2 }} type='default' icon={<PlusCircleTwoTone />}>
+                  Tạo user
+                 </Button>
+              </Link>
+
+              <Popconfirm
+                icon={<DeleteOutlined />}
+                placement='bottomLeft'
+                title={`Are you sure delete ${selectedRowKeys.length} selected items?`}
+                onConfirm={this.onDeleteMany}
+                disabled={!hasSelected}
+              >
+                <Button type='danger' icon={<DeleteOutlined />} disabled={!hasSelected} loading={isDeletingManyUser}>
+                  Xóa
+                </Button>
+              </Popconfirm>
+            </Col>
+          </Row>
+        </div>
+        <div className='filter-table-wrapper'>
+          <div className={`filter-wrapper ${displayFilter ? '' : 'd-none'}`} >
             <Button
-              type='dashed'
               onClick={this.clearSorters}
-              icon={<ClearOutlined />}
               disabled={checkIsEmptyObj(sortedInfo) || !sortedInfo.order}
             >
-              <SortAscendingOutlined />
-            </Button>
-          </Tooltip>
-          <Tooltip placement='topLeft' title='Clear filters'>
+              Reset sắp xếp
+              </Button>
             <Button
-              type='dashed'
               onClick={this.clearFilters}
-              icon={<ClearOutlined />}
               disabled={checkIsEmptyObj(filteredInfo)}
             >
-              <FilterOutlined />
-            </Button>
-          </Tooltip>
-          <Tooltip placement='topLeft' title='Clear sorters and filters'>
+              Reset filter
+              </Button>
             <Button
-              type='dashed'
               onClick={this.clearFiltersAndSorters}
-              icon={<ClearOutlined />}
               disabled={
                 checkIsEmptyObj(filteredInfo || checkIsEmptyObj(sortedInfo))
                 || checkIsEmptyObj(filteredInfo) || !sortedInfo.order
               }
             >
-              <FilterOutlined /> {'&'} <SortAscendingOutlined />
+              Reset filter và sắp xếp
             </Button>
-          </Tooltip>
-          <Tooltip placement='topLeft' title='Clear selected'>
             <Button
-              type='dashed'
               onClick={this.clearSelected}
-              icon={<ClearOutlined />}
               disabled={selectedRowKeys.length === 0}
             >
-              <CheckSquareOutlined />
+              Bỏ chọn tất cả
             </Button>
-          </Tooltip>
-          <Tooltip placement='topLeft' title='Fixed columns'>
-            <Button type='dashed' onClick={this.onClickToggleFixed}>
+            <Button onClick={this.onClickToggleFixed}>
               <Checkbox
-                checked={isColumnsFixed}
-                defaultChecked={isColumnsFixed}
+                style={{ marginRight: '2px' }}
+                checked={this.state.isColumnsFixed}
+                defaultChecked={this.state.isColumnsFixed}
                 onChange={this.onChangeColumnsFixed}
-              />
+              />Fixed operations
             </Button>
-          </Tooltip>
-          <Tooltip placement='topLeft' title='Refresh'>
-            <Button
-              type='dashed'
-              onClick={this.refreshData}>
-              <ReloadOutlined />
-            </Button>
-          </Tooltip>
-          <Link to={{ pathname: '/admin/user/manage/add', state: { background: location } }} >
-            <Button type='default' icon={<PlusCircleTwoTone />}>
-              Add
-          </Button>
-          </Link>
-
-          <Popconfirm
-            icon={<DeleteOutlined />}
-            placement='bottomLeft'
-            title={`Are you sure delete ${selectedRowKeys.length} selected items?`}
-            onConfirm={this.onDeleteMany}
-            disabled={!hasSelected}
-          >
-            <Button type='danger' icon={<DeleteOutlined />} disabled={!hasSelected} loading={isDeletingManyUser}>
-              Delete
-            </Button>
-          </Popconfirm>
-          <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-          </span>
+          </div>
+          <Table
+            style={{ fontSize: '13px', width: '100%' }}
+            bordered
+            rowSelection={rowSelection}
+            components={this.components}
+            onRow={this.onRow}
+            columns={columns}
+            rowKey={record => record.id}
+            dataSource={data}
+            pagination={pagination}
+            loading={{
+              spinning: isLoadingTable,
+              indicator: <LoadingOutlined />,
+            }}
+            onChange={this.handleTableChange}
+            scroll={{ x: 'max-content' }}
+          />
         </div>
-        <Table
-          style={{ fontSize: '13px' }}
-          bordered
-          rowSelection={rowSelection}
-          components={this.components}
-          onRow={this.onRow}
-          columns={columns}
-          rowKey={record => record.id}
-          dataSource={data}
-          pagination={pagination}
-          loading={{
-            spinning: isLoadingTable,
-            indicator: <LoadingOutlined />,
-          }}
-          onChange={this.handleTableChange}
-          scroll={{ x: 'max-content' }}
-        />
       </>
     );
   }

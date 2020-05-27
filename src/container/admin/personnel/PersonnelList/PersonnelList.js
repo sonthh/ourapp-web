@@ -556,7 +556,7 @@ class PersonnelList extends Component {
               </span>
               <Link to={'/admin/personnel/create'} >
                 <Button style={{ marginRight: '2px' }} type='default' icon={<PlusCircleTwoTone />}>
-                  Tạo mới
+                  Tạo mới NV
                 </Button>
               </Link>
               <Button style={{ marginRight: '2px' }} type='default' icon={<DownloadOutlined />}>
@@ -614,7 +614,7 @@ class PersonnelList extends Component {
             </Button>
           </div>
           <Table
-            style={{ fontSize: '13px' }}
+            style={{ fontSize: '13px', width: '100%' }}
             bordered
             rowSelection={rowSelection}
             components={this.components}

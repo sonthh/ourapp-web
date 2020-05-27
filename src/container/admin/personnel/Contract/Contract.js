@@ -556,7 +556,7 @@ class Contract extends Component {
               </span>
               <Link to={'/admin/personnel/contracts/create'} >
                 <Button style={{ marginRight: '2px' }} type='default' icon={<PlusCircleTwoTone />}>
-                  Tạo mới
+                  Tạo hợp đồng
                 </Button>
               </Link>
               <Button style={{ marginRight: '2px' }} type='default' icon={<DownloadOutlined />}>
@@ -614,7 +614,7 @@ class Contract extends Component {
             </Button>
           </div>
           <Table
-            style={{ fontSize: '13px' }}
+            style={{ fontSize: '13px', width: '100%' }}
             bordered
             rowSelection={rowSelection}
             components={this.components}
