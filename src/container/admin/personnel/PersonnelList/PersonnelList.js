@@ -4,7 +4,7 @@ import {
   Table, Button, notification, Popconfirm, Typography, Checkbox, Space, Breadcrumb, Divider, Col, Row,
 } from 'antd';
 import {
-  DeleteOutlined, DeleteTwoTone, MailTwoTone, FilterTwoTone, UsergroupAddOutlined, UnorderedListOutlined,
+  DeleteOutlined, DeleteTwoTone, FilterTwoTone, UsergroupAddOutlined, UnorderedListOutlined,
   EditTwoTone, ReloadOutlined, PlusCircleTwoTone, LoadingOutlined, UserDeleteOutlined, DownloadOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
@@ -13,13 +13,13 @@ import { checkIsEmptyObj } from '../../../../util/check';
 import { getDateFormat } from '../../../../util/date';
 import AvatarAndTitle from '../../../../component/common/AvatarAndTitle';
 import GenderTag from '../../../../component/common/GenderTag';
-import StatusTag from '../../../../component/common/StatusTag';
 import { getColumnSearchProps } from '../../../../util/table';
 import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
 import MyAvatar from '../../../../component/common/MyAvatar';
 import * as personnelAction from '../../../../action/personnelAction';
 import { Link, NavLink } from 'react-router-dom';
 import { Select } from 'antd';
+import { Helmet } from 'react-helmet';
 
 const { Option } = Select;
 const Paragraph = Typography.Paragraph;
@@ -51,7 +51,7 @@ class PersonnelList extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { error, isDeleted, ids, dataList } = this.props;
+    const { error, isDeleted, ids, dataList, isDeletedOnePersonnel, deletedId } = this.props;
 
     if (error && error !== prevProps.error) {
       if (error) {
@@ -61,6 +61,17 @@ class PersonnelList extends Component {
           duration: 2.5,
         });
       }
+    }
+
+    if (isDeletedOnePersonnel !== undefined && isDeletedOnePersonnel === true
+      && deletedId !== prevProps.deletedId) {
+
+      const description = `Deleted successfully`;
+      notification.success({
+        message: 'SUCCESS',
+        description,
+        duration: 2.5,
+      });
     }
 
     if (isDeleted !== undefined && isDeleted === true && ids !== prevProps.ids) {
@@ -179,7 +190,7 @@ class PersonnelList extends Component {
     },
     {
       title: 'Họ tên',
-      dataIndex: ['user', 'fullName'],
+      dataIndex: 'fullName',
       key: 'fullName',
       width: 150,
       minWidth: 150,
@@ -243,7 +254,7 @@ class PersonnelList extends Component {
     },
     {
       title: 'Sinh nhật',
-      dataIndex: ['user', 'birthDay'],
+      dataIndex: 'birthDay',
       key: 'birthDay',
       sorter: true,
       sortOrder: sortedInfo.columnKey === 'birthDay' && sortedInfo.order,
@@ -252,30 +263,8 @@ class PersonnelList extends Component {
       render: birthDay => getDateFormat(birthDay) || 'No',
     },
     {
-      title: 'Username',
-      dataIndex: ['user', 'username'],
-      key: 'username',
-      width: 140,
-      minWidth: 140,
-      filteredValue: filteredInfo.username || null,
-      ...getColumnSearchProps(this, 'username'),
-      render: (username) => (
-        <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ', rows: 1 }}>{username}</Paragraph>
-      ),
-    },
-    {
-      title: 'Identification',
-      dataIndex: ['user', 'identification'],
-      key: 'identification',
-      width: 150,
-      minWidth: 150,
-      filteredValue: filteredInfo.identification || null,
-      ...getColumnSearchProps(this, 'identification'),
-      render: identification => identification || 'No',
-    },
-    {
       title: 'Gender',
-      dataIndex: ['user', 'gender'],
+      dataIndex: 'gender',
       key: 'gender',
       width: 95,
       minWidth: 95,
@@ -294,38 +283,8 @@ class PersonnelList extends Component {
       render: gender => (<GenderTag gender={gender} />),
     },
     {
-      title: 'Status',
-      dataIndex: ['user', 'status'],
-      key: 'status',
-      width: 95,
-      minWidth: 95,
-      filteredValue: filteredInfo.status || null,
-      filters: [
-        {
-          text: (<StatusTag status='INACTIVE' />),
-          value: 'INACTIVE',
-        },
-        {
-          text: (<StatusTag status='ACTIVE' />),
-          value: 'ACTIVE',
-        },
-      ],
-      filterMultiple: false,
-      render: status => (<StatusTag status={status} />),
-    },
-    {
-      title: 'Address',
-      dataIndex: ['user', 'address'],
-      key: 'address',
-      width: 150,
-      minWidth: 150,
-      filteredValue: filteredInfo.address || null,
-      ...getColumnSearchProps(this, 'address'),
-      render: address => address || 'No',
-    },
-    {
       title: 'Phone number',
-      dataIndex: ['user', 'phoneNumber'],
+      dataIndex: 'phoneNumber',
       key: 'phoneNumber',
       width: 150,
       minWidth: 150,
@@ -335,7 +294,7 @@ class PersonnelList extends Component {
     },
     {
       title: 'Email',
-      dataIndex: ['user', 'email'],
+      dataIndex: 'email',
       key: 'email',
       width: 240,
       minWidth: 240,
@@ -404,27 +363,34 @@ class PersonnelList extends Component {
       fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
         <Space key={id}>
-          <Link to={{ pathname: `/admin/personnel/manage/${id}/edit`, state: { background: this.props.location } }} >
+          <Link to={`/admin/personnel/${id}/update`} >
             <Button
               type='default'
               icon={<EditTwoTone />}
               size='small'
             />
           </Link>
-          <Button
-            type='default'
-            icon={<DeleteTwoTone />}
-            size='small'
-          />
-          <Button
-            type='default'
-            icon={<MailTwoTone />}
-            size='small'
-          />
+          <Popconfirm
+            icon={<DeleteOutlined />}
+            placement='bottomRight'
+            title={`Bạn có muốn xóa nhân viên này`}
+            onConfirm={() => this.handleDeleteOnePersonnel(id)}
+          >
+            <Button
+              loading={this.props.isDeletingOnePersonnel && this.props.isDeletingOnePersonnelId === id}
+              type='default'
+              icon={<DeleteTwoTone />}
+              size='small'
+            />
+          </Popconfirm>
         </Space>
       ),
     },
   ]);
+
+  handleDeleteOnePersonnel = (id) => {
+    this.props.deleteOnePersonnel(id);
+  }
 
   components = {
     header: {
@@ -514,6 +480,9 @@ class PersonnelList extends Component {
 
     return (
       <>
+        <Helmet>
+          <title>Nhân viên</title>
+        </Helmet>
         <Breadcrumb className={'MyBreadCrumb'} separator={<Divider type="vertical" />}>
           <Breadcrumb.Item>
             <NavLink to={'/admin/personnel/employees'}>Nhân viên</NavLink>
@@ -643,9 +612,8 @@ const mapStateToProps = ({ personnel }) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    findManyPersonnel: (params = {}) => {
-      dispatch(personnelAction.findManyPersonnel(params));
-    },
+    findManyPersonnel: (params = {}) => dispatch(personnelAction.findManyPersonnel(params)),
+    deleteOnePersonnel: (id) => dispatch(personnelAction.delteOnePersonnel(id)),
   };
 };
 

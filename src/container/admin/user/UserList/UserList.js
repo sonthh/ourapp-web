@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Popconfirm, Tooltip, Typography, Checkbox, Space, Row, Col,
+  Table, Button, notification, Popconfirm, Typography, Checkbox, Space, Row, Col,
 } from 'antd';
 import {
-  ClearOutlined, SortAscendingOutlined, FilterOutlined, DeleteOutlined, DeleteTwoTone, FilterTwoTone,
-  EditTwoTone, CheckSquareOutlined, ReloadOutlined, PlusCircleTwoTone, LoadingOutlined,
+  DeleteOutlined, DeleteTwoTone, FilterTwoTone,
+  EditTwoTone, ReloadOutlined, PlusCircleTwoTone, LoadingOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import * as userAction from '../../../../action/userAction';
@@ -19,6 +19,7 @@ import { getColumnSearchProps } from '../../../../util/table';
 import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
 import MyAvatar from '../../../../component/common/MyAvatar';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 const Paragraph = Typography.Paragraph;
 class UserList extends Component {
@@ -418,8 +419,8 @@ class UserList extends Component {
     });
   };
 
-  onRow = (record, rowIndex) => ({
-    onDoubleClick: event => {
+  onRow = (record) => ({
+    onDoubleClick: () => {
       let { selectedRowKeys } = this.state;
       const { id } = record;
 
@@ -475,6 +476,9 @@ class UserList extends Component {
 
     return (
       <>
+        <Helmet>
+          <title>Account user</title>
+        </Helmet>
         <div style={{ marginBottom: 16 }}>
           <Row justify='space-between'>
             <Col span={24} md={{ span: 12 }}>

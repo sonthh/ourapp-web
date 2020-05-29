@@ -15,6 +15,7 @@ import Contract from './container/admin/personnel/Contract/Contract';
 import PersonnelCreate from './container/admin/personnel/PersonnelCreate/PersonnelCreate';
 import TimeKeeping from './container/admin/working/TimeKeeping/TimeKeeping';
 import ContractCreate from './container/admin/personnel/ContractCreate/ContractCreate';
+import PersonnelUpdate from './container/admin/personnel/PersonnelUpdate/PersonnelUpdate';
 
 export const adminModalRoutes = [
   {
@@ -70,6 +71,10 @@ export const adminRoutes = [
   {
     path: '/personnel/create',
     component: PersonnelCreate,
+  },
+  {
+    path: '/personnel/:id/update',
+    component: PersonnelUpdate,
   },
   {
     path: '/personnel/employees',

@@ -5,6 +5,7 @@ import { authReducer } from './authReducer';
 import { roleReducer } from './roleReducer';
 import { personnelReducer } from './personnel/personnelReducer';
 import { branchReducer } from './branch/branchReducer';
+import { departmentReducer } from './department/departmentReducer';
 
 export const rootReducer = combineReducers({
   app: appReducer,
@@ -13,4 +14,5 @@ export const rootReducer = combineReducers({
   auth: authReducer,
   role: roleReducer,
   branch: branchReducer,
+  department: departmentReducer,
 });

@@ -1,0 +1,70 @@
+.personnel-header {
+  .avatar-uploader {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .avatar-uploader > div {
+    border-radius: 50%;
+    width: 130px;
+    height: 130px;
+  }
+
+  .custom-icon {
+    color: #589dfa;
+  }
+
+  .personnel-info-left h3 {
+    color: #514d6a;
+    margin-bottom: 14px;
+  }
+
+  .personnel-info-left div {
+    margin-bottom: 12px;
+  }
+
+  .personnel-info-right {
+    padding-top: 47px;
+  }
+
+  .personnel-info-right div {
+    margin-bottom: 12px;
+  }
+}
+
+.personnel-tabs > .ant-tabs-bar .ant-tabs-nav-container .ant-tabs-nav .ant-tabs-tab {
+  color: rgba(0, 0, 0, 0.65);
+  font-weight: bold;
+  font-size: 13px;
+  padding: 18px 9px;
+}
+
+.personnel-tabs > .ant-tabs-bar .ant-tabs-nav-container .ant-tabs-nav .ant-tabs-tab:hover {
+  color: #0190fe;
+}
+
+.personnel-tabs {
+  width: 100%;
+}
+
+.personnel-tabs {
+  .ant-tabs-bar {
+    margin: 0 0 35px 0;
+  }
+
+  label {
+    font-size: 13px;
+  }
+
+  @media screen and (min-width: 992px) {
+    .tabContent {
+      padding-left: 50px;
+    }
+  }
+  @media screen and (max-width: 992px) {
+    .ant-menu {
+      text-align: center;
+    }
+  }
+}

@@ -47,7 +47,6 @@ export const deleteOneUser = async (id) => {
   }
 };
 
-
 export const createOneUser = async (userRequest) => {
   try {
     const { data } = await axios

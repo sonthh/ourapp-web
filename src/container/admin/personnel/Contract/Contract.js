@@ -20,6 +20,7 @@ import MyAvatar from '../../../../component/common/MyAvatar';
 import * as personnelAction from '../../../../action/personnelAction';
 import { Link, NavLink } from 'react-router-dom';
 import { Select } from 'antd';
+import { Helmet } from 'react-helmet';
 
 const { Option } = Select;
 const Paragraph = Typography.Paragraph;
@@ -514,6 +515,9 @@ class Contract extends Component {
 
     return (
       <>
+        <Helmet>
+          <title>Hợp đồng</title>
+        </Helmet>
         <Breadcrumb className={'MyBreadCrumb'} separator={<Divider type="vertical" />}>
           <Breadcrumb.Item>
             <NavLink to={'/admin/personnel/employees'}>Nhân viên</NavLink>

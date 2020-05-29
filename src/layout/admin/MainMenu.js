@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Menu } from 'antd';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { menu } from '../../menu';
 import PropTypes from 'prop-types';
 
@@ -16,7 +16,7 @@ export default class MainMenu extends Component {
       const sub = menu.submenu.map((subMenu, subMenuIndex) => (
         <Menu.Item key={menu.title + '.' + menuIndex + '.' + subMenuIndex}>
           {subMenu.icon}
-          <Link to={subMenu.path}>{subMenu.title}</Link>
+          <NavLink to={subMenu.path}>{subMenu.title}</NavLink>
         </Menu.Item>
       ));
 
@@ -41,7 +41,7 @@ export default class MainMenu extends Component {
       return (
         <Menu.Item key={menu.title + '.' + menuIndex}>
           {menu.icon}
-          <Link to={menu.path}>{menu.title}</Link>
+          <NavLink to={menu.path}>{menu.title}</NavLink>
         </Menu.Item>
       );
 

@@ -1,20 +1,8 @@
-import { Button, Form, Modal, notification, Select, Spin, Tabs, Row, Col, Upload, Avatar, Input, DatePicker, Checkbox, Divider } from 'antd';
+import { Button, Form, Select, Row, Col, Input, DatePicker, Divider } from 'antd';
 import './index.scss';
-import moment from 'moment';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { LoadingOutlined, PlusOutlined, PhoneTwoTone, MailTwoTone } from '@ant-design/icons';
-import { Typography } from 'antd';
-import { FaBirthdayCake } from "react-icons/fa";
-import { GiPositionMarker } from "react-icons/gi";
 import TextArea from 'antd/lib/input/TextArea';
-
-const { TabPane } = Tabs;
-
-const { Option } = Select;
-
-
-const { Title } = Typography;
 
 class ContractCreate extends Component {
 
@@ -51,7 +39,6 @@ class ContractCreate extends Component {
 
 
   render() {
-    const { displayIDForm, displayPassportForm, displayBankForm } = this.state;
 
     return (
       <>
@@ -154,11 +141,11 @@ class ContractCreate extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = () => {
   return {}
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
   return {}
 };
 

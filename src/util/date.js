@@ -4,7 +4,7 @@ export const getDateFormat = (date) => {
   if (!date) {
     return null;
   }
-  return moment(date).format('MMMM DD YYYY');
+  return moment(date).format('DD/MM/YYYY');
 };
 
 export const getArrayDatesOfWeek = (date) => {

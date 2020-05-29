@@ -1,30 +1,20 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Popconfirm, Typography, Checkbox, Space, Breadcrumb, Divider, Col, Row, DatePicker, Input,
+  Table, Button, notification, Col, Row, DatePicker,
 } from 'antd';
 import {
-  DeleteOutlined, DeleteTwoTone, MailTwoTone, FilterTwoTone, UsergroupAddOutlined, UnorderedListOutlined,
-  EditTwoTone, ReloadOutlined, PlusCircleTwoTone, LoadingOutlined, UserDeleteOutlined, DownloadOutlined,
+  FilterTwoTone, ReloadOutlined, LoadingOutlined, DownloadOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { getFilterObject } from '../../../../util/get';
 import { checkIsEmptyObj } from '../../../../util/check';
-import { getDateFormat, getArrayDatesOfWeek, getArrayDatesOfMonth, getDateFormatForTimeKeeping } from '../../../../util/date';
-import AvatarAndTitle from '../../../../component/common/AvatarAndTitle';
-import GenderTag from '../../../../component/common/GenderTag';
-import StatusTag from '../../../../component/common/StatusTag';
-import { getColumnSearchProps } from '../../../../util/table';
+import { getArrayDatesOfWeek, getArrayDatesOfMonth, getDateFormatForTimeKeeping } from '../../../../util/date';
 import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
-import MyAvatar from '../../../../component/common/MyAvatar';
-import * as personnelAction from '../../../../action/personnelAction';
-import { Link, NavLink } from 'react-router-dom';
 import { Select } from 'antd';
 import moment from 'moment';
+import { Helmet } from 'react-helmet';
 
-const { Option } = Select;
-const Paragraph = Typography.Paragraph;
-const { Title, Text } = Typography
 class TimeKeeping extends Component {
 
   constructor(props) {
@@ -171,12 +161,12 @@ class TimeKeeping extends Component {
   }
 
   // filteredInfo, sortedInfo from state
-  getColumns = (days, filteredInfo, sortedInfo) => {
+  getColumns = (days) => {
     let firstColumn = [
       {
         title: null,
         key: 'blank',
-        render: (data, record) => (
+        render: () => (
           <div>Search</div>
         ),
       }
@@ -189,7 +179,7 @@ class TimeKeeping extends Component {
         key: index,
         // width: 160,
         // minWidth: 160,
-        render: (data, record) => (
+        render: () => (
           <div>Hello</div>
         ),
       }
@@ -254,7 +244,7 @@ class TimeKeeping extends Component {
     });
   }
 
-  onDatePickerChange = (date, dateString) => {
+  onDatePickerChange = (date) => {
     const { type } = this.state;
     if (type === 'week') {
       const days = getArrayDatesOfWeek(date);
@@ -296,6 +286,9 @@ class TimeKeeping extends Component {
 
     return (
       <>
+        <Helmet>
+          <title>Bảng chấm công</title>
+        </Helmet>
         <div style={{ marginBottom: 16 }}>
           <Row justify='space-between'>
             <Col span={24} md={{ span: 12 }}>
@@ -402,7 +395,7 @@ const mapStateToProps = ({ personnel }) => {
   return { ...personnelList };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = () => {
   return {
   };
 };
