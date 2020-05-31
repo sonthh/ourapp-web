@@ -154,3 +154,102 @@ export const deleteQualification = async (personnelId, qualificationId) => {
     return Promise.reject(error);
   }
 };
+
+export const addCertification = async (personnelId, certificationRequest) => {
+  try {
+    const { data } = await axios
+      .post(`${config.API_URL}/personnel/${personnelId}/certifications`, certificationRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const updateCertification = async (personnelId, qualificationId, certificationRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/certifications/${qualificationId}`, certificationRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const deleteCertification = async (personnelId, qualificationId) => {
+  try {
+    const { data } = await axios
+      .delete(`${config.API_URL}/personnel/${personnelId}/certifications/${qualificationId}`);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const addWorkHistory = async (personnelId, workHistoryRequest) => {
+  try {
+    const { data } = await axios
+      .post(`${config.API_URL}/personnel/${personnelId}/workHistories`, workHistoryRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const updateWorkHistory = async (personnelId, workHistoryId, workHistoryRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/workHistories/${workHistoryId}`, workHistoryRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const deleteWorkHistory = async (personnelId, workHistoryId) => {
+  try {
+    const { data } = await axios
+      .delete(`${config.API_URL}/personnel/${personnelId}/workHistories/${workHistoryId}`);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const addContactInfo = async (personnelId, contactInfoRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/contactInfo/add`, contactInfoRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const updateContactInfo = async (personnelId, contactInfoRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/contactInfo/update`, contactInfoRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const updateAvatar = async (personnelId, formData) => {
+  try {
+    const { data } = await axios
+      .post(`${config.API_URL}/personnel/${personnelId}/avatar`, formData);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};

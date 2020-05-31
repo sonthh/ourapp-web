@@ -8,7 +8,7 @@ import moment from 'moment';
 import TextArea from 'antd/lib/input/TextArea';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
-class UpdateQualificationForm extends Component {
+class UpdateCertificationForm extends Component {
 
   constructor(props) {
     super(props);
@@ -28,23 +28,24 @@ class UpdateQualificationForm extends Component {
     let { forms } = this.state;
 
     if (item !== prevProps.item) {
-      const { qualifications = [] } = item;
-      if (qualifications.length === 0) {
-        forms = [this.renderOneQualification({}, 0)];
+      const { certifications = [] } = item;
+
+      if (certifications.length === 0) {
+        forms = [this.renderOneCertification({}, 0)];
         this.setState({ forms });
         return;
       }
 
       let updateForm = {};
       forms = [];
-      qualifications.forEach((each, index) => {
+      certifications.forEach((each, index) => {
         if (!each) {
           return;
         }
 
-        forms = [...forms, this.renderOneQualification(each, index)];
+        forms = [...forms, this.renderOneCertification(each, index)];
 
-        const name = `qualifications[${index}].`;
+        const name = `certifications[${index}].`;
         for (const key in each) {
           let value = each[key];
 
@@ -81,7 +82,7 @@ class UpdateQualificationForm extends Component {
     }
   }
 
-  onSubmitWorkingTimeForm = (values) => {
+  onSubmitCertificationForm = (values) => {
     const { item } = this.props;
     if (!item || !item.id) {
       return;
@@ -90,30 +91,29 @@ class UpdateQualificationForm extends Component {
 
     const { forms } = this.state;
     const length = forms.length;
-    const arrRequest = getRequestArrayFromFormValues(values, length, 'qualifications');
+    const arrRequest = getRequestArrayFromFormValues(values, length, 'certifications');
 
     arrRequest.forEach(each => {
       if (!each) return;
 
-      const { id: qualificationId } = each;
+      const { id: certificationId } = each;
 
-      if (qualificationId) {
-        this.props.updateQualification(personnelId, qualificationId, each);
+      if (certificationId) {
+        this.props.updateCertification(personnelId, certificationId, each);
       }
 
-      if (!qualificationId) {
-        this.props.addQualification(personnelId, each);
+      if (!certificationId) {
+        this.props.addCertification(personnelId, each);
       }
     });
   }
 
-  onDeleteQualification = (qualificationId, index) => {
+  onDeleteCertification = (certificationId, index) => {
     const { item } = this.props;
     if (!item || !item.id) return;
 
-    console.log(qualificationId, index);
-    if (qualificationId) {
-      this.props.deleteQualification(item.id, qualificationId);
+    if (certificationId) {
+      this.props.deleteCertification(item.id, certificationId);
     }
 
     let { forms } = this.state;
@@ -122,33 +122,27 @@ class UpdateQualificationForm extends Component {
     this.setState({ forms });
   }
 
-  renderOneQualification = (qualification, index) => {
-    const name = `qualifications[${index}].`;
+  renderOneCertification = (certification, index) => {
+    const name = `certifications[${index}].`;
     return (
       <>
         <Col span={24} md={{ span: 12 }}>
-          <Form.Item name={`${name}degree`} label='Trình độ'>
-            <Select>
-              <Select.Option value='Fulltime'>Thạc sĩ</Select.Option>
-              <Select.Option value='Parttime'>Tiến sĩ</Select.Option>
-              <Select.Option value='Kỹ sư'>Kỹ sư</Select.Option>
-              <Select.Option value='Cử nhân'>Cử nhân</Select.Option>
-            </Select>
+          <Form.Item name={`${name}name`} label='Tên chứng chỉ'>
+            <Input />
           </Form.Item>
         </Col>
         <Col span={24} md={{ span: 12 }}>
-          <Form.Item name={`${name}major`} label='Chuyên nghành' >
+          <Form.Item name={`${name}type`} label='Loại chứng chỉ' >
             <Select>
-              <Select.Option value='CNTT'>CNTT</Select.Option>
-              <Select.Option value='Điện tử viễn thông'>Điện tử viễn thông</Select.Option>
-              <Select.Option value='Marketing'>Marketing</Select.Option>
-              <Select.Option value='Kinh tế'>Kinh tế</Select.Option>
-              <Select.Option value='Sư phạm'>Sư phạm</Select.Option>
+              <Select.Option value='Chứng chỉ CNTT'>Chứng chỉ CNTT</Select.Option>
+              <Select.Option value='Chứng chỉ ngoại ngữ'>Chứng chỉ ngoại ngữ</Select.Option>
+              <Select.Option value='Chứng chỉ marketing'>Chứng chỉ marketing</Select.Option>
+              <Select.Option value='Khác'>Khác</Select.Option>
             </Select>
           </Form.Item>
         </Col>
         <Col md={{ span: 12 }}>
-          <Form.Item name={`${name}trainedAt`} label='Nơi đào tạo'>
+          <Form.Item name={`${name}issueAt`} label='Nơi cấp'>
             <Input />
           </Form.Item>
         </Col>
@@ -170,7 +164,7 @@ class UpdateQualificationForm extends Component {
             icon={<DeleteOutlined />}
             placement='bottomRight'
             title={`Bạn có muốn xóa?`}
-            onConfirm={() => this.onDeleteQualification(qualification.id, index)}
+            onConfirm={() => this.onDeleteCertification(certification.id, index)}
           >
             <Button icon={<DeleteOutlined />} style={{ fontSize: 13 }} size='small' type='danger'></Button>
           </Popconfirm>
@@ -182,7 +176,7 @@ class UpdateQualificationForm extends Component {
 
   onAddNewForm = () => {
     let { forms } = this.state;
-    forms = [...forms, this.renderOneQualification({}, forms.length)];
+    forms = [...forms, this.renderOneCertification({}, forms.length)];
     this.setState({ forms });
   }
 
@@ -198,8 +192,8 @@ class UpdateQualificationForm extends Component {
         autoComplete='off'
         labelCol={{ xs: 24 }}
         wrapperCol={{ xs: 24 }}
-        id='UpdateQualificaiton'
-        onFinish={this.onSubmitWorkingTimeForm}
+        id='UpdateCertification'
+        onFinish={this.onSubmitCertificationForm}
       >
         <Row>
           {forms}
@@ -225,13 +219,13 @@ const mapStateToProps = ({ personnel }) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addQualification: (personnelId, qualificationRequest) => dispatch(personnelAction.addQualification(personnelId, qualificationRequest)),
-    updateQualification: (personnelId, qualificationId, workingTimeRequest) => {
-      dispatch(personnelAction.updateQualification(personnelId, qualificationId, workingTimeRequest))
+    addCertification: (personnelId, certificationRequest) => dispatch(personnelAction.addCertification(personnelId, certificationRequest)),
+    updateCertification: (personnelId, certificationId, certificationRequest) => {
+      dispatch(personnelAction.updateCertification(personnelId, certificationId, certificationRequest))
     },
-    deleteQualification: (personnelId, qualificationId) => dispatch(personnelAction.deleteQualification(personnelId, qualificationId)),
+    deleteCertification: (personnelId, certificationId) => dispatch(personnelAction.deleteCertification(personnelId, certificationId)),
     findOnePersonnel: (id) => dispatch(personnelAction.findOnePersonnel(id)),
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(UpdateQualificationForm);
+export default connect(mapStateToProps, mapDispatchToProps)(UpdateCertificationForm);

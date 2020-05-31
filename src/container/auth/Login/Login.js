@@ -70,7 +70,7 @@ class Login extends Component {
           >
             <Form.Item
               name='username'
-              rules={[{ required: true, message: 'Please input your Username!' }]}
+              rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
             >
               <Input
                 prefix={<UserOutlined className='site-form-item-icon' />}
@@ -79,23 +79,22 @@ class Login extends Component {
             </Form.Item>
             <Form.Item
               name='password'
-              rules={[{ required: true, message: 'Please input your Password!' }]}
+              rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
             >
               <Input.Password prefix={<LockOutlined className='site-form-item-icon' />} placeholder='Password' />
             </Form.Item>
             <Form.Item>
               <Form.Item name='remember' valuePropName='checked' noStyle>
-                <Checkbox>Remember me</Checkbox>
+                <Checkbox>Nhớ mật khẩu</Checkbox>
               </Form.Item>
-
-              <Link to='/auth/forgot'><span className='login-form-forgot'>Forgot password</span></Link>
+              {/* <Link to='/auth/forgot'><span className='login-form-forgot'>Quên mật khẩu</span></Link> */}
             </Form.Item>
 
             <Form.Item>
               <Button loading={isLoading} type='primary' htmlType='submit' className='login-form-button'>
-                Log in
-                  </Button>
-              <Link to='/auth/forgot' className='login-form-register'><span>Don't have account</span></Link>
+                Đăng nhập
+                </Button>
+              {/* <Link to='/auth/forgot' className='login-form-register'><span>Kh</span></Link> */}
             </Form.Item>
           </Form>
         </Col>

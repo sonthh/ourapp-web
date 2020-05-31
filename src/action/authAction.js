@@ -17,11 +17,9 @@ export const passwordLogin = (loginData) => {
         payloads: { authData },
       });
     } catch (error) {
-      const errorData = error.response;
-
       dispatch({
         type: actionTypes.AUTH_FAILURE,
-        payloads: { error: errorData },
+        payloads: { error },
       });
     }
   };

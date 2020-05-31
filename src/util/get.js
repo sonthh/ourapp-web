@@ -42,3 +42,25 @@ export const PrivateRoute = ({ component: Component, ...rest }) => (
       : <Redirect to={{ pathname: '/auth/login', state: { from: props.location } }} />
   )} />
 );
+
+export const getRequestArrayFromFormValues = (values, requestLength, prefixName) => {
+
+  if (!values) return null;
+
+  const arrRequest = new Array(requestLength);
+
+  for (const key in values) {
+    let value = values[key];
+    for (let i = 0; i < requestLength; i++) {
+      if (key.startsWith(`${prefixName}[${i}].`)) {
+        arrRequest[i] = {
+          ...arrRequest[i],
+          [key.split('.')[1]]: value,
+        }
+        break;
+      }
+    }
+  }
+
+  return arrRequest;
+};

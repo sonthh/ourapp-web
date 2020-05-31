@@ -1,4 +1,8 @@
 .personnel-header {
+  .ant-upload-picture-card-wrapper {
+    width: 60%;
+  }
+
   .avatar-uploader {
     display: flex;
     flex-direction: row;
@@ -54,6 +58,10 @@
   }
 
   label {
+    font-size: 13px;
+  }
+
+  .ant-menu-item {
     font-size: 13px;
   }
 

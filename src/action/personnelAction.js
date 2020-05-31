@@ -11,8 +11,6 @@ export const findManyPersonnel = (params = {}) => {
 
     try {
       const dataList = await personnelService.findManyPersonnel(params);
-      console.log(dataList);
-
 
       dispatch({
         type: actionTypes.FIND_MANY_PERSONNEL_SUCCESS,
@@ -322,6 +320,213 @@ export const deleteQualification = (personnelId, qualificationId) => {
     } catch (error) {
       dispatch({
         type: actionTypes.UPDATE_PERSONNEL_DELETE_QUALIFICATION_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const addCertification = (personnelId, certificationRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_ADD_CERTIFICATION_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.addCertification(personnelId, certificationRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_CERTIFICATION_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_CERTIFICATION_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const updateCertification = (personnelId, certificationId, certificationRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_UPDATE_CERTIFICATION_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.updateCertification(personnelId, certificationId, certificationRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_CERTIFICATION_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_CERTIFICATION_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const deleteCertification = (personnelId, certificationId) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_DELETE_CERTIFICATION_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.deleteCertification(personnelId, certificationId);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_DELETE_CERTIFICATION_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_DELETE_CERTIFICATION_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const addWorkHistory = (personnelId, workHistoryRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_ADD_WORK_HISTORY_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.addWorkHistory(personnelId, workHistoryRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_WORK_HISTORY_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_WORK_HISTORY_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const updateWorkHistory = (personnelId, workHistoryId, workHistoryRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_UPDATE_WORK_HISTORY_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.updateWorkHistory(personnelId, workHistoryId, workHistoryRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_WORK_HISTORY_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_WORK_HISTORY_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const deleteWorkHistory = (personnelId, workHistoryId) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_DELETE_WORK_HISTORY_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.deleteWorkHistory(personnelId, workHistoryId);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_DELETE_WORK_HISTORY_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_DELETE_WORK_HISTORY_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const addContactInfo = (personnelId, contactInfoRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_ADD_CONTACT_INFO_REQUEST,
+    });
+
+    try {
+      const isUpdated = await personnelService.addContactInfo(personnelId, contactInfoRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_CONTACT_INFO_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_CONTACT_INFO_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const updateContactInfo = (personnelId, contactInfoRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_UPDATE_CONTACT_INFO_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.updateContactInfo(personnelId, contactInfoRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_CONTACT_INFO_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_CONTACT_INFO_REQUEST,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const updateAvatar = (personnelId, formData) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_UPDATE_AVATAR_REQUEST,
+    });
+
+    try {
+      const avatarUrl = await personnelService.updateAvatar(personnelId, formData);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_AVATAR_SUCCESS,
+        payloads: { avatarUrl },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_AVATAR_FAILURE,
         payloads: { error },
       });
     }

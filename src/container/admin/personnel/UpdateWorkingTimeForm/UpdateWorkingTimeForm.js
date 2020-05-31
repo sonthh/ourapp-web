@@ -134,12 +134,12 @@ class UpdateWorkingTimeForm extends Component {
         <Row>
           <Col span={24} md={{ span: 12 }}>
             <Form.Item name='startWorkDate' label='Ngày vào làm'>
-              <DatePicker />
+              <DatePicker format='DD/MM/YYYY' />
             </Form.Item>
           </Col>
           <Col span={24} md={{ span: 12 }}>
             <Form.Item name='signContractDate' label='Ngày ký hợp đồng'>
-              <DatePicker />
+              <DatePicker format='DD/MM/YYYY' />
             </Form.Item>
           </Col>
           <Col span={24} md={{ span: 12 }}>
@@ -175,7 +175,7 @@ class UpdateWorkingTimeForm extends Component {
               </Col>
               <Col md={{ span: 12 }}>
                 <Form.Item name='stopWorkDate' label='Ngày nghỉ việc'>
-                  <DatePicker />
+                  <DatePicker format='DD/MM/YYYY' />
                 </Form.Item>
               </Col>
             </Row>

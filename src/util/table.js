@@ -8,24 +8,32 @@ export const getColumnSearchProps = (context, dataIndex, title = null) => ({
     <div style={{ padding: 8 }}>
       <Input
         ref={node => context.searchInput = node}
-        placeholder={`Search by ${title ? title : dataIndex}`}
+        placeholder={`Tìm theo ${title ? title : dataIndex}`}
         value={selectedKeys[0]}
         onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
         onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
         style={{ width: 188, marginBottom: 8, display: 'block' }}
       />
-      <Button
-        type='primary'
-        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-        icon={<SearchOutlined />}
-        size='small'
-        style={{ width: 90, marginRight: 8 }}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+        }}
       >
-        Search
+      <Button onClick={() => handleReset(clearFilters)} size='small' type='link' style={{}}>
+          Tạo lại
       </Button>
-      <Button onClick={() => handleReset(clearFilters)} size='small' style={{ width: 90 }}>
-        Reset
+        <Button
+          type='primary'
+          onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          icon={<SearchOutlined />}
+          size='small'
+          style={{ marginRight: 3 }}
+        >
+          Tìm
       </Button>
+
+      </div>
     </div>
   ),
   filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,

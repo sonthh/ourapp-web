@@ -6,7 +6,6 @@ const initialState = {
   item: {},
 };
 
-
 export const personnelItemReducer = (state = initialState, { type, payloads }) => {
 
   switch (type) {
@@ -296,6 +295,220 @@ export const personnelItemReducer = (state = initialState, { type, payloads }) =
         isUpdating: false,
         success: 'Xóa thành công',
         isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_CERTIFICATION_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_CERTIFICATION_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_CERTIFICATION_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_CERTIFICATION_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_CERTIFICATION_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_CERTIFICATION_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_DELETE_CERTIFICATION_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_DELETE_CERTIFICATION_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_DELETE_CERTIFICATION_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Xóa thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_WORK_HISTORY_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_WORK_HISTORY_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_WORK_HISTORY_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_WORK_HISTORY_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_WORK_HISTORY_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_WORK_HISTORY_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_DELETE_WORK_HISTORY_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_DELETE_WORK_HISTORY_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_DELETE_WORK_HISTORY_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Xóa thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_CONTACT_INFO_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_CONTACT_INFO_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_CONTACT_INFO_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_CONTACT_INFO_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_CONTACT_INFO_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_CONTACT_INFO_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_AVATAR_REQUEST: {
+      return {
+        ...state,
+        isUploadingAvatar: true,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_AVATAR_SUCCESS: {
+      const { avatarUrl } = payloads;
+      return {
+        ...state,
+        isUploadingAvatar: false,
+        avatarUrl,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_AVATAR_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        isUploadingAvatar: false,
+        error,
       }
     }
     default:

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './index.scss';
-import { Button, Drawer, Radio, Rate, Avatar } from 'antd';
+import { Button, Drawer, Radio, Avatar } from 'antd';
 import * as appAction from '../../../action/appAction';
 import { connect } from 'react-redux';
 import responsive from '../../../constant/responsive';
@@ -55,23 +55,19 @@ class Setting extends Component {
           closable={true}
           onClose={this.onClose}
           visible={this.state.visible}
-          title='Setting'
+          title='Cài đặt'
         >
           <div className={'SettingContainer'}>
-            <div>Navigation mode</div>
+            <div style={{ marginTop: 20, marginBottom: 14 }}>Kiểu menu</div>
             <Radio.Group onChange={this.onChangeNavigationMode} defaultValue={this.props.navigationMode}>
-              <Radio.Button value='horizontal'>
-                Horizontal
-            </Radio.Button>
-              <Radio.Button value='vertical' disabled={!this.state.isLargeScreen}>
-                Vertical
-            </Radio.Button>
+              <Radio value='horizontal'>
+                Trên
+            </Radio>
+              <Radio value='vertical' disabled={!this.state.isLargeScreen}>
+                Bên trái
+            </Radio>
             </Radio.Group>
-
-            <div>Rating</div>
-            <Rate allowHalf defaultValue={2.5} />
-
-            <div>Team1 members</div>
+            <div style={{ marginTop: 20, marginBottom: 14 }}>Thành viên nhóm 1</div>
             <div>
               <Tooltip placement='bottom-start' title='Leader'>
                 <Avatar className={'avatar'} src="https://res.cloudinary.com/ourapp-upload/image/upload/v1588564716/67403831_2356011294616988_4352344051870072832_o_uixydl.jpg" />

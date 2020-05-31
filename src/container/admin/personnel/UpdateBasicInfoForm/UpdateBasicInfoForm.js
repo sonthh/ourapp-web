@@ -248,7 +248,7 @@ class UpdateBasicInfoForm extends Component {
           </Col>
           <Col span={24} md={{ span: 12 }}>
             <Form.Item name='birthDay' label='Ngày sinh'>
-              <DatePicker />
+              <DatePicker format='DD/MM/YYYY' />
             </Form.Item>
           </Col>
           <Col span={24} md={{ span: 12 }}>
@@ -281,7 +281,7 @@ class UpdateBasicInfoForm extends Component {
               </Col>
               <Col md={{ span: 8 }}>
                 <Form.Item name='identificationIssueDate' label='Ngày cấp'>
-                  <DatePicker />
+                  <DatePicker format='DD/MM/YYYY' />
                 </Form.Item>
               </Col>
               <Col md={{ span: 8 }}>
@@ -298,12 +298,12 @@ class UpdateBasicInfoForm extends Component {
               </Col>
               <Col md={{ span: 4 }}>
                 <Form.Item name='passportIssueDate' label='Ngày cấp'>
-                  <DatePicker />
+                  <DatePicker format='DD/MM/YYYY' />
                 </Form.Item>
               </Col>
               <Col md={{ span: 4 }}>
                 <Form.Item name='passportExpiredDate' label='Ngày hết hạn'>
-                  <DatePicker />
+                  <DatePicker format='DD/MM/YYYY' />
                 </Form.Item>
               </Col>
               <Col md={{ span: 8 }}>
