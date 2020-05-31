@@ -13,6 +13,7 @@ import BranchAdd from './container/admin/branch/BranchAdd/BranchAdd';
 import BranchEdit from './container/admin/branch/BranchEdit/BranchEdit';
 import Contract from './container/admin/personnel/Contract/Contract';
 import PersonnelCreate from './container/admin/personnel/PersonnelCreate/PersonnelCreate';
+import RequestList from './container/admin/request/RequestList/RequestList';
 
 export const adminModalRoutes = [
   {
@@ -77,6 +78,11 @@ export const adminRoutes = [
     path: '/personnel/contracts',
     component: Contract,
   },
+  {
+    path: '/personnel/request',
+    component: RequestList,
+  },
+
   {
     path: '/error/:errorCode',
     component: ErrorPage,

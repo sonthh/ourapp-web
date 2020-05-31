@@ -1,0 +1,56 @@
+
+.card-container p {
+  // margin-top: 20px;
+  // background-color: #f5f5f5;
+  // padding-left: 5px;
+  // padding-right: 5px;
+  // padding-top: 10px;
+  // height: 100%;
+  // display: flex;
+  // flex-direction: column;
+  margin: 0;
+}
+.card-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.card-container > .ant-tabs > .ant-tabs-bar {
+  margin: 16px 16px 0px 16px;
+  background-color: #f5f5f5;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.card-container > .ant-tabs-card .ant-tabs-content > .ant-tabs-tabpane {
+  background: #fff;
+  padding: 5px 16px 16px 16px;
+}
+.card-container > .ant-tabs-card > .ant-tabs-nav::before {
+  display: none;
+}
+
+.card-container > .ant-tabs-card .ant-tabs-tab-active {
+  border-color: #fff;
+  background: #fff;
+}
+.code-box-demo {
+  background: #F5F5F5;
+  overflow: hidden;
+  padding: 24px;
+}
+
+.count-icon {
+  margin-left: 3px;
+}
+
+.ant-tabs-nav-scroll > .ant-tabs-nav-animated > .ant-tabs-tab {
+  height: 40px;
+  margin: 0;
+  padding: 0 16px;
+  line-height: 38px;
+  background: #fafafa;
+  border-radius: 2px 2px 0 0;
+}
+
