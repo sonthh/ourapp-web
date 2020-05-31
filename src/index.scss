@@ -45,6 +45,7 @@
 
 .site-layout {
   background-color: #fff;
+  overflow: hidden;
 }
 
 .site-layout .site-layout-background {
@@ -185,4 +186,12 @@ th {
 
 .icon-option {
   margin-right: 10px;
+}
+
+.d-none {
+  display: none;
+}
+
+.ant-tabs-tabpane {
+  outline: none;
 }

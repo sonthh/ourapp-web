@@ -25,7 +25,7 @@ export const menu = [
     submenu: [],
   },
   {
-    title: 'User',
+    title: 'Người dùng',
     icon: null,
     path: '/admin/user/manage',
     submenu: [],

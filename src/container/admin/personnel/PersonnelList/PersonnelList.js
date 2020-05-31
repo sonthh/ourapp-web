@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Popconfirm, Typography, Checkbox, Space, Breadcrumb, Divider, Col, Row,
+  Table, Button, notification, Popconfirm, Typography, Checkbox, Breadcrumb, Divider, Col, Row, Dropdown, Menu,
 } from 'antd';
 import {
-  DeleteOutlined, DeleteTwoTone, MailTwoTone, FilterTwoTone, UsergroupAddOutlined, UnorderedListOutlined,
+  DeleteOutlined, DeleteTwoTone, FilterTwoTone, UsergroupAddOutlined,
   EditTwoTone, ReloadOutlined, PlusCircleTwoTone, LoadingOutlined, UserDeleteOutlined, DownloadOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
@@ -13,16 +13,19 @@ import { checkIsEmptyObj } from '../../../../util/check';
 import { getDateFormat } from '../../../../util/date';
 import AvatarAndTitle from '../../../../component/common/AvatarAndTitle';
 import GenderTag from '../../../../component/common/GenderTag';
-import StatusTag from '../../../../component/common/StatusTag';
 import { getColumnSearchProps } from '../../../../util/table';
 import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
 import MyAvatar from '../../../../component/common/MyAvatar';
 import * as personnelAction from '../../../../action/personnelAction';
+import * as departmentAction from '../../../../action/departmentAction';
 import { Link, NavLink } from 'react-router-dom';
 import { Select } from 'antd';
+import { Helmet } from 'react-helmet';
+import axios from '../../../../service/apiConfig';
+import FileSaver from 'file-saver';
 
 const { Option } = Select;
-const Paragraph = Typography.Paragraph;
+const { Paragraph } = Typography;
 
 class PersonnelList extends Component {
 
@@ -32,11 +35,14 @@ class PersonnelList extends Component {
     const isColumnsFixed = localStorage.getItem('isColumnsFixed') === 'true' || false;
 
     this.state = {
-      filteredInfo: null,
-      sortedInfo: null,
+      filteredInfo: {
+        isStopWork: false,
+        departmentId: null,
+      },
+      sortedInfo: {},
       data: [],
       pagination: {
-        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} personnel`,
+        showTotal: (total, range) => `Từ ${range[0]}-${range[1]} / ${total} kết quả`,
         showQuickJumper: true,
       },
       selectedRowKeys: [],
@@ -48,10 +54,11 @@ class PersonnelList extends Component {
 
   componentDidMount() {
     this.props.findManyPersonnel({});
+    this.props.findManyDepartments({});
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { error, isDeleted, ids, dataList } = this.props;
+    const { error, isDeleted, ids, dataList, isDeletedOnePersonnel, deletedId } = this.props;
 
     if (error && error !== prevProps.error) {
       if (error) {
@@ -61,6 +68,17 @@ class PersonnelList extends Component {
           duration: 2.5,
         });
       }
+    }
+
+    if (isDeletedOnePersonnel !== undefined && isDeletedOnePersonnel === true
+      && deletedId !== prevProps.deletedId) {
+
+      const description = `Deleted successfully`;
+      notification.success({
+        message: 'SUCCESS',
+        description,
+        duration: 2.5,
+      });
     }
 
     if (isDeleted !== undefined && isDeleted === true && ids !== prevProps.ids) {
@@ -88,24 +106,29 @@ class PersonnelList extends Component {
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-    console.log(filters, sorter);
-
+    let { filteredInfo, sortedInfo } = this.state;
     const { current } = pagination;
+
+    filteredInfo = {
+      ...filteredInfo,
+      ...filters,
+    };
+
+    sortedInfo = sorter;
 
     this.setState({
       pagination: { ...this.state.pagination, current },
-      filteredInfo: filters,
-      sortedInfo: sorter,
+      filteredInfo,
+      sortedInfo,
     });
 
-    this.fetchPersonnel(pagination, filters, sorter);
+    this.fetchPersonnel(pagination, filteredInfo, sortedInfo);
   };
 
   fetchPersonnel = (pagination, filters, sorter) => {
 
     filters = getFilterObject(
-      ['gender', 'username', 'createdBy', 'lastModifiedBy', 'address', 'status',
-        'email', 'identification', 'phoneNumber', 'fullName', 'position', 'degree', 'department', 'branch'],
+      ['gender', 'createdBy', 'lastModifiedBy', 'email', 'phoneNumber', 'fullName', 'position', 'department'],
       filters,
     );
 
@@ -145,7 +168,7 @@ class PersonnelList extends Component {
 
   refreshData = () => {
     const { pagination, filteredInfo, sortedInfo } = this.state;
-    this.fetchPersonnel(pagination, filteredInfo, sortedInfo)
+    this.fetchPersonnel(pagination, filteredInfo, sortedInfo);
   }
 
   clearFiltersAndSorters = () => {
@@ -168,7 +191,7 @@ class PersonnelList extends Component {
   getColumns = (filteredInfo, sortedInfo, isColumnsFixed = false) => ([
     {
       title: 'Ảnh',
-      dataIndex: ['user', 'username'],
+      dataIndex: 'avatar',
       key: 'avatar',
       width: 75,
       minWidth: 75,
@@ -179,12 +202,12 @@ class PersonnelList extends Component {
     },
     {
       title: 'Họ tên',
-      dataIndex: ['user', 'fullName'],
+      dataIndex: 'fullName',
       key: 'fullName',
-      width: 150,
-      minWidth: 150,
+      width: 200,
+      minWidth: 200,
       filteredValue: filteredInfo.fullName || null,
-      ...getColumnSearchProps(this, 'fullName'),
+      ...getColumnSearchProps(this, 'fullName', 'họ tên'),
       render: fullName => fullName || 'No',
     },
     {
@@ -194,7 +217,7 @@ class PersonnelList extends Component {
       width: 140,
       minWidth: 140,
       filteredValue: filteredInfo.position || null,
-      ...getColumnSearchProps(this, 'position'),
+      ...getColumnSearchProps(this, 'position', 'chức danh'),
       render: position => position || 'No',
     },
     {
@@ -204,46 +227,11 @@ class PersonnelList extends Component {
       width: 240,
       minWidth: 240,
       filteredValue: filteredInfo.department || null,
-      ...getColumnSearchProps(this, 'department'),
       render: department => department || 'No',
     },
     {
-      title: 'Chi nhánh',
-      dataIndex: ['department', 'branch', 'name'],
-      key: 'branch',
-      width: 140,
-      minWidth: 140,
-      filteredValue: filteredInfo.branch || null,
-      ...getColumnSearchProps(this, 'branch'),
-      render: branch => branch || 'No',
-    },
-    {
-      title: 'Degree',
-      dataIndex: 'degree',
-      key: 'degree',
-      width: 140,
-      minWidth: 140,
-      filteredValue: filteredInfo.degree || null,
-      ...getColumnSearchProps(this, 'degree'),
-      render: degree => degree || 'No',
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-      width: 200,
-      minWidth: 200,
-      filteredValue: filteredInfo.description || null,
-      ...getColumnSearchProps(this, 'description'),
-      render: (description) => (
-        description ?
-          <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ', rows: 1 }}>{description}</Paragraph>
-          : 'No'
-      ),
-    },
-    {
       title: 'Sinh nhật',
-      dataIndex: ['user', 'birthDay'],
+      dataIndex: 'birthDay',
       key: 'birthDay',
       sorter: true,
       sortOrder: sortedInfo.columnKey === 'birthDay' && sortedInfo.order,
@@ -252,30 +240,8 @@ class PersonnelList extends Component {
       render: birthDay => getDateFormat(birthDay) || 'No',
     },
     {
-      title: 'Username',
-      dataIndex: ['user', 'username'],
-      key: 'username',
-      width: 140,
-      minWidth: 140,
-      filteredValue: filteredInfo.username || null,
-      ...getColumnSearchProps(this, 'username'),
-      render: (username) => (
-        <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ', rows: 1 }}>{username}</Paragraph>
-      ),
-    },
-    {
-      title: 'Identification',
-      dataIndex: ['user', 'identification'],
-      key: 'identification',
-      width: 150,
-      minWidth: 150,
-      filteredValue: filteredInfo.identification || null,
-      ...getColumnSearchProps(this, 'identification'),
-      render: identification => identification || 'No',
-    },
-    {
       title: 'Gender',
-      dataIndex: ['user', 'gender'],
+      dataIndex: 'gender',
       key: 'gender',
       width: 95,
       minWidth: 95,
@@ -294,48 +260,18 @@ class PersonnelList extends Component {
       render: gender => (<GenderTag gender={gender} />),
     },
     {
-      title: 'Status',
-      dataIndex: ['user', 'status'],
-      key: 'status',
-      width: 95,
-      minWidth: 95,
-      filteredValue: filteredInfo.status || null,
-      filters: [
-        {
-          text: (<StatusTag status='INACTIVE' />),
-          value: 'INACTIVE',
-        },
-        {
-          text: (<StatusTag status='ACTIVE' />),
-          value: 'ACTIVE',
-        },
-      ],
-      filterMultiple: false,
-      render: status => (<StatusTag status={status} />),
-    },
-    {
-      title: 'Address',
-      dataIndex: ['user', 'address'],
-      key: 'address',
-      width: 150,
-      minWidth: 150,
-      filteredValue: filteredInfo.address || null,
-      ...getColumnSearchProps(this, 'address'),
-      render: address => address || 'No',
-    },
-    {
-      title: 'Phone number',
-      dataIndex: ['user', 'phoneNumber'],
+      title: 'Số ĐT',
+      dataIndex: 'phoneNumber',
       key: 'phoneNumber',
       width: 150,
       minWidth: 150,
       filteredValue: filteredInfo.phoneNumber || null,
-      ...getColumnSearchProps(this, 'phoneNumber', 'Phone number'),
+      ...getColumnSearchProps(this, 'phoneNumber', 'số ĐT'),
       render: phoneNumber => phoneNumber || 'No',
     },
     {
       title: 'Email',
-      dataIndex: ['user', 'email'],
+      dataIndex: 'email',
       key: 'email',
       width: 240,
       minWidth: 240,
@@ -346,7 +282,7 @@ class PersonnelList extends Component {
       ),
     },
     {
-      title: 'Created date',
+      title: 'Ngày tạo',
       dataIndex: 'createdDate',
       key: 'createdDate',
       sorter: true,
@@ -356,13 +292,13 @@ class PersonnelList extends Component {
       render: createdDate => getDateFormat(createdDate) || 'No',
     },
     {
-      title: 'Create by',
+      title: 'Tạo bởi',
       dataIndex: 'createdBy',
       key: 'createdBy',
       width: 190,
       minWidth: 190,
       filteredValue: filteredInfo.createdBy || null,
-      ...getColumnSearchProps(this, 'createdBy', 'created by'),
+      ...getColumnSearchProps(this, 'createdBy', 'người tạo'),
       render: createdBy => (
         <AvatarAndTitle
           src={createdBy ? createdBy.avatar : null}
@@ -371,7 +307,7 @@ class PersonnelList extends Component {
       ),
     },
     {
-      title: 'Last modified date',
+      title: 'Lần cuối sửa',
       dataIndex: 'lastModifiedDate',
       width: 160,
       minWidth: 160,
@@ -381,13 +317,13 @@ class PersonnelList extends Component {
       render: lastModifiedDate => getDateFormat(lastModifiedDate),
     },
     {
-      title: 'Last modifed by',
+      title: 'Sửa bởi',
       dataIndex: 'lastModifiedBy',
       key: 'lastModifiedBy',
       width: 190,
       minWidth: 190,
       filteredValue: filteredInfo.lastModifiedBy || null,
-      ...getColumnSearchProps(this, 'lastModifiedBy', 'last modified by'),
+      ...getColumnSearchProps(this, 'lastModifiedBy', 'người sửa'),
       render: lastModifiedBy => (
         <AvatarAndTitle
           src={lastModifiedBy ? lastModifiedBy.avatar : null}
@@ -396,35 +332,43 @@ class PersonnelList extends Component {
       ),
     },
     {
-      title: 'Operations',
+      title: 'Hành động',
       key: 'operation',
       width: 120,
       minWidth: 120,
       dataIndex: 'id',
       fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
-        <Space key={id}>
-          <Link to={{ pathname: `/admin/personnel/manage/${id}/edit`, state: { background: this.props.location } }} >
+        <>
+          <Link to={`/admin/personnel/${id}/update`} >
             <Button
+              style={{ marginRight: 4 }}
               type='default'
               icon={<EditTwoTone />}
               size='small'
             />
           </Link>
-          <Button
-            type='default'
-            icon={<DeleteTwoTone />}
-            size='small'
-          />
-          <Button
-            type='default'
-            icon={<MailTwoTone />}
-            size='small'
-          />
-        </Space>
+          <Popconfirm
+            icon={<DeleteOutlined />}
+            placement='bottomRight'
+            title={`Bạn có muốn xóa nhân viên này`}
+            onConfirm={() => this.handleDeleteOnePersonnel(id)}
+          >
+            <Button
+              loading={this.props.isDeletingOnePersonnel && this.props.isDeletingOnePersonnelId === id}
+              type='default'
+              icon={<DeleteTwoTone />}
+              size='small'
+            />
+          </Popconfirm>
+        </>
       ),
     },
   ]);
+
+  handleDeleteOnePersonnel = (id) => {
+    this.props.deleteOnePersonnel(id);
+  }
 
   components = {
     header: {
@@ -482,9 +426,61 @@ class PersonnelList extends Component {
     });
   }
 
+  exportExcel = () => {
+    axios.get(`http://0.0.0.0:8080/api/v1/personnel/export/list`, {
+      responseType: 'blob',
+    })
+      .then((response) => {
+        console.log(response);
+        const blob = new Blob([response.data]);
+        FileSaver.saveAs(blob, 'abc.xlsx');
+      });
+  }
+
+  exportExcelMenu = (
+    <Menu>
+      <Menu.Item onClick={this.exportExcel}>
+        <span style={{ color: '#1890ff' }}><DownloadOutlined />Nhân viên được chọn</span>
+      </Menu.Item>
+      <Menu.Item>
+        <span style={{ color: '#1890ff' }}><DownloadOutlined />Bộ lọc</span>
+      </Menu.Item>
+    </Menu>
+  );
+
+  ongChangeWorkStatus = (isStopWork) => {
+    let { filteredInfo } = this.state;
+    const { pagination, sortedInfo } = this.state;
+
+
+    filteredInfo = {
+      ...filteredInfo,
+      isStopWork,
+    }
+
+    this.setState({ filteredInfo });
+
+    this.fetchPersonnel(pagination, filteredInfo, sortedInfo);
+  }
+
+  ongChangeDepartment = (departmentId) => {
+    let { filteredInfo } = this.state;
+    const { pagination, sortedInfo } = this.state;
+
+
+    filteredInfo = {
+      ...filteredInfo,
+      departmentId,
+    }
+
+    this.setState({ filteredInfo });
+
+    this.fetchPersonnel(pagination, filteredInfo, sortedInfo);
+  }
+
   render() {
     const { data, pagination, selectedRowKeys, isColumnsFixed, displayFilter } = this.state;
-    const { isLoading } = this.props;
+    const { isLoading, departments = [] } = this.props;
 
     const rowSelection = {
       selectedRowKeys,
@@ -496,6 +492,8 @@ class PersonnelList extends Component {
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
+
+    let { isStopWork = false, departmentId = null } = filteredInfo;
 
     // columns with filteredInfo and sortedInfo
     const columnsInfo = this.getColumns(filteredInfo, sortedInfo, isColumnsFixed);
@@ -514,7 +512,10 @@ class PersonnelList extends Component {
 
     return (
       <>
-        <Breadcrumb className={'MyBreadCrumb'} separator={<Divider type="vertical" />}>
+        <Helmet>
+          <title>Nhân viên</title>
+        </Helmet>
+        <Breadcrumb className={'MyBreadCrumb'} separator={<Divider type='vertical' />}>
           <Breadcrumb.Item>
             <NavLink to={'/admin/personnel/employees'}>Nhân viên</NavLink>
           </Breadcrumb.Item>
@@ -536,13 +537,29 @@ class PersonnelList extends Component {
                 icon={<ReloadOutlined />}>
               </Button>
               <Select
-                defaultValue="-1"
-                onChange={null}
-                style={{ width: 160, top: '-1px' }}
+                value={isStopWork}
+                onChange={this.ongChangeWorkStatus}
+                style={{ width: 160, top: '-1px', marginRight: '2px' }}
               >
-                <Option value="1"><UsergroupAddOutlined className='icon-option' />Đang làm việc</Option>
-                <Option value="0"><UserDeleteOutlined className='icon-option' />Nghỉ việc</Option>
-                <Option value="-1"><UnorderedListOutlined className='icon-option' />Tất cả</Option>
+                <Option value={false}><UsergroupAddOutlined className='icon-option' />Đang làm việc</Option>
+                <Option value={true}><UserDeleteOutlined className='icon-option' />Nghỉ việc</Option>
+              </Select>
+              <Select
+                value={departmentId}
+                onChange={this.ongChangeDepartment}
+                style={{ width: 200, top: '-1px' }}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                <Option value={null}>Tất cả</Option>
+                {
+                  departments.map(({ id, name }) => (
+                    <Option value={id}>{name}</Option>
+                  ))
+                }
               </Select>
             </Col>
             <Col md={{ span: 12 }}
@@ -556,12 +573,14 @@ class PersonnelList extends Component {
               </span>
               <Link to={'/admin/personnel/create'} >
                 <Button style={{ marginRight: '2px' }} type='default' icon={<PlusCircleTwoTone />}>
-                  Tạo mới
+                  Tạo mới NV
                 </Button>
               </Link>
-              <Button style={{ marginRight: '2px' }} type='default' icon={<DownloadOutlined />}>
-                Xuất excel
+              <Dropdown overlay={this.exportExcelMenu} placement='bottomLeft'>
+                <Button style={{ marginRight: '2px' }} type='default' icon={<DownloadOutlined />}>
+                  Xuất excel
                 </Button>
+              </Dropdown>
               <Popconfirm
                 placement='bottomLeft'
                 title={`Are you sure delete ${selectedRowKeys.length} selected items?`}
@@ -581,13 +600,13 @@ class PersonnelList extends Component {
               onClick={this.clearSorters}
               disabled={checkIsEmptyObj(sortedInfo) || !sortedInfo.order}
             >
-              Reset sắp xếp
+              Bỏ sắp xếp
               </Button>
             <Button
               onClick={this.clearFilters}
               disabled={checkIsEmptyObj(filteredInfo)}
             >
-              Reset filter
+              Bỏ lọc
               </Button>
             <Button
               onClick={this.clearFiltersAndSorters}
@@ -596,7 +615,7 @@ class PersonnelList extends Component {
                 || checkIsEmptyObj(filteredInfo) || !sortedInfo.order
               }
             >
-              Reset filter và sắp xếp
+              Bỏ lọc & sắp xếp
             </Button>
             <Button
               onClick={this.clearSelected}
@@ -606,15 +625,22 @@ class PersonnelList extends Component {
             </Button>
             <Button onClick={this.onClickToggleFixed}>
               <Checkbox
-                style={{ marginRight: '2px' }}
+                style={{ marginRight: 4 }}
                 checked={this.state.isColumnsFixed}
                 defaultChecked={this.state.isColumnsFixed}
                 onChange={this.onChangeColumnsFixed}
-              />Fixed operations
+              />Hiện hành động
             </Button>
           </div>
           <Table
-            style={{ fontSize: '13px' }}
+            style={{ fontSize: '13px', width: '100%' }}
+            locale={{
+              emptyText: (
+                <div style={{ padding: '20px 0' }}>
+                  Không có dữ liệu
+                </div>
+              )
+            }}
             bordered
             rowSelection={rowSelection}
             components={this.components}
@@ -636,16 +662,21 @@ class PersonnelList extends Component {
   }
 }
 
-const mapStateToProps = ({ personnel }) => {
+const mapStateToProps = ({ personnel, department }) => {
   const { personnelList } = personnel;
-  return { ...personnelList };
+  const { departmentList, } = department;
+
+  return {
+    ...personnelList,
+    departments: departmentList.dataList.content,
+  };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    findManyPersonnel: (params = {}) => {
-      dispatch(personnelAction.findManyPersonnel(params));
-    },
+    findManyPersonnel: (params = {}) => dispatch(personnelAction.findManyPersonnel(params)),
+    deleteOnePersonnel: (id) => dispatch(personnelAction.delteOnePersonnel(id)),
+    findManyDepartments: () => dispatch(departmentAction.findManyDepartments()),
   };
 };
 

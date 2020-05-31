@@ -14,6 +14,9 @@ import BranchEdit from './container/admin/branch/BranchEdit/BranchEdit';
 import Contract from './container/admin/personnel/Contract/Contract';
 import PersonnelCreate from './container/admin/personnel/PersonnelCreate/PersonnelCreate';
 import RequestList from './container/admin/request/RequestList/RequestList';
+import TimeKeeping from './container/admin/working/TimeKeeping/TimeKeeping';
+import ContractCreate from './container/admin/personnel/ContractCreate/ContractCreate';
+import PersonnelUpdate from './container/admin/personnel/PersonnelUpdate/PersonnelUpdate';
 
 export const adminModalRoutes = [
   {
@@ -71,12 +74,25 @@ export const adminRoutes = [
     component: PersonnelCreate,
   },
   {
+    path: '/personnel/:id/update',
+    component: PersonnelUpdate,
+  },
+  {
     path: '/personnel/employees',
     component: PersonnelList,
   },
   {
     path: '/personnel/contracts',
     component: Contract,
+    exact: true,
+  },
+  {
+    path: '/personnel/contracts/create',
+    component: ContractCreate,
+  },
+  {
+    path: '/working-day/timekeeping',
+    component: TimeKeeping,
   },
   {
     path: '/personnel/request',

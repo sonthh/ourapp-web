@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
 import 'ant-design-pro/dist/ant-design-pro.css';
+import locale from 'antd/es/locale/vi_VN';
 import './index.scss';
+import 'moment/locale/vi';
 // import * as serviceWorker from './serviceWorker';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import AdminLayout from './layout/admin/AdminLayout';
@@ -14,7 +16,7 @@ import { rootReducer } from './reducer/rootReducer';
 import AuthLayout from './layout/auth/AuthLayout';
 import { registerServiceWorker } from './config/register-sw';
 import { messaging } from './config/init-fcm';
-import { notification } from 'antd';
+import { notification, ConfigProvider } from 'antd';
 import * as authService from './service/authService';
 import { setTokenSentToServer, isTokenSentToServer } from './util/auth';
 
@@ -64,15 +66,17 @@ messaging.onMessage((payloads) => {
 });
 
 ReactDOM.render(
-  <Provider store={store}>
-    <BrowserRouter>
-      <Switch>
-        <Route path='/admin' render={props => <AdminLayout {...props} />} />
-        <Route path='/auth' render={props => <AuthLayout {...props} />} />
-        <Redirect from='/' to='/admin/error/404' />
-      </Switch>
-    </BrowserRouter>
-  </Provider>,
+  <ConfigProvider locale={locale}>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Switch>
+          <Route path='/admin' render={props => <AdminLayout {...props} />} />
+          <Route path='/auth' render={props => <AuthLayout {...props} />} />
+          <Redirect from='/' to='/admin/error/404' />
+        </Switch>
+      </BrowserRouter>
+    </Provider>
+  </ConfigProvider>,
   document.getElementById('root')
 );
 
