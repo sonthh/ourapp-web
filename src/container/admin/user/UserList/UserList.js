@@ -54,7 +54,7 @@ class UserList extends Component {
     if (error && error !== prevProps.error) {
       if (error) {
         notification.error({
-          message: 'Notification',
+          message: 'Lỗi',
           description: 'Something went wrong',
           duration: 2.5,
         });
@@ -64,9 +64,9 @@ class UserList extends Component {
     if (isDeletedOneUser !== undefined && isDeletedOneUser === true
       && deletedId !== prevProps.deletedId) {
 
-      const description = `Deleted successfully`;
+      const description = `Xóa thành công`;
       notification.success({
-        message: 'SUCCESS',
+        message: 'Thành công',
         description,
         duration: 2.5,
       });
@@ -76,10 +76,10 @@ class UserList extends Component {
       && deletedIds !== prevProps.deletedIds) {
 
       const { deletedIds } = this.props;
-      const description = `Deleted ${deletedIds.length} user${deletedIds.length > 1 ? 's' : ''} successfully`;
+      const description = `Đã xóa ${deletedIds.length} người dùng`;
 
       notification.success({
-        message: 'SUCCESS',
+        message: 'Thành công',
         description,
         duration: 2.5,
       });

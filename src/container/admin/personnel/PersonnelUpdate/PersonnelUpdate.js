@@ -66,7 +66,7 @@ class PersonnelUpdate extends Component {
 
       notification.success({
         message: 'Thành công',
-        description: 'Updated avatar successfully',
+        description: 'Chỉnh sửa ảnh thành công',
         duration: 2.5,
       });
     }

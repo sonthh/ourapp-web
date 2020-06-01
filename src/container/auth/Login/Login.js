@@ -24,8 +24,8 @@ class Login extends Component {
 
     if (error && error !== prevProps.error) {
       return notification.error({
-        message: 'Login failed',
-        description: 'Username or password is incorrect!',
+        message: 'Lỗi đăng nhập',
+        description: 'Tên đăng nhập hoặc mật khẩu sai!',
       });
     }
 
@@ -38,7 +38,7 @@ class Login extends Component {
 
       notification.success({
         duration: 2.5,
-        message: `Hi ${username}`,
+        message: `Chào ${username}`,
         description: 'Wellcom back!',
       });
     }

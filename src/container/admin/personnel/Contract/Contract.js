@@ -57,7 +57,7 @@ class Contract extends Component {
     if (error && error !== prevProps.error) {
       if (error) {
         notification.error({
-          message: 'Notification',
+          message: 'Lỗi',
           description: 'Something went wrong',
           duration: 2.5,
         });
@@ -66,10 +66,10 @@ class Contract extends Component {
 
     if (isDeleted !== undefined && isDeleted === true && ids !== prevProps.ids) {
       const { ids } = this.props;
-      const description = `Deleted ${ids.length} user${ids.length > 1 ? 's' : ''}`;
+      const description = `Đã xóa ${ids.length} người dùng`;
 
       notification.success({
-        message: 'SUCCESS',
+        message: 'Thành công',
         description,
         duration: 2.5,
       });

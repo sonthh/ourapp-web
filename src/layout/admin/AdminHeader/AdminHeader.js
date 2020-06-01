@@ -82,12 +82,16 @@ class AdminHeader extends Component {
       <Menu className='menu-avatar'>
         <Menu.Item>
           <SettingOutlined />
-          <Link style={{ display: 'inline' }} to='/admin/setting'><span>Setting</span></Link>
+          <Link style={{ display: 'inline' }} to='/admin/setting'><span>Chỉnh sửa</span></Link>
+        </Menu.Item>
+        <Menu.Item>
+          <SettingOutlined />
+          <Link style={{ display: 'inline' }} to='/admin/setting/permission'><span>Phân quyền</span></Link>
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item onClick={this.onLogout}>
           <LogoutOutlined />
-          <span>Logout</span>
+          <span>Đăng xuất</span>
         </Menu.Item>
       </Menu>
     );

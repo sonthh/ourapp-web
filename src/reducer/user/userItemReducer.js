@@ -28,7 +28,7 @@ export const userItemReducer = (state = initialState, { type, payloads }) => {
       return {
         ...state,
         isCreatingUser: false,
-        success: 'Created successfully',
+        success: 'Tạo thành công',
         item: user,
       }
     }
@@ -65,7 +65,7 @@ export const userItemReducer = (state = initialState, { type, payloads }) => {
       return {
         ...state,
         isUpdatingUser: false,
-        success: 'Updated successfully',
+        success: 'Tạo thành công',
         item: user,
       }
     }

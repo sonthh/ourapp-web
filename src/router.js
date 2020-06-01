@@ -16,6 +16,7 @@ import PersonnelCreate from './container/admin/personnel/PersonnelCreate/Personn
 import TimeKeeping from './container/admin/working/TimeKeeping/TimeKeeping';
 import ContractCreate from './container/admin/personnel/ContractCreate/ContractCreate';
 import PersonnelUpdate from './container/admin/personnel/PersonnelUpdate/PersonnelUpdate';
+import PermissionSetting from './container/admin/role/PermissionSetting/PermissionSetting';
 
 export const adminModalRoutes = [
   {
@@ -60,10 +61,6 @@ export const adminRoutes = [
     exact: true,
   },
   {
-    path: '/setting',
-    component: UserSetting,
-  },
-  {
     path: '/user/manage',
     component: UserList,
     exact: true,
@@ -92,6 +89,16 @@ export const adminRoutes = [
   {
     path: '/working-day/timekeeping',
     component: TimeKeeping,
+  },
+  {
+    path: '/setting',
+    component: UserSetting,
+    exact: true,
+  },
+  {
+    path: '/setting/permission',
+    component: PermissionSetting,
+    exact: true,
   },
   {
     path: '/error/:errorCode',
