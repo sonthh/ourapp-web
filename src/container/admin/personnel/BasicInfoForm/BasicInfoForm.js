@@ -32,7 +32,7 @@ class BasicInfoForm extends Component {
 
     if (error && error !== prevProps.error) {
       notification.error({
-        message: 'ERROR',
+        message: 'Lỗi',
         description: getErrorMessage(error) || 'Something went wrong',
         duration: 2.5,
       });
@@ -40,7 +40,7 @@ class BasicInfoForm extends Component {
 
     if (success !== undefined && success !== prevProps.success) {
       notification.success({
-        message: 'SUCCESSS',
+        message: 'Thành công',
         description: success,
         duration: 2.5,
       });

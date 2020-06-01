@@ -74,7 +74,7 @@ class UpdateQualificationForm extends Component {
 
     if (success !== undefined && success !== prevProps.success) {
       notification.success({
-        message: 'Thành công!',
+        message: 'Thành công',
         description: success,
         duration: 2.5,
       });

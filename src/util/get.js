@@ -64,3 +64,57 @@ export const getRequestArrayFromFormValues = (values, requestLength, prefixName)
 
   return arrRequest;
 };
+
+export const domains = {
+  'USER': 'Nguời dùng',
+  'PERSONNEL': 'Nhân sự',
+  'ROLE': 'Nhóm quyền',
+  'BRANCH': 'Chi nhánh',
+  'DEPARTMENT': 'Phòng ban'
+};
+
+export const actions = {
+  'CREATE': 'Tạo',
+  'UPDATE': 'Cập nhật',
+  'READ': 'Xem',
+  'DELETE': 'Xóa',
+};
+
+export const scopes = {
+  'ALL': 'Tất cả',
+  'PER': 'Sở hữu'
+};
+
+export const getPermissionGroup = (permissions) => {
+  const arr = ['USER', 'PERSONNEL', 'ROLE', 'BRANCH', 'DEPARTMENT'];
+  let result = {};
+  arr.forEach(each => result[each] = []);
+
+  permissions.forEach(each => {
+    const key = each.split('_')[1];
+
+    if (arr.includes(key)) {
+      const tmp = result[key] || [];
+
+      result[key] = [
+        ...tmp,
+        each,
+      ];
+    }
+  });
+
+  return result;
+}
+
+export const getPermisionInVietnamees = per => {
+  const tmp = per.split('_');
+
+  const scope = tmp[0];
+  const domain = tmp[1];
+  const action = tmp[2];
+
+  let result = '';
+  result += actions[action] + ' ' + domains[domain].toLowerCase() + ` (${scopes[scope].toLowerCase()})`;
+
+  return result;
+} 

@@ -56,8 +56,8 @@ class UserSetting extends Component {
       this.setState({ avatarUrl, avatarFile: null });
 
       notification.success({
-        message: 'SUCCESSS',
-        description: 'Updated avatar successfully',
+        message: 'Thành công',
+        description: 'Chỉnh sửa ảnh thành công',
         duration: 2.5,
       });
 
@@ -70,7 +70,7 @@ class UserSetting extends Component {
 
     if (error && error !== prevProps.error) {
       notification.error({
-        message: 'ERROR',
+        message: 'Lỗi',
         description: getErrorMessage(error) || 'Something went wrong',
         duration: 2.5,
       });
@@ -87,8 +87,8 @@ class UserSetting extends Component {
 
     if (isUpdatedUserMe === true && isUpdatedUserMe !== prevProps.isUpdatedUserMe) {
       notification.success({
-        message: 'SUCCESSS',
-        description: 'Updated info successfully',
+        message: 'Thành công',
+        description: 'Chỉnh sửa thành công',
         duration: 2.5,
       });
     }

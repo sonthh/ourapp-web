@@ -15,7 +15,7 @@ export const personnelItemReducer = (state = initialState, { type, payloads }) =
       return {
         ...state,
         isCreating: false,
-        success: 'Created successfully',
+        success: 'Tạo thành công',
         item: personnel,
       }
     }

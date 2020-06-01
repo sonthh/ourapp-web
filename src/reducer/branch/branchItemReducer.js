@@ -14,7 +14,7 @@ export const branchItemReducer = (state = initialState, { type, payloads }) => {
       return {
         ...state,
         isCreatingBranch: false,
-        success: 'Created successfully',
+        success: 'Tạo thành công',
         item: branch,
       }
     }
@@ -75,7 +75,7 @@ export const branchItemReducer = (state = initialState, { type, payloads }) => {
       return {
         ...state,
         isUpdatingBranch: false,
-        success: 'Updated successfully',
+        success: 'Cập nhật thành công',
         item: branch,
       }
     }

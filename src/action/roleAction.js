@@ -33,3 +33,41 @@ export const findOneRole = (id) => {
     }
   };
 };
+
+export const findManyPermissions = () => {
+
+  return async (dispatch) => {
+    try {
+      const permissions = await roleService.findManyPermissions();
+
+      dispatch({
+        type: actionTypes.FIND_MANY_PERMISSION_SUCCESS,
+        payloads: { permissions },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const updateRoleScopes = (roleId, scopeRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_ROLE_SCOPES_REQUEST
+    });
+    try {
+      const role = await roleService.updateRoleScopes(roleId, scopeRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_ROLE_SCOPES_SUCCESS,
+        payloads: { role },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_ROLE_SCOPES_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};

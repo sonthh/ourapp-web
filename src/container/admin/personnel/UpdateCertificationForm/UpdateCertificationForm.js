@@ -67,7 +67,7 @@ class UpdateCertificationForm extends Component {
 
     if (error && error !== prevProps.error) {
       notification.error({
-        message: 'Có lỗi',
+        message: 'Lỗi',
         description: getErrorMessage(error) || 'Something went wrong',
         duration: 2.5,
       });
@@ -75,7 +75,7 @@ class UpdateCertificationForm extends Component {
 
     if (success !== undefined && success !== prevProps.success) {
       notification.success({
-        message: 'Thành công!',
+        message: 'Thành công',
         description: success,
         duration: 2.5,
       });
