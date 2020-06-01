@@ -15,7 +15,7 @@ export const menu = [
   {
     title: 'Yêu cầu',
     icon: null,
-    path: '/admin/request',
+    path: '/admin/personnel/request',
     submenu: [],
   },
   {

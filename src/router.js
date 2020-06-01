@@ -13,6 +13,7 @@ import BranchAdd from './container/admin/branch/BranchAdd/BranchAdd';
 import BranchEdit from './container/admin/branch/BranchEdit/BranchEdit';
 import Contract from './container/admin/personnel/Contract/Contract';
 import PersonnelCreate from './container/admin/personnel/PersonnelCreate/PersonnelCreate';
+import RequestList from './container/admin/request/RequestList/RequestList';
 import TimeKeeping from './container/admin/working/TimeKeeping/TimeKeeping';
 import ContractCreate from './container/admin/personnel/ContractCreate/ContractCreate';
 import PersonnelUpdate from './container/admin/personnel/PersonnelUpdate/PersonnelUpdate';
@@ -89,6 +90,10 @@ export const adminRoutes = [
   {
     path: '/working-day/timekeeping',
     component: TimeKeeping,
+  },
+  {
+    path: '/personnel/request',
+    component: RequestList,
   },
   {
     path: '/setting',
