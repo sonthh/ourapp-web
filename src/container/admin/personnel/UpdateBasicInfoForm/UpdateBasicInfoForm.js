@@ -124,9 +124,6 @@ class UpdateBasicInfoForm extends Component {
       return;
     }
 
-    console.log(values);
-
-
     // add/update identification
     const { displayIDForm, displayPassportForm } = this.state;
     if (displayIDForm === true) {

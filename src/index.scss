@@ -104,8 +104,8 @@ th {
     cursor: pointer;
   }
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background-color: #ffffff;
   }
   ::-webkit-scrollbar-thumb {
@@ -194,4 +194,46 @@ th {
 
 .ant-tabs-tabpane {
   outline: none;
+}
+
+/*
+  pagination
+*/
+
+.ant-pagination {
+  font-size: 13px;
+}
+
+// dark background to work at night
+.site-layout {
+  //background-color: #131212 !important;
+}
+
+.actions-right {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1px;
+
+  button {
+    font-size: 12px;
+    border-radius: 4px;
+    height: 31px;
+    padding: 0px 16px;
+
+    span.anticon + span {
+      margin-left: 4px;
+    }
+  }
+
+  > button:first-child {
+    margin-right: 4px;
+  }
+}
+
+// action buttons in last column of table 
+tbody > tr > td:last-child {
+  button:first-child {
+    margin-right: 5px;
+  }
 }

@@ -28,11 +28,11 @@ class PersonnelUpdate extends Component {
       avatarFile: null,
       avatarUrl: null,
       displayUploadButton: false,
-      fullName: '',
-      phoneNumber: '',
-      email: '',
-      birthDay: '',
-      address: '',
+      fullName: 'Tên nhân viên',
+      phoneNumber: 'Số điện thoại',
+      email: 'Email',
+      birthDay: 'Sinh nhật',
+      address: 'Địa chỉ',
       hash: '#basic-info',
     }
   }
@@ -53,11 +53,15 @@ class PersonnelUpdate extends Component {
     const { item, avatarUrl } = this.props;
 
     if (item !== prevProps.item) {
-      const { fullName, phoneNumber, email, birthDay, contactInfo, avatar } = item;
+      let { fullName, phoneNumber, email, birthDay, contactInfo, avatar } = item;
       const address = (contactInfo && contactInfo.address) ? contactInfo.address : 'Địa chỉ';
+      fullName = fullName || 'Tên nhân viên';
+      phoneNumber = phoneNumber || 'Số điện thoại';
+      email = email || 'Email';
+      birthDay = birthDay ? getDateFormat(birthDay) : 'Sinh nhật'
 
       this.setState({
-        fullName, phoneNumber, email, birthDay: getDateFormat(birthDay), address, avatarUrl: avatar,
+        fullName, phoneNumber, email, birthDay, address, avatarUrl: avatar,
       });
     }
 

@@ -72,6 +72,29 @@ export const personnelListReducer = (state = initialState, { type, payloads }) =
         isDeletedOnePersonnel: isDeleted,
       }
     }
+    case actionTypes.PERSONNEL_EXPORT_EXCEL_REQUEST: {
+      return {
+        ...state,
+        isExporting: true,
+      };
+    }
+    case actionTypes.PERSONNEL_EXPORT_EXCEL_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        isExporting: true,
+        error,
+      };
+    }
+    case actionTypes.PERSONNEL_EXPORT_EXCEL_SUCCESS: {
+      const { fileData } = payloads;
+      
+      return {
+        ...state,
+        isExporting: false,
+        fileData,
+      };
+    }
     default:
       return state;
   }

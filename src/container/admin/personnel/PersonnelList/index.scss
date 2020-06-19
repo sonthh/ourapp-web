@@ -17,3 +17,23 @@
 .d-none {
   display: none;
 }
+
+.actions-right {
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    font-size: 13px;
+  }
+}
+
+.excel-exporting-options {
+  .ant-dropdown-menu-item {
+    font-size: 13px;
+    padding: 5px 17px;
+  }
+
+  .ant-dropdown-menu-item:hover {
+    background-color: #e6f8ff;
+  }
+}

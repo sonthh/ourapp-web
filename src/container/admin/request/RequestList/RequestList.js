@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable react/react-in-jsx-scope */
 import React, { Component } from 'react';
 import { Row, Col, Button, Select, Tabs, Table, Badge, DatePicker } from "antd";
 import './index.scss';
@@ -186,7 +184,7 @@ class RequestList extends Component {
               <Select
                 defaultValue="-1"
                 onChange={null}
-                style={{ width: 160, top: '-1px' }}
+                style={{ width: 160, top: -2 }}
               >
                 <Option value="0"><DollarOutlined className='icon-option' />Tạm ứng lương</Option>
                 <Option value="1"><FieldTimeOutlined className='icon-option' />Làm thêm giờ</Option>
@@ -196,10 +194,8 @@ class RequestList extends Component {
             </Col>
             <Col
               md={{ span: 12 }}
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-              }}>
+              className='actions-right'
+            >
               <span style={{ marginRight: '8px', lineHeight: '30px' }}>
                 {/* {'hasSelected' ? `Selected ${'selectedRowKeys.length'} items` : ''} */}
               </span>

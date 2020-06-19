@@ -532,3 +532,27 @@ export const updateAvatar = (personnelId, formData) => {
     }
   };
 };
+
+export const exportExcel = (params) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.PERSONNEL_EXPORT_EXCEL_REQUEST,
+    });
+
+    try {
+      const fileData = await personnelService.exportExcel(params);
+
+      dispatch({
+        type: actionTypes.PERSONNEL_EXPORT_EXCEL_SUCCESS,
+        payloads: { fileData },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.PERSONNEL_EXPORT_EXCEL_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+

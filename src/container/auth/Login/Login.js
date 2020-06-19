@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Form, Input, Button, Checkbox, Row, Col, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as authAction from '../../../action/authAction';
 import { saveAuthData, checkAuth } from '../../../util/auth';

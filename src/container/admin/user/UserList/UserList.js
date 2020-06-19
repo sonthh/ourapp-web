@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Popconfirm, Typography, Checkbox, Space, Row, Col,
+  Table, Button, notification, Popconfirm, Typography, Checkbox, Row, Col,
 } from 'antd';
 import {
   DeleteOutlined, DeleteTwoTone, FilterTwoTone,
@@ -361,7 +361,7 @@ class UserList extends Component {
       dataIndex: 'id',
       fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
-        <Space key={id}>
+        <>
           <Link to={{ pathname: `/admin/user/manage/${id}/edit`, state: { background: this.props.location } }} >
             <Button
               type='default'
@@ -382,7 +382,7 @@ class UserList extends Component {
               size='small'
             />
           </Popconfirm>
-        </Space>
+        </>
       ),
     },
   ]);
@@ -492,11 +492,9 @@ class UserList extends Component {
                 onClick={this.refreshData}
               />
             </Col>
-            <Col md={{ span: 12 }}
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end'
-              }}
+            <Col
+              md={{ span: 12 }}
+              className='actions-right'
             >
               <span style={{ marginRight: '8px', lineHeight: '30px' }}>
                 {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
@@ -562,6 +560,13 @@ class UserList extends Component {
           <Table
             style={{ fontSize: '13px', width: '100%' }}
             bordered
+            locale={{
+              emptyText: (
+                <div style={{ padding: '20px 0' }}>
+                  {isLoadingTable === true ? 'Đang tải dữ liệu' : 'Không tìm thấy dữ liệu'}
+                </div>
+              ),
+            }}
             rowSelection={rowSelection}
             components={this.components}
             onRow={this.onRow}

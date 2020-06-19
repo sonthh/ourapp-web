@@ -3,13 +3,11 @@ import './index.scss';
 import {
   Button, notification, Checkbox, Col, Row, Form,
 } from 'antd';
-import { connect } from 'react-redux';
-import * as personnelAction from '../../../../action/personnelAction';
+    import { connect } from 'react-redux';
 import { Select } from 'antd';
 import { Helmet } from 'react-helmet';
 import * as roleAction from '../../../../action/roleAction'
 import { getPermissionGroup, getPermisionInVietnamees, domains } from '../../../../util/get';
-
 
 class PermissionSetting extends Component {
 

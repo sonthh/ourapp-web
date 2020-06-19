@@ -90,7 +90,7 @@ class UpdateContactInfoForm extends Component {
       >
         <Row>
           <Col span={24} md={{ span: 24 }}>
-            <Title level={4}>Liên hệ chung</Title>
+            <Title className='form-title' level={4}>Liên hệ chung</Title>
           </Col>
           <Col span={24} md={{ span: 24 }}>
             <Form.Item
@@ -113,7 +113,7 @@ class UpdateContactInfoForm extends Component {
             </Form.Item>
           </Col>
           <Col span={24} md={{ span: 24 }}>
-            <Title level={4}>Địa chỉ thương trú</Title>
+            <Title className='form-title' level={4}>Địa chỉ thương trú</Title>
           </Col>
           <Col span={24} md={{ span: 12 }}>
             <Form.Item name='address' label='Địa chỉ thường trú'>
@@ -136,7 +136,7 @@ class UpdateContactInfoForm extends Component {
             </Form.Item>
           </Col>
           <Col span={24} md={{ span: 24 }}>
-            <Title level={4}>Liên hệ khẩn cấp</Title>
+            <Title className='form-title' level={4}>Liên hệ khẩn cấp</Title>
           </Col>
           <Col span={24} md={{ span: 12 }}>
             <Form.Item name='urgentContact' label='Người liên hệ'>

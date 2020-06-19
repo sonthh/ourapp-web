@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Popconfirm, Typography, Checkbox, Breadcrumb, Divider, Col, Row, Dropdown, Menu,
+  Table, Button, notification, Popconfirm, Typography, Checkbox, Breadcrumb, Divider, Col, Row, Dropdown, Menu, message,
 } from 'antd';
 import {
   DeleteOutlined, DeleteTwoTone, FilterTwoTone, UsergroupAddOutlined,
@@ -15,13 +15,14 @@ import AvatarAndTitle from '../../../../component/common/AvatarAndTitle';
 import GenderTag from '../../../../component/common/GenderTag';
 import { getColumnSearchProps } from '../../../../util/table';
 import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
+import ExcelSettingModal from '../../../../component/modal/ExcelSettingModal/ExcelSettingModal';
+import ExcelProgressModal from '../../../../component/modal/ExcelProgressModal/ExcelProgressModal';
 import MyAvatar from '../../../../component/common/MyAvatar';
 import * as personnelAction from '../../../../action/personnelAction';
 import * as departmentAction from '../../../../action/departmentAction';
 import { Link, NavLink } from 'react-router-dom';
 import { Select } from 'antd';
 import { Helmet } from 'react-helmet';
-import axios from '../../../../service/apiConfig';
 import FileSaver from 'file-saver';
 
 const { Option } = Select;
@@ -49,6 +50,8 @@ class PersonnelList extends Component {
       columns: this.getColumns({}, {}),
       isColumnsFixed,
       displayFilter: false,
+      displayExcelSettingModal: false,
+      displayExcelDownload: false,
     };
   }
 
@@ -342,7 +345,6 @@ class PersonnelList extends Component {
         <>
           <Link to={`/admin/personnel/${id}/update`} >
             <Button
-              style={{ marginRight: 4 }}
               type='default'
               icon={<EditTwoTone />}
               size='small'
@@ -426,24 +428,40 @@ class PersonnelList extends Component {
     });
   }
 
-  exportExcel = () => {
-    axios.get(`http://0.0.0.0:8080/api/v1/personnel/export/list`, {
-      responseType: 'blob',
-    })
-      .then((response) => {
-        console.log(response);
-        const blob = new Blob([response.data]);
-        FileSaver.saveAs(blob, 'abc.xlsx');
+  openExportExcel = ({ item, key, keyPath, selectedKeys, domEvent }) => {
+    this.setState({ exportingType: key });
+    const { selectedRowKeys } = this.state;
+
+    if (key === 'type_selected' && selectedRowKeys.length === 0) {
+      notification.success({
+        message: 'Thông báo',
+        description: 'Chưa chọn dòng nào',
+        duration: 2.5,
       });
+
+      return;
+    }
+
+    message.info('Kéo để sắp xếp', 0.6);
+    this.setState({ displayExcelSettingModal: true });
+  }
+
+  saveExcelToClient = () => {
+    const { fileData } = this.props;
+
+    if (!fileData) return;
+
+    const blob = new Blob([fileData]);
+    FileSaver.saveAs(blob, 'DanhSachNhanVien.xlsx');
   }
 
   exportExcelMenu = (
-    <Menu>
-      <Menu.Item onClick={this.exportExcel}>
+    <Menu className='excel-exporting-options'>
+      <Menu.Item onClick={this.openExportExcel} key='type_selected'>
         <span style={{ color: '#1890ff' }}><DownloadOutlined />Nhân viên được chọn</span>
       </Menu.Item>
-      <Menu.Item>
-        <span style={{ color: '#1890ff' }}><DownloadOutlined />Bộ lọc</span>
+      <Menu.Item onClick={this.openExportExcel} key='type_filtered'>
+        <span style={{ color: '#1890ff' }}><DownloadOutlined />Theo bộ lọc hiện tại</span>
       </Menu.Item>
     </Menu>
   );
@@ -478,9 +496,54 @@ class PersonnelList extends Component {
     this.fetchPersonnel(pagination, filteredInfo, sortedInfo);
   }
 
+
+  closeExcelSettingModal = () => {
+    this.setState({ displayExcelSettingModal: false });
+  }
+
+  closeExcelDownload = () => {
+    this.setState({ displayExcelDownload: false });
+  }
+
+  handleExcelRequest = (selectedColumns) => {
+    this.setState({ displayExcelDownload: true });
+
+    const { exportingType, selectedRowKeys } = this.state;
+
+    if (exportingType === 'type_selected') {
+
+      this.props.exportExcel({
+        ids: selectedRowKeys + '',
+        columns: selectedColumns + '',
+      });
+    }
+
+    if (exportingType === 'type_filtered') {
+      let { filteredInfo: filters, sortedInfo: sorter } = this.state;
+
+      filters = getFilterObject(
+        ['gender', 'createdBy', 'lastModifiedBy', 'email', 'phoneNumber', 'fullName', 'position', 'department'],
+        filters,
+      );
+
+      const sortDirection = (sorter && sorter.order && sorter.order === 'ascend') ? 'ASC' : 'DESC';
+      const sortBy = (sorter && sorter.order && sorter.field) ? sorter.field : 'id';
+
+      this.props.exportExcel({
+        sortBy,
+        sortDirection,
+        ...filters,
+        columns: selectedColumns + '',
+      });
+    }
+  }
+
   render() {
-    const { data, pagination, selectedRowKeys, isColumnsFixed, displayFilter } = this.state;
-    const { isLoading, departments = [] } = this.props;
+    const {
+      data, pagination, selectedRowKeys, isColumnsFixed, displayFilter, displayExcelSettingModal, displayExcelDownload
+    } = this.state;
+
+    const { isLoading, departments = [], isExporting } = this.props;
 
     const rowSelection = {
       selectedRowKeys,
@@ -539,7 +602,7 @@ class PersonnelList extends Component {
               <Select
                 value={isStopWork}
                 onChange={this.ongChangeWorkStatus}
-                style={{ width: 160, top: '-1px', marginRight: '2px' }}
+                style={{ width: 160, top: -2, marginRight: '2px' }}
               >
                 <Option value={false}><UsergroupAddOutlined className='icon-option' />Đang làm việc</Option>
                 <Option value={true}><UserDeleteOutlined className='icon-option' />Nghỉ việc</Option>
@@ -547,9 +610,9 @@ class PersonnelList extends Component {
               <Select
                 value={departmentId}
                 onChange={this.ongChangeDepartment}
-                style={{ width: 200, top: '-1px' }}
+                style={{ width: 200, top: -2 }}
                 showSearch
-                optionFilterProp="children"
+                optionFilterProp='children'
                 filterOption={(input, option) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
@@ -557,40 +620,28 @@ class PersonnelList extends Component {
                 <Option value={null}>Tất cả</Option>
                 {
                   departments.map(({ id, name }) => (
-                    <Option value={id}>{name}</Option>
+                    <Option key={id} value={id}>{name}</Option>
                   ))
                 }
               </Select>
             </Col>
-            <Col md={{ span: 12 }}
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end'
-              }}
+            <Col
+              md={{ span: 12 }}
+              className='actions-right'
             >
               <span style={{ marginRight: '8px', lineHeight: '30px' }}>
                 {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
               </span>
               <Link to={'/admin/personnel/create'} >
                 <Button style={{ marginRight: '2px' }} type='default' icon={<PlusCircleTwoTone />}>
-                  Tạo mới NV
+                  Tạo NV
                 </Button>
               </Link>
-              <Dropdown overlay={this.exportExcelMenu} placement='bottomLeft'>
+              <Dropdown overlay={this.exportExcelMenu} placement='bottomRight'>
                 <Button style={{ marginRight: '2px' }} type='default' icon={<DownloadOutlined />}>
-                  Xuất excel
+                  Excel
                 </Button>
               </Dropdown>
-              <Popconfirm
-                placement='bottomLeft'
-                title={`Are you sure delete ${selectedRowKeys.length} selected items?`}
-                onConfirm={this.onDeleteMany}
-                disabled={!hasSelected}
-              >
-                <Button type='danger' icon={<DeleteOutlined />} disabled={!hasSelected} loading={this.props.isLoadingDelete}>
-                  Xóa
-                </Button>
-              </Popconfirm>
             </Col>
           </Row>
         </div>
@@ -637,9 +688,9 @@ class PersonnelList extends Component {
             locale={{
               emptyText: (
                 <div style={{ padding: '20px 0' }}>
-                  Không có dữ liệu
+                  {isLoading === true ? 'Đang tải dữ liệu' : 'Không tìm thấy dữ liệu'}
                 </div>
-              )
+              ),
             }}
             bordered
             rowSelection={rowSelection}
@@ -657,6 +708,17 @@ class PersonnelList extends Component {
             scroll={{ x: 'max-content' }}
           />
         </div>
+        <ExcelSettingModal
+          visible={displayExcelSettingModal}
+          onClose={this.closeExcelSettingModal}
+          onOk={(selectedColums) => this.handleExcelRequest(selectedColums)}
+        />
+        <ExcelProgressModal
+          visible={displayExcelDownload}
+          onClose={this.closeExcelDownload}
+          onOk={this.saveExcelToClient}
+          isExporting={isExporting}
+        />
       </>
     );
   }
@@ -677,6 +739,7 @@ const mapDispatchToProps = (dispatch) => {
     findManyPersonnel: (params = {}) => dispatch(personnelAction.findManyPersonnel(params)),
     deleteOnePersonnel: (id) => dispatch(personnelAction.delteOnePersonnel(id)),
     findManyDepartments: () => dispatch(departmentAction.findManyDepartments()),
+    exportExcel: (params) => dispatch(personnelAction.exportExcel(params)),
   };
 };
 

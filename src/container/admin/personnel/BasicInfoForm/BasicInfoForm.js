@@ -24,7 +24,7 @@ class BasicInfoForm extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { departments, error, success } = this.props;
+    const { departments, error, success, item } = this.props;
 
     if (departments !== prevProps.departments) {
       this.setState({ departments });
@@ -45,6 +45,10 @@ class BasicInfoForm extends Component {
         duration: 2.5,
       });
     }
+
+    if (item && item !== prevProps.item) {
+      this.props.handleCreateSucess(item);
+    }
   }
 
   onChangeDisplayIDForm = (e) => {
@@ -64,9 +68,8 @@ class BasicInfoForm extends Component {
 
   onSubmitBasicInfoForm = (values) => {
     this.props.createOneBasicInfo(values);
-
-    this.props.history.push("/admin/personnel/employees");
   }
+
   onFieldsChange = (changedFields, allFields) => {
     if (changedFields[0]) {
       const name = changedFields[0].name[0];

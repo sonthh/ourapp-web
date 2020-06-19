@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Popconfirm, Typography, Checkbox, Space, Breadcrumb, Divider, Col, Row,
+  Table, Button, notification, Popconfirm, Typography, Checkbox, Breadcrumb, Divider, Col, Row,
 } from 'antd';
 import {
   DeleteOutlined, DeleteTwoTone, MailTwoTone, FilterTwoTone, UsergroupAddOutlined, UnorderedListOutlined,
@@ -404,7 +404,7 @@ class Contract extends Component {
       dataIndex: 'id',
       fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
-        <Space key={id}>
+        <>
           <Link to={{ pathname: `/admin/personnel/manage/${id}/edit`, state: { background: this.props.location } }} >
             <Button
               type='default'
@@ -422,7 +422,7 @@ class Contract extends Component {
             icon={<MailTwoTone />}
             size='small'
           />
-        </Space>
+        </>
       ),
     },
   ]);
@@ -542,7 +542,7 @@ class Contract extends Component {
               <Select
                 defaultValue="1"
                 onChange={null}
-                style={{ width: 200, top: '-1px' }}
+                style={{ width: 200, top: -2 }}
               >
                 <Option value="1"><UsergroupAddOutlined className='icon-option' />Hợp đồng chính thức</Option>
                 <Option value="0"><UserDeleteOutlined className='icon-option' />Hợp đồng thử việc</Option>
@@ -554,6 +554,7 @@ class Contract extends Component {
                 display: 'flex',
                 justifyContent: 'flex-end'
               }}
+              className='actions-right'
             >
               <span style={{ marginRight: '8px', lineHeight: '30px' }}>
                 {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}

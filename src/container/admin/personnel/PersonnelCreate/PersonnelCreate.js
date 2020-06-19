@@ -1,4 +1,4 @@
-import { Spin, Tabs, Row, Col, Upload, Avatar } from 'antd';
+import { Spin, Tabs, Row, Col, Upload, Avatar, Menu } from 'antd';
 import './index.scss';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -8,6 +8,7 @@ import { FaBirthdayCake } from "react-icons/fa";
 import { GiPositionMarker } from "react-icons/gi";
 import BasicInfoForm from '../BasicInfoForm/BasicInfoForm';
 import { Helmet } from 'react-helmet';
+import { NavLink } from 'react-router-dom';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -21,13 +22,8 @@ class PersonnelCreate extends Component {
       email: 'Email',
       birthDay: 'Ngày sinh',
       address: 'Địa chỉ',
+      hash: '#basic-info',
     }
-  }
-
-  componentDidMount() {
-  }
-
-  componentDidUpdate(prevProps, prevState) {
   }
 
   onChangeFields = (name, value) => {
@@ -36,8 +32,70 @@ class PersonnelCreate extends Component {
     });
   };
 
+  handleCreateSucess = (item) => {
+    if (item && item.id) {
+      this.props.history.push(`/admin/personnel/${item.id}/update`);
+    }
+  }
+
+  menu = [
+    {
+      hash: '#basic-info',
+      title: 'Thông tin cơ bản',
+      component: <BasicInfoForm handleCreateSucess={this.handleCreateSucess} onChangeFields={this.onChangeFields} />,
+    },
+    {
+      hash: '#working-time',
+      title: 'Thời gian làm việc',
+      component: <div>Bạn cần tạo thông tin cơ bản của nhân viên trước.</div>
+    },
+    {
+      hash: '#qualification',
+      title: 'Trình độ chuyên môn',
+      component: <div>Bạn cần tạo thông tin cơ bản của nhân viên trước.</div>
+    },
+    {
+      hash: '#certification',
+      title: 'Chứng chỉ chuyên ngành',
+      component: <div>Bạn cần tạo thông tin cơ bản của nhân viên trước.</div>
+    },
+    {
+      hash: '#work-history',
+      title: 'Lịch sử làm việc',
+      component: <div>Bạn cần tạo thông tin cơ bản của nhân viên trước.</div>
+    },
+    {
+      hash: '#contact-info',
+      title: 'Thông tin liên hệ',
+      component: <div>Bạn cần tạo thông tin cơ bản của nhân viên trước.</div>
+    },
+  ]
+
+  componentDidMount() {
+    const hash = window.location.hash;
+    if (hash && hash !== '') {
+      this.setState({ hash });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+  }
+
+  onClickMenu = ({ item, key, keyPath, domEvent }) => {
+    this.setState({ hash: key });
+  }
+
+  renderTabContent = (hash) => {
+    const item = this.menu.find(each => each.hash === hash);
+
+    if (item && item.component)
+      return item.component;
+
+    return null;
+  }
+
   render() {
-    const { fullName, phoneNumber, email, birthDay, address } = this.state;
+    const { fullName, phoneNumber, email, birthDay, address, hash } = this.state;
 
     return (
       <>
@@ -94,32 +152,38 @@ class PersonnelCreate extends Component {
           <Tabs defaultActiveKey="1" className='personnel-tabs'>
             <TabPane tab="Hồ sơ" key="1">
 
-              <Tabs tabPosition='left' className='personnel-files-tabs'>
-                <TabPane tab="Thông tin cơ bản" key="ttcb">
-                  <BasicInfoForm history={this.props.history} onChangeFields={this.onChangeFields} />
-                </TabPane>
-                <TabPane tab="Thời gian làm việc" key="ttlv">
-                  Bạn cần tạo thông tin cơ bản của nhân viên trước.
-                </TabPane>
-                <TabPane tab="Trình độ chuyên môn" key="tdcm">
-                  Bạn cần tạo thông tin cơ bản của nhân viên trước.
-                </TabPane>
-                <TabPane tab="Chứng chỉ chuyên nghành" key="cccn">
-                  Bạn cần tạo thông tin cơ bản của nhân viên trước.
-                </TabPane>
-                <TabPane tab="Lịch sử công tác" key="lsct">
-                  Bạn cần tạo thông tin cơ bản của nhân viên trước.
-                </TabPane>
-                <TabPane tab="Thông tin liên hệ" key="ttlh">
-                  Bạn cần tạo thông tin cơ bản của nhân viên trước.
-                </TabPane>
-                <TabPane tab="Tình trạng sức khỏe" key="ttsk">
-                  Bạn cần tạo thông tin cơ bản của nhân viên trước.
-                     </TabPane>
-                <TabPane tab="Thông tin khác" key="ttk">
-                  Bạn cần tạo thông tin cơ bản của nhân viên trước.
-                </TabPane>
-              </Tabs>
+              <Row>
+                <Col span={24} lg={{ span: 4 }}>
+                  <Menu
+                    style={{ fontSize: 14 }}
+                    selectedKeys={[hash]}
+                    mode='inline'
+                    theme='light'
+                  >
+                    {
+                      this.menu.map(each => (
+                        <Menu.Item
+                          key={each.hash}
+                          onClick={this.onClickMenu}
+                        >
+                          <NavLink to={{ hash: each.hash }}>{each.title}</NavLink>
+                        </Menu.Item>
+                      ))
+                    }
+                  </Menu>
+                </Col>
+                <Col span={24} lg={{ span: 20 }}
+                  className={'tabContent'}
+                >
+                  <Spin
+                    spinning={false}
+                    indicator={<LoadingOutlined />}
+                  >
+                    {this.renderTabContent(hash)}
+                  </Spin>
+                </Col>
+              </Row>
+
             </TabPane>
             <TabPane tab="Hợp đồng" key="2">
               Bạn cần tạo thông tin cơ bản của nhân viên trước.

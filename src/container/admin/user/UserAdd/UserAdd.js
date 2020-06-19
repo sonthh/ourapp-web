@@ -79,7 +79,7 @@ class UserAdd extends Component {
 
     this.setState({
       visibleModal: false,
-    })
+    });
   };
 
   onSubmitForm = (values) => {

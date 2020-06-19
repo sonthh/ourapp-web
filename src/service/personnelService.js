@@ -253,3 +253,17 @@ export const updateAvatar = async (personnelId, formData) => {
     return Promise.reject(error);
   }
 };
+
+export const exportExcel = async (params = {}) => {
+  try {
+    const { data } = await axios
+      .get(`${config.API_URL}/personnel/export/excel`, {
+        responseType: 'blob',
+        params,
+      });
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};

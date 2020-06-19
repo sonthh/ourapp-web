@@ -1,17 +1,196 @@
-// .TimeKeepingTable {
-// }
-
 .TimeKeepingTable-week {
-  .ant-table-thead > tr > th {
-    text-align: center;
-    font-size: 12px;
+  tr th {
+    min-width: 45px !important;
   }
 }
 
 .TimeKeepingTable-month {
-  .ant-table-thead > tr > th {
-    padding: 16px 6px;
-    text-align: center;
+  tr th {
+    min-width: 32px !important;
+  }
+
+  .timekeeping-day .overlay {
+    flex-direction: column;
+  }
+
+  .timekeeping-day .overlay button {
+    height: 17px !important;
+    width: 96% !important;
+    border-radius: 5px !important;
+    margin-bottom: 1px;
+    margin-top: 1px;
+  }
+
+  .timekeeping-day .overlay button span.anticon {
+    font-size: 9px !important;
+  }
+}
+
+.TimeKeepingTable {
+  .timekeeping-day .overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transition: 0.15s linear;
+    background-color: #42a94a;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  .timekeeping-day .overlay button {
+    background-color: #42a94a;
+    border: 1px solid #f7f7f7;
+    margin-left: 2px;
+    margin-right: 2px;
+    border-radius: 5px;
+    width: 40px;
+    height: 25px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .timekeeping-day .overlay button span.anticon {
+    line-height: normal;
+    font-size: 13px;
+    top: 1px !important;
+    position: relative;
+  }
+
+  .timekeeping-day:hover .overlay {
+    opacity: 1;
+  }
+
+  .timekeeping-day {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border: 2px solid #e3e3e3;
+    border-radius: 5px;
+    background-color: rgb(247, 247, 247);
+    cursor: pointer;
+  }
+
+  .timekeeping-day .content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 12px;
+
+    .keeping-status {
+      height: 10px;
+      width: 10px;
+      border-radius: 5px;
+      background: rgb(126, 211, 33);
+    }
+  }
+
+  .ant-table-tbody > tr > td {
+    height: 50px;
+    padding: 1px 1px;
+  }
+
+  tr th {
+    height: 55px !important;
+    padding: 0 !important;
+    text-align: center;
+  }
+
+  tr td:first-child {
+    padding: 0 10px;
+  }
+
+  tr > th:first-child {
+    background-color: #fff;
+  }
+
+  .input-search-personnel {
+    border: none;
+  }
+
+  .ant-input-affix-wrapper {
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+#timekeeping-options {
+  .menu-item {
+    font-size: 13px;
+    padding: 5px 17px;
+  }
+
+  .menu-item:hover {
+    background-color: #e6f8ff;
+  }
+}
+
+.note {
+  border-style: solid;
+  border-width: 1px 0 0;
+  border-color: #e3e3e3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 6px;
+  margin-top: 6px;
+}
+
+.note > .note-item {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.note > .note-item > .dot {
+  height: 10px;
+  width: 10px;
+  border-radius: 5px;
+  background: blue;
+  margin-right: 6px;
+}
+
+.ant-select-item-option-content {
+  font-size: 13px;
+  padding: 8px 20px;
+}
+
+.ant-select-selection-item {
+  font-size: 13px;
+}
+
+.ant-select-item-option-content:hover {
+  background-color: #e6f8ff;
+  margin: 0px;
+}
+
+.ant-select-item {
+  padding: 0;
+}
+
+.filter-wrapper {
+  width: 180px;
+
+  .btn-apply {
+    border-color: #42a94a;
+    background-color: #42a94a;
+  }
+
+  .btn-apply:hover {
+    border-color: #42a94ad1;
+    background-color: #42a94ad1;
   }
 }

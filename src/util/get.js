@@ -117,4 +117,14 @@ export const getPermisionInVietnamees = per => {
   result += actions[action] + ' ' + domains[domain].toLowerCase() + ` (${scopes[scope].toLowerCase()})`;
 
   return result;
-} 
+}
+
+export const getAvatarTextFromName = (name) => {
+  let text = 'N';
+
+  if (name && name.length > 0) {
+    text = name[0].toUpperCase();
+  }
+
+  return text;
+}
