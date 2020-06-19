@@ -1,20 +1,23 @@
-import { Spin, Tabs, Row, Col, Upload, Avatar, Menu, message, Button, notification } from 'antd';
+import { Spin, Tabs, Row, Col, Upload, Avatar, Menu, message, Button, notification, Table } from 'antd';
 import './index.scss';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { LoadingOutlined, PlusOutlined, PhoneTwoTone, MailTwoTone, UploadOutlined } from '@ant-design/icons';
+import { LoadingOutlined, PlusOutlined, PhoneTwoTone, MailTwoTone, UploadOutlined, EyeOutlined } from '@ant-design/icons';
 import { Typography } from 'antd';
-import { FaBirthdayCake } from "react-icons/fa";
-import { GiPositionMarker } from "react-icons/gi";
+import { FaBirthdayCake } from 'react-icons/fa';
+import { GiPositionMarker } from 'react-icons/gi';
 import UpdateBasicInfoForm from '../UpdateBasicInfoForm/UpdateBasicInfoForm';
 import UpdateWorkingTimeForm from '../UpdateWorkingTimeForm/UpdateWorkingTimeForm';
 import UpdateQualificationForm from '../UpdateQualificationForm/UpdateQualificationForm';
 import UpdateCertificationForm from '../UpdateCertificationForm/UpdateCertificationForm';
 import UpdateWorkHistoryForm from '../UpdateWorkHistoryForm/UpdateWorkHistoryForm';
 import UpdateContactInfoForm from '../UpdateContactInfoForm/UpdateContactInfoForm';
+import UpdateHeathyStatusForm from '../UpdateHealthyStatusForm/UpdateHealthyStatusForm';
+import UpdateAdditionalInfoForm from '../UpdateAdditionalInfoForm/UpdateAdditionalInfoForm';
 import * as personnelAction from '../../../../action/personnelAction';
+import * as contractAction from '../../../../action/contractAction';
 import { getDateFormat } from '../../../../util/date';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { getBase64Url } from '../../../../util/file';
 
 const { TabPane } = Tabs;
@@ -46,6 +49,7 @@ class PersonnelUpdate extends Component {
     const { id } = this.props.match.params;
     if (id) {
       this.props.findOnePersonnel(id);
+      this.props.findManyContracts({ personnelId: id });
     }
   }
 
@@ -86,6 +90,10 @@ class PersonnelUpdate extends Component {
     this.setState({ hash: key });
   }
 
+  onChangeTab = (key) => {
+    this.setState({ hash: key });
+  }
+
   menu = [
     {
       hash: '#basic-info',
@@ -113,9 +121,19 @@ class PersonnelUpdate extends Component {
       component: <UpdateWorkHistoryForm personnelId={this.props.match.params.id} />,
     },
     {
+      hash: '#healthy-status',
+      title: 'Tình trạng sức khỏe',
+      component: <UpdateHeathyStatusForm personnelId={this.props.match.params.id} />,
+    },
+    {
       hash: '#contact-info',
       title: 'Thông tin liên hệ',
       component: <UpdateContactInfoForm personnelId={this.props.match.params.id} />,
+    },
+    {
+      hash: '#other',
+      title: 'Thông tin khác',
+      component: <UpdateAdditionalInfoForm personnelId={this.props.match.params.id} />,
     },
   ];
 
@@ -161,13 +179,82 @@ class PersonnelUpdate extends Component {
     }
   }
 
+  columns = [
+    {
+      title: 'STT',
+      dataIndex: 'id',
+      key: 'STT',
+      width: 75,
+      minWidth: 75,
+      render: (text, record, index) => {
+        return <div>{index + 1}</div>
+      }
+    },
+    {
+      title: 'Họ và tên',
+      dataIndex: ['personnel', 'fullName'],
+      key: 'personnel.fullName',
+      width: 75,
+      minWidth: 75,
+    },
+    {
+      title: 'Số hợp đồng',
+      dataIndex: 'contractNumber',
+      key: 'contractNumber',
+      width: 75,
+      minWidth: 75,
+    },
+    {
+      title: 'Loại hợp đồng',
+      dataIndex: 'contractType',
+      key: 'contractType',
+      width: 75,
+      minWidth: 75,
+    },
+    {
+      title: 'Hiệu lực',
+      dataIndex: 'validDate',
+      key: 'validDate',
+      width: 75,
+      minWidth: 75,
+      render: date => getDateFormat(date) || 'No',
+    },
+    {
+      title: 'Hết hạn',
+      dataIndex: 'expiredDate',
+      key: 'expiredDate',
+      width: 75,
+      minWidth: 75,
+      render: date => getDateFormat(date) || 'No',
+    },
+    {
+      title: 'Hành động',
+      key: 'operation',
+      width: 100,
+      minWidth: 100,
+      dataIndex: 'id',
+      render: (id) => (
+        <>
+          <Link to={`/admin/contracts/${id}/update`} >
+            <Button
+              type='default'
+              icon={<EyeOutlined />}
+              size='small'
+            >Xem
+            </Button>
+          </Link>
+        </>
+      ),
+    },
+  ]
+
   render() {
     const { isLoading, isUploadingAvatar } = this.props;
     const { fullName, phoneNumber, email, birthDay, address = 'Địa chỉ', hash, avatarUrl, displayUploadButton } = this.state;
-
+    const isBasicInfoTab = !['#contract', '#salary'].includes(hash);
     return (
       <>
-        <Row style={{ padding: '0 35px' }} className="personnel-header">
+        <Row style={{ padding: '0 35px' }} className='personnel-header'>
           <Col span={24} lg={{ span: 6 }} style={{ display: 'flex', justifyContent: 'center' }}>
             <Button
               loading={isUploadingAvatar}
@@ -223,58 +310,79 @@ class PersonnelUpdate extends Component {
           </Col>
         </Row>
         <Row style={{ marginBottom: '30px' }}>
-          <Tabs defaultActiveKey="1" className='personnel-tabs'>
-            <TabPane tab="Hồ sơ" key="1">
-              <Row>
-                <Col span={24} lg={{ span: 4 }}>
-                  <Menu
-                    style={{ fontSize: 14 }}
-                    selectedKeys={[hash]}
-                    mode='inline'
-                    theme='light'
-                  >
-                    {
-                      this.menu.map(each => (
-                        <Menu.Item
-                          key={each.hash}
-                          onClick={this.onClickMenu}
-                        >
-                          <NavLink to={{ hash: each.hash }}>{each.title}</NavLink>
-                        </Menu.Item>
-                      ))
-                    }
-                  </Menu>
-                </Col>
-                <Col span={24} lg={{ span: 20 }}
-                  className={'tabContent'}
-                >
-                  <Spin
-                    spinning={isLoading}
-                    indicator={<LoadingOutlined />}
-                  >
-                    {this.renderTabContent(hash)}
-                  </Spin>
-                </Col>
-              </Row>
-            </TabPane>
-            <TabPane tab="Hợp đồng" key="2">
-              Bạn cần tạo thông tin cơ bản của nhân viên trước.
-            </TabPane>
-            <TabPane tab="Lương - phụ cấp" key="3">
-              Bạn cần tạo thông tin cơ bản của nhân viên trước.
-            </TabPane>
-          </Tabs>
 
+          <Tabs className='personnel-tabs' onChange={this.onChangeTab}>
+            <TabPane tab='Hồ sơ' key='#basic-info' />
+            <TabPane tab='Hợp đồng' key='#contract' />
+            <TabPane tab='Lương - phụ cấp' key='#salary' />
+          </Tabs>
+          {
+            isBasicInfoTab ? (
+              <Col span={24} lg={{ span: 4 }}>
+                <Menu
+                  style={{ fontSize: 14 }}
+                  selectedKeys={[hash]}
+                  mode='inline'
+                  theme='light'
+                >
+                  {
+                    this.menu.map(each => (
+                      <Menu.Item
+                        key={each.hash}
+                        onClick={this.onClickMenu}
+                      >
+                        <NavLink to={{ hash: each.hash }}>{each.title}</NavLink>
+                      </Menu.Item>
+                    ))
+                  }
+                </Menu>
+              </Col>
+            ) : null
+          }
+          <Col span={isBasicInfoTab ? 20 : 24}
+            className={'tabContent'}
+          >
+            <Spin
+              spinning={isLoading}
+              indicator={<LoadingOutlined />}
+            >
+              {isBasicInfoTab ? this.renderTabContent(hash) :
+                (<Table
+                  style={{ fontSize: '13px', width: '100%' }}
+                  bordered
+                  locale={{
+                    emptyText: (
+                      <div style={{ padding: '20px 0' }}>
+                        Chưa có hợp đồng nào.
+                      </div>
+                    ),
+                  }}
+                  pagination={false}
+                  columns={this.columns}
+                  rowKey={record => record.id}
+                  dataSource={this.props.contracts}
+                  loading={{
+                    spinning: false,
+                    indicator: <LoadingOutlined />,
+                  }}
+                  scroll={{ x: 'max-content' }}
+                />)
+              }
+            </Spin>
+          </Col>
         </Row>
       </>
     )
   }
 }
 
-const mapStateToProps = ({ personnel }) => {
+const mapStateToProps = ({ personnel, contract }) => {
   const { personnelItem } = personnel;
+  const { contractList } = contract;
+
   return {
     ...personnelItem,
+    contracts: contractList.dataList.content,
   }
 };
 
@@ -282,6 +390,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     findOnePersonnel: (id) => dispatch(personnelAction.findOnePersonnel(id)),
     updateAvatar: (personnelId, formData) => dispatch(personnelAction.updateAvatar(personnelId, formData)),
+    findManyContracts: (params) => dispatch(contractAction.findManyContracts(params)),
   }
 };
 

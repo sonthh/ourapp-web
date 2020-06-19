@@ -65,14 +65,26 @@
     font-size: 13px;
   }
 
-  @media screen and (min-width: 992px) {
-    .tabContent {
-      padding-left: 50px;
-    }
-  }
   @media screen and (max-width: 992px) {
     .ant-menu {
       text-align: center;
+    }
+  }
+}
+@media screen and (min-width: 992px) {
+  .ant-col-20.tabContent {
+    padding-left: 50px;
+  }
+
+  .tabContent {
+    table tr td:last-child {
+      button {
+        font-size: 12px !important;
+        border-radius: 5px;
+      }
+      span.anticon {
+        color: rgba(0, 0, 0, 0.65);
+      }
     }
   }
 }

@@ -267,3 +267,47 @@ export const exportExcel = async (params = {}) => {
     return Promise.reject(error);
   }
 };
+
+export const addHealthyStatus = async (personnelId, healthyStatusRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/healthyStatus/add`, healthyStatusRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const updateHealthyStatus = async (personnelId, healthyStatusRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/healthyStatus/update`, healthyStatusRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const addAdditionalInfo = async (personnelId, additionalInfoRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/additionalInfo/add`, additionalInfoRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const updateAdditionalInfo = async (personnelId, additionalInfoRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/additionalInfo/update`, additionalInfoRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};

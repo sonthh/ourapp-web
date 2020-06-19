@@ -556,3 +556,94 @@ export const exportExcel = (params) => {
   };
 };
 
+export const addHealthyStatus = (personnelId, healthyStatusRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_ADD_HEALTHY_STATUS_REQUEST,
+    });
+
+    try {
+      const isUpdated = await personnelService.addHealthyStatus(personnelId, healthyStatusRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_HEALTHY_STATUS_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_HEALTHY_STATUS_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const updateHealthyStatus = (personnelId, healthyStatusRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_UPDATE_HEALTHY_STATUS_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.updateHealthyStatus(personnelId, healthyStatusRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_HEALTHY_STATUS_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_HEALTHY_STATUS_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const addAdditionalInfo = (personnelId, additionalInfo) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_ADD_ADDITIONAL_INFO_REQUEST
+    });
+
+    try {
+      const isUpdated = await personnelService.addAdditionalInfo(personnelId, additionalInfo);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_ADDITIONAL_INFO_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_ADDITIONAL_INFO_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const updateAddtionalInfo = (personnelId, additionalInfo) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_UPDATE_ADDITIONAL_INFO_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.updateAdditionalInfo(personnelId, additionalInfo);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_ADDITIONAL_INFO_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_ADDITIONAL_INFO_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};

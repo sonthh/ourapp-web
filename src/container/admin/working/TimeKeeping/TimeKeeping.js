@@ -204,14 +204,14 @@ class TimeKeeping extends Component {
       this.props.findManyPersonnel();
 
       const days = getArrayDatesOfWeek(date);
-      this.setState({ days });
+      this.setState({ days, columns: this.getColumns(days) });
     }
 
     if (type === 'month') {
       this.props.findManyPersonnel();
 
       const days = getArrayDatesOfMonth(date);
-      this.setState({ days });
+      this.setState({ days, columns: this.getColumns(days) });
     }
   }
 
@@ -227,8 +227,6 @@ class TimeKeeping extends Component {
     }
 
     if (value === 'month') {
-      console.log('month1');
-      
       this.props.findManyPersonnel();
 
       this.setState({
@@ -237,8 +235,6 @@ class TimeKeeping extends Component {
 
       const days = getArrayDatesOfMonth(moment());
       this.setState({ days, pickerFormat: 'TM-YYYY', columns: this.getColumns(days) });
-
-      console.log('month2');
     }
   }
 
@@ -249,7 +245,6 @@ class TimeKeeping extends Component {
   }
 
   showTimeKeepingModal = () => {
-    console.log('kkkkkkk');
 
     this.setState({
       visibleTimeKeepingModal: true,
@@ -285,7 +280,7 @@ class TimeKeeping extends Component {
   }
 
   render() {
-    const { data, selectedRowKeys, displayFilter, visibleTimeKeepingModal } = this.state;
+    const { data, selectedRowKeys, displayFilter, visibleTimeKeepingModal, days } = this.state;
     const { isLoading, departments = [] } = this.props;
 
     const hasSelected = selectedRowKeys.length > 0;
@@ -296,7 +291,7 @@ class TimeKeeping extends Component {
     const departmentOptions = departments.map(({ id, name }) => ({ label: name, value: id }));
 
     // columns with filteredInfo and sortedInfo
-    // const columns = this.getColumns(days, filteredInfo, sortedInfo);
+    columns = this.getColumns(days, filteredInfo, sortedInfo);
 
     return (
       <>

@@ -511,6 +511,102 @@ export const personnelItemReducer = (state = initialState, { type, payloads }) =
         error,
       }
     }
+    case actionTypes.UPDATE_PERSONNEL_ADD_HEALTHY_STATUS_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_HEALTHY_STATUS_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_HEALTHY_STATUS_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_HEALTHY_STATUS_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_HEALTHY_STATUS_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_HEALTHY_STATUS_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_ADDITIONAL_INFO_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_ADDITIONAL_INFO_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_ADDITIONAL_INFO_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_ADDITIONAL_INFO_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_ADDITIONAL_INFO_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_ADDITIONAL_INFO_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
     default:
       return state;
   }

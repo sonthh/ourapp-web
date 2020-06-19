@@ -1,17 +1,20 @@
-import { Button, Form, Select, Row, Col, Input, DatePicker, Divider } from 'antd';
+import { Button, Form, Select, Row, Col, Input, DatePicker, Divider, notification } from 'antd';
 import './index.scss';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TextArea from 'antd/lib/input/TextArea';
+import SelectPersonnelModal from '../../../../component/modal/SelectPersonnelModal/SelectPersonnelModal';
+import * as contractAction from '../../../../action/contractAction';
+import { getErrorMessage } from '../../../../util/get';
 
 class ContractCreate extends Component {
 
   constructor(props) {
     super(props);
+    this.formRef = React.createRef();
     this.state = {
-      displayIDForm: false,
-      displayPassportForm: false,
-      displayBankForm: false,
+      visibleSelectPersonnel: false,
+      personnel: null,
     }
   }
 
@@ -19,26 +22,80 @@ class ContractCreate extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    const { error, success, item } = this.props;
 
+    if (item && item !== prevProps.item) {
+      // this.formRef.current.setFieldsValue(item);
+    }
+
+    if (error && error !== prevProps.error) {
+      notification.error({
+        message: 'Có lỗi',
+        description: getErrorMessage(error) || 'Something went wrong',
+        duration: 2.5,
+      });
+    }
+
+    if (success !== undefined && success !== prevProps.success) {
+      notification.success({
+        message: 'Thành công',
+        description: success,
+        duration: 2.5,
+      });
+    }
   }
 
-  onChangeDisplayIDForm = (e) => {
-    const checked = e.target.checked;
-    this.setState({ displayIDForm: checked })
-  };
+  onCloseSelectPersonnelModal = () => {
+    this.setState({ visibleSelectPersonnel: false });
+  }
 
-  onChangeDisplayPassportForm = (e) => {
-    const checked = e.target.checked;
-    this.setState({ displayPassportForm: checked })
-  };
+  onClickOpenSelectForm = () => {
+    this.setState({ visibleSelectPersonnel: true });
+  }
 
-  onChangeDisplayBankForm = (e) => {
-    const checked = e.target.checked;
-    this.setState({ displayBankForm: checked })
-  };
+  onOkSelectPersonnelModal = () => {
+    this.setState({ visibleSelectPersonnel: false });
+  }
 
+  onSelectPersonnel = (personnel) => {
+    const { fullName } = personnel;
+    this.formRef.current.setFieldsValue({ fullName });
+
+    this.setState({ visibleSelectPersonnel: false, personnel });
+  }
+
+  onCreateContract = (values) => {
+    const { personnel } = this.state;
+    if (!personnel) {
+      notification.error({
+        message: 'Thông báo',
+        description: 'Vui lòng chọn nhân sự',
+        duration: 2.5,
+      });
+
+      return;
+    }
+
+    let request = { ...values, signerId: personnel.id, personnelId: personnel.id };
+
+    this.props.createOneContract(request);
+  }
+
+  taxTypes = [
+    'Không tính thuế',
+    'Hợp đồng lao động dưới 3 tháng',
+    'Hợp đồng lao động 3 tháng trở lên',
+  ];
+
+  contractTypes = [
+    'Hợp đồng chính thức',
+    'Hợp đồng thử việc',
+    'Hợp đồng thời vụ',
+  ]
 
   render() {
+    const { visibleSelectPersonnel } = this.state;
+    const { isCreating } = this.props;
 
     return (
       <>
@@ -46,79 +103,66 @@ class ContractCreate extends Component {
           <Form
             layout='vertical'
             defaultValue={{}}
-            // ref={this.formRef}
+            ref={this.formRef}
             autoComplete='off'
             labelCol={{ xs: 24 }}
             wrapperCol={{ xs: 24 }}
-            id='basicInfoForm'
-            onFinish={this.onSubmitBasicInfoForm}
+            id='ContractCreateForm'
+            onFinish={this.onCreateContract}
           >
             <Row>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item label="Họ và tên">
+                <Form.Item name='fullName' label='Họ và tên'>
+                  <Input className={'select-personnel'} onClick={this.onClickOpenSelectForm} />
+                </Form.Item>
+              </Col>
+              <Col span={24} md={{ span: 12 }}>
+                <Form.Item name='contractNumber' label='Số hợp đồng'>
                   <Input />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item label="Số hợp đồng">
-                  <Input />
+                <Form.Item name='contractType' label='Loại hợp đồng' >
+                  <Select options={this.contractTypes.map(each => ({ value: each, label: each }))} />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item label="Loại hợp đồng" >
-                  <Select defaultValue='1'>
-                    <Select.Option value='1'>Hợp đồng chính thức</Select.Option>
-                    <Select.Option value='2'>Hợp đồng thời vụ</Select.Option>
-                    <Select.Option value='3'>Hợp đồng thử việc</Select.Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item label="Loại thuế thu nhập cá nhân" >
-                  <Select defaultValue='1'>
-                    <Select.Option value='1'>Không tính thuế</Select.Option>
-                    <Select.Option value='2'>Hợp đồng lao động dưới 3 tháng</Select.Option>
-                    <Select.Option value='3'>Hợp đồng lao động 3 tháng trở lên</Select.Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item label="Người ký">
-                  <Input />
+                <Form.Item name='taxType' label='Loại thuế thu nhập cá nhân' >
+                  <Select options={this.taxTypes.map(each => ({ value: each, label: each }))} />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 6 }}>
-                <Form.Item label="Ngày ký">
-                  <DatePicker />
+                <Form.Item name='validDate' label='Ngày ký'>
+                  <DatePicker style={{ width: '80%' }} />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 6 }}>
-                <Form.Item label="Ngày hết hạn">
-                  <DatePicker />
+                <Form.Item name='expiredDate' label='Ngày hết hạn'>
+                  <DatePicker style={{ width: '80%' }} />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item label="Mức lương">
+                <Form.Item name='salary' label='Mức lương'>
                   <Input />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item label="Thời gian thử việc">
+                <Form.Item name='probationTime' label='Thời gian thử việc'>
                   <Input placeholder='Đơn vị tháng' />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item label="Địa điểm làm việc">
+                <Form.Item name='workAt' label='Địa điểm làm việc'>
                   <Input />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item label="Ngày bắt đầu làm">
-                  <DatePicker />
+                <Form.Item name='startWorkDate' label='Ngày bắt đầu làm'>
+                  <DatePicker style={{ width: '80%' }} />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 24 }}>
-                <Form.Item wrapperCol={{ span: 24 }} label="Ghi chú">
+                <Form.Item name='note' wrapperCol={{ span: 24 }} label='Ghi chú'>
                   <TextArea rows={4} />
                 </Form.Item>
               </Col>
@@ -128,25 +172,36 @@ class ContractCreate extends Component {
                   display: 'flex',
                   justifyContent: 'center',
                 }}>
-                <Button style={{ marginRight: 20 }}>Hủy</Button>
-                <Button type='primary'>Update</Button>
+                <Button style={{ marginRight: 20 }} onClick={() => this.props.history.goBack()}>Hủy</Button>
+                <Button style={{ fontSize: 13 }} loading={isCreating} type='primary' htmlType='submit'>Thêm mới</Button>
               </Col>
 
             </Row>
           </Form>
-
+          <SelectPersonnelModal
+            visible={visibleSelectPersonnel}
+            onClose={this.onCloseSelectPersonnelModal}
+            onOk={this.onOkSelectPersonnelModal}
+            onSelectPersonnel={this.onSelectPersonnel}
+          />
         </Row>
       </>
     )
   }
 }
 
-const mapStateToProps = () => {
-  return {}
+const mapStateToProps = ({ contract }) => {
+  const { contractItem } = contract;
+
+  return {
+    ...contractItem,
+  }
 };
 
-const mapDispatchToProps = () => {
-  return {}
+const mapDispatchToProps = (dispatch) => {
+  return {
+    createOneContract: (contractRequest) => dispatch(contractAction.createOneContract(contractRequest)),
+  }
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ContractCreate);
