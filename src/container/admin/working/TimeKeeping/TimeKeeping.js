@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Col, Row, DatePicker, Input, Avatar, Dropdown, Menu, Modal,
+  Table, Button, notification, Col, Row, DatePicker, Input, Avatar, Dropdown, Menu,
 } from 'antd';
 import {
   FilterTwoTone, ReloadOutlined, LoadingOutlined, DownloadOutlined, SearchOutlined, PlusOutlined, EllipsisOutlined
@@ -13,8 +13,11 @@ import { getArrayDatesOfWeek, getArrayDatesOfMonth, getDateFormatForTimeKeeping 
 import { Select } from 'antd';
 import moment from 'moment';
 import { Helmet } from 'react-helmet';
-import * as personnelAction from '../../../../action/personnelAction';
 import * as departmentAction from '../../../../action/departmentAction';
+import * as timeKeepingAction from '../../../../action/timeKeepingAction';
+import DoTimeKeepingModal from '../../../../component/modal/DoTimeKeepingModal/DoTimeKeepingModal';
+import TimeKeepingDot from '../../../../component/common/TimeKeepingDot/TimeKeepingDot';
+import { timeKeepingColors } from '../../../../constant/colors';
 
 class TimeKeeping extends Component {
 
@@ -33,17 +36,24 @@ class TimeKeeping extends Component {
       days,
       type: 'week',
       pickerFormat: 'Tuần w-YYYY',
-      visibleTimeKeepingModal: false,
+      doTimeKeeping: {
+        visible: false,
+        personnel: null,
+        day: null,
+      },
     };
   }
 
   componentDidMount() {
-    this.props.findManyPersonnel({});
     this.props.findManyDepartments();
+
+    this.props.findTimeKeeping({
+      dates: this.state.days.map(date => moment(date).format('YYYY-MM-DD')) + ''
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { error, isDeleted, ids, dataList } = this.props;
+    const { error, isDeleted, ids, timeKeepingView } = this.props;
 
     if (error && error !== prevProps.error) {
       if (error) {
@@ -68,20 +78,17 @@ class TimeKeeping extends Component {
       this.setState({ selectedRowKeys: [] });
     }
 
-    if (dataList && dataList !== prevProps.dataList) {
-      const { content, totalElements } = dataList;
-      const pagination = { ...this.state.pagination, total: totalElements };
+    if (timeKeepingView && timeKeepingView !== prevProps.timeKeepingView) {
+      // const pagination = { ...this.state.pagination, total: totalElements };
 
       this.setState({
-        data: content,
-        pagination,
+        data: timeKeepingView,
+        // pagination,
       });
     }
   }
 
   handleTableChange = (pagination, filters, sorter) => {
-    console.log(filters, sorter);
-
     const { current } = pagination;
 
     this.setState({
@@ -118,7 +125,6 @@ class TimeKeeping extends Component {
     this.setState({ selectedRowKeys });
   };
 
-
   menu = (
     <Menu id='timekeeping-options'>
       <Menu.Item className='menu-item'>
@@ -133,18 +139,17 @@ class TimeKeeping extends Component {
   // filteredInfo, sortedInfo from state
   getColumns = (days) => {
 
-    console.log('get col');
-
     let firstColumn = {
       title: () => {
         return (<Input placeholder='Tìm kiếm' className='input-search-personnel' prefix={<SearchOutlined />} />);
       },
       width: 200,
       key: 'blank',
-      dataIndex: 'fullName',
-      render: (fullName, { avatar }) => {
+      dataIndex: ['personnel', 'fullName'],
+      render: (fullName, record) => {
         const color = '#cccccc';
         const backgroundColor = '#e6f7fe';
+        const avatar = record?.personnel?.avatar;
         const avatarComp = avatar ?
           (<Avatar size={30} src={avatar} />) :
           (<Avatar style={{ color, backgroundColor }} size={30}>{getAvatarTextFromName(fullName)}</Avatar>);
@@ -178,14 +183,15 @@ class TimeKeeping extends Component {
           }
           return null;
         },
+        dataIndex: 'id',
         key: index,
-        render: () => (
+        render: (text, record, index) => (
           <div className='timekeeping-day'>
             <div className='content'>
               <div className='keeping-status'></div>
             </div>
             <div className='overlay'>
-              <Button onClick={() => this.showTimeKeepingModal()} icon={<PlusOutlined />} />
+              <Button onClick={() => this.showTimeKeepingModal(record, day)} icon={<PlusOutlined />} />
               <Dropdown trigger='click' overlay={this.menu} placement='topLeft'>
                 <Button icon={<EllipsisOutlined />} />
               </Dropdown>
@@ -244,34 +250,13 @@ class TimeKeeping extends Component {
     this.setState({ displayFilter: !displayFilter });
   }
 
-  showTimeKeepingModal = () => {
-
+  showTimeKeepingModal = (record, day) => {
     this.setState({
-      visibleTimeKeepingModal: true,
-    });
-  }
-
-  handleOkKeepingModal = () => {
-    this.setState({
-      visibleTimeKeepingModal: false,
-    });
-  }
-
-  footer = [
-    <Button
-      key='submit' type='primary' size='small'
-      // loading={isCreatingUser}
-      // disabled={isLoading} 
-      onClick={this.handleOkKeepingModal}
-      form='TimeKeepingForm' htmlType='submit'
-    >
-      OK
-    </Button >,
-  ];
-
-  handleCancelTimeKeepingModal = () => {
-    this.setState({
-      visibleTimeKeepingModal: false,
+      doTimeKeeping: {
+        visible: true,
+        personnel: record,
+        day,
+      },
     });
   }
 
@@ -279,8 +264,29 @@ class TimeKeeping extends Component {
     this.props.findManyPersonnel();
   }
 
+  onCancelDoTimeKeepingModal = () => {
+    this.setState({
+      doTimeKeeping: {
+        visible: false,
+        personnel: null,
+        day: null,
+      },
+    });
+  }
+
+  onOkDoTimeKeepingModal = () => {
+    this.setState({
+      doTimeKeeping: {
+        visible: false,
+        personnel: null,
+        day: null,
+      },
+    });
+  }
+
   render() {
-    const { data, selectedRowKeys, displayFilter, visibleTimeKeepingModal, days } = this.state;
+    const { data, selectedRowKeys, displayFilter, doTimeKeeping, days } = this.state;
+    const { visible, personnel, day } = doTimeKeeping;
     const { isLoading, departments = [] } = this.props;
 
     const hasSelected = selectedRowKeys.length > 0;
@@ -376,11 +382,14 @@ class TimeKeeping extends Component {
             >
               Áp dụng
             </Button>
-            <div className="note">
-              <div className="note-item"><div className="dot" style={{ backgroundColor: 'rgb(102, 102, 102)' }}></div><span>Không chấm công</span></div>
-              <div className="note-item"><div className="dot" style={{ backgroundColor: 'rgb(196, 196, 196)' }}></div><span>Chưa đến ca</span></div>
-              <div className="note-item"><div className="dot" style={{ backgroundColor: 'rgb(126, 211, 33)' }}></div><span>Đúng giờ</span></div>
-              <div className="note-item"><div className="dot" style={{ backgroundColor: 'rgb(255, 203, 118)' }}></div><span>Vào trễ</span></div>
+            <div className='note'>
+              {
+                Object.keys(timeKeepingColors).map(key => (
+                  <div className='note-item'>
+                    <TimeKeepingDot dotColor={timeKeepingColors[key]} /><span>{key}</span>
+                  </div>
+                ))
+              }
             </div>
           </div>
           <Table
@@ -408,34 +417,32 @@ class TimeKeeping extends Component {
             scroll={{ x: 'max-content' }}
           />
         </div>
-        <Modal
-          className={'TimeKeepingModel'}
-          title='Trần Hữu Hồng Sơn Vào Thứ 3 02/06/2020'
-          visible={visibleTimeKeepingModal}
-          footer={this.footer}
-          onCancel={this.handleCancelTimeKeepingModal}
-          bodyStyle={{ padding: '0px' }}
-        >
-        </Modal>
+        <DoTimeKeepingModal
+          visible={visible}
+          personnel={personnel}
+          day={day}
+          onCancel={this.onCancelDoTimeKeepingModal}
+          onOk={this.onOkDoTimeKeepingModal}
+        />
       </>
     );
   }
 }
 
-const mapStateToProps = ({ personnel, department }) => {
-  const { personnelList } = personnel;
+const mapStateToProps = ({ timeKeeping, department }) => {
+  const { timeKeepingList } = timeKeeping;
   const { departmentList, } = department;
 
   return {
-    ...personnelList,
+    ...timeKeepingList,
     departments: departmentList.dataList.content,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    findManyPersonnel: () => dispatch(personnelAction.findManyPersonnel()),
     findManyDepartments: () => dispatch(departmentAction.findManyDepartments()),
+    findTimeKeeping: (params) => dispatch(timeKeepingAction.findTimeKeeping(params)),
   };
 };
 

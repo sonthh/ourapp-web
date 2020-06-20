@@ -155,6 +155,7 @@ class PersonnelCreate extends Component {
               <Row>
                 <Col span={24} lg={{ span: 4 }}>
                   <Menu
+                    className='basic-info-menu'
                     style={{ fontSize: 14 }}
                     selectedKeys={[hash]}
                     mode='inline'

@@ -52,7 +52,7 @@ class Login extends Component {
         return <Redirect to={state.from} />
       }
 
-      return <Redirect to='/admin/dashboard' />
+      return <Redirect to='/admin/working-day/timekeeping' />
     }
 
     const { isLoading } = this.props;

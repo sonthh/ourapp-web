@@ -25,7 +25,7 @@ export default class AuthLayout extends Component {
           </Switch>
         </Content>
         <Footer style={{ textAlign: 'center' }}>
-          Copyright ©2020 bởi nhóm 1
+          Copyright ©2020 bởi nhóm 1 HTTT
         </Footer>
       </Layout>
     );

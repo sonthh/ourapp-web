@@ -91,7 +91,7 @@ class ContractCreate extends Component {
     'Hợp đồng chính thức',
     'Hợp đồng thử việc',
     'Hợp đồng thời vụ',
-  ]
+  ];
 
   render() {
     const { visibleSelectPersonnel } = this.state;

@@ -11,3 +11,12 @@ export const colors = [
 export const randomColor = () => {
   return colors[Math.floor(Math.random() * colors.length)];
 }
+
+export const timeKeepingColors = {
+  'Đúng giờ':             'rgb(126, 211, 33)',
+  'Chưa đến ca':          'rgb(196, 196, 196)',
+  'Không chấm công':      'rgb(102, 102, 102)',
+  'Vào trễ':              'rgb(255, 203, 118)',
+  'Vắng mặt':             'rgb(255, 0, 0)',
+  'Nghỉ phép':            'rgb(102, 0, 255)',
+};

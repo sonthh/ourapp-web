@@ -246,7 +246,7 @@ class PersonnelUpdate extends Component {
         </>
       ),
     },
-  ]
+  ];
 
   render() {
     const { isLoading, isUploadingAvatar } = this.props;
@@ -320,6 +320,7 @@ class PersonnelUpdate extends Component {
             isBasicInfoTab ? (
               <Col span={24} lg={{ span: 4 }}>
                 <Menu
+                  className='basic-info-menu'
                   style={{ fontSize: 14 }}
                   selectedKeys={[hash]}
                   mode='inline'

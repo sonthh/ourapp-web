@@ -7,6 +7,7 @@ import { personnelReducer } from './personnel/personnelReducer';
 import { branchReducer } from './branch/branchReducer';
 import { departmentReducer } from './department/departmentReducer';
 import { contractReducer } from './contract/contractReducer';
+import { timeKeepingReducer } from './timeKeeping/timeKeepingReducer';
 
 export const rootReducer = combineReducers({
   app: appReducer,
@@ -17,4 +18,5 @@ export const rootReducer = combineReducers({
   branch: branchReducer,
   department: departmentReducer,
   contract: contractReducer,
+  timeKeeping: timeKeepingReducer,
 });
