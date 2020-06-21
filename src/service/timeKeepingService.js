@@ -12,6 +12,28 @@ export const createTimeKeeping = async (personnelId, timeKeepingRequest) => {
   }
 };
 
+export const updateTimeKeeping = async (personnelId, timeKeepingId, timeKeepingRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/timeKeeping/${personnelId}/update/${timeKeepingId}`, timeKeepingRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const deleteTimeKeeping = async (personnelId, timeKeepingId) => {
+  try {
+    const { data } = await axios
+      .delete(`${config.API_URL}/timeKeeping/${personnelId}/delete/${timeKeepingId}`);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 export const findTimeKeeping = async (params = {}) => {
   try {
     const { data } = await axios

@@ -4,10 +4,10 @@ import './index.scss';
 export default class TimeKeepingDot extends Component {
 
   render = () => {
-    const { dotColor } = this.props;
+    const { dotColor, style } = this.props;    
 
     return (
-      <div className='TimeKeepingDot' style={{ backgroundColor: dotColor }} />
+      <div className='TimeKeepingDot' style={{ ...style, backgroundColor: dotColor }} />
     );
   }
 }

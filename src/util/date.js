@@ -65,3 +65,13 @@ export const getDateFormatForTimeKeeping = (date, type) => {
 
   return null;
 }
+
+export const getDateFormatForTitle = (date) => {
+  if (!date) {
+    return null;
+  }
+
+  let T = date.getDay();
+  T === 0 ? (T = 'Chủ nhật') : (T = 'Thứ ' + (T + 1));
+  return T + ' ' + moment(date).format('DD/MM/YYYY');
+}

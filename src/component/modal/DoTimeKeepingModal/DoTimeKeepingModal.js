@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import './index.scss';
-import { Modal, Button, List, notification } from 'antd';
+import { Modal, Button, List, notification, message } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import * as timeKeepingAction from '../../../action/timeKeepingAction';
 import { connect } from 'react-redux';
-import { getDateFormat } from '../../../util/date';
+import { getDateFormatForTitle } from '../../../util/date';
 import TimeKeepingDot from '../../common/TimeKeepingDot/TimeKeepingDot';
 import { timeKeepingColors } from '../../../constant/colors';
 import { getErrorMessage } from '../../../util/get';
@@ -19,10 +19,11 @@ class DoTimeKeepingModal extends Component {
     super(props);
     this.state = {
     };
+    this.messageLoadingKey = '1111111';
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { error } = this.props;
+    const { error, isUpdating, isCreating } = this.props;
 
     if (error && error !== prevProps.error) {
       if (error) {
@@ -31,6 +32,24 @@ class DoTimeKeepingModal extends Component {
           description: getErrorMessage(error) || 'Something went wrong',
           duration: 2.5,
         });
+      }
+    }
+
+    if (isUpdating !== undefined && isUpdating !== prevProps.isUpdating) {
+      if (isUpdating) {
+        message.loading({ content: 'Đang chấm...', key: this.messageLoadingKey });
+      }
+      if (!isUpdating) {
+        message.success({ content: 'Chấm xong', key: this.messageLoadingKey, duration: 0.4 });
+      }
+    }
+
+    if (isCreating !== undefined && isCreating !== prevProps.isCreating) {
+      if (isCreating) {
+        message.loading({ content: 'Đang chấm...', key: this.messageLoadingKey });
+      }
+      if (!isCreating) {
+        message.success({ content: 'Chấm xong', key: this.messageLoadingKey, duration: 0.4 });
       }
     }
   }
@@ -78,21 +97,40 @@ class DoTimeKeepingModal extends Component {
 
   onChooseDoKeeping = (keepingStatus) => {
     const { value } = keepingStatus;
-    const { personnel = {}, day } = this.props;
-    const date = moment(day).format('YYYY-MM-DD');
+    const { record = {}, date, indexRecord, indexDate } = this.props;
 
-    const timeKeepingRequest = {
-      date,
-      status: value,
+    if (!record || !record.timeKeepingList || !record.personnel) return;
+
+    const currentTimeKeeping = record.timeKeepingList[indexDate];
+
+    if (!currentTimeKeeping) {
+      const dateFormat = moment(date).format('YYYY-MM-DD');
+      const timeKeepingRequest = {
+        date: dateFormat,
+        status: value,
+      }
+
+      this.props.createTimeKeeping(indexRecord, indexDate, record.personnel.id, timeKeepingRequest);
     }
-    this.props.createTimeKeeping(personnel.id, timeKeepingRequest);
+
+    if (currentTimeKeeping) {
+      const timeKeepingRequest = {
+        status: value,
+      }
+      this.props.updateTimeKeeping(indexRecord, indexDate, record.personnel.id, currentTimeKeeping.id, timeKeepingRequest);
+    }
+
   }
 
   render() {
-    const { visible, personnel = {}, day } = this.props;
+    const { visible, record, date, indexDate } = this.props;
     let title = '';
-    if (personnel) {
-      title = `${personnel?.fullName} vào ${getDateFormat(day)}`;
+    if (record && record.personnel) {
+      title = `${record.personnel.fullName} vào ${getDateFormatForTitle(date)}`;
+    }
+    let status = '';
+    if (record && record.timeKeepingList) {
+      status = record.timeKeepingList[indexDate]?.status;
     }
 
     return (
@@ -119,7 +157,7 @@ class DoTimeKeepingModal extends Component {
           itemLayout="horizontal"
           dataSource={this.listTimeKeepingStatus}
           renderItem={item => (
-            <List.Item onClick={() => this.onChooseDoKeeping(item)}>
+            <List.Item onClick={() => this.onChooseDoKeeping(item)} className={status === item.value ? 'active' : ''}>
               <List.Item.Meta
                 title={
                   <div className='time-keeping-status-item'>
@@ -146,7 +184,8 @@ const mapStateToProps = ({ timeKeeping }) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createTimeKeeping: (personnelId, timeKeepingRequest) => dispatch(timeKeepingAction.createTimeKeeping(personnelId, timeKeepingRequest)),
+    createTimeKeeping: (indexRecord, indexDate, personnelId, timeKeepingRequest) => dispatch(timeKeepingAction.createTimeKeeping(indexRecord, indexDate, personnelId, timeKeepingRequest)),
+    updateTimeKeeping: (indexRecord, indexDate, personnelId, timeKeepingId, timeKeepingRequest) => dispatch(timeKeepingAction.updateTimeKeeping(indexRecord, indexDate, personnelId, timeKeepingId, timeKeepingRequest)),
   };
 };
 

@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Col, Row, DatePicker, Input, Avatar, Dropdown, Menu,
+  Table, Button, notification, Col, Row, DatePicker, Input, Avatar, Dropdown, Menu, message,
 } from 'antd';
 import {
   FilterTwoTone, ReloadOutlined, LoadingOutlined, DownloadOutlined, SearchOutlined, PlusOutlined, EllipsisOutlined
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
-import { getFilterObject, getAvatarTextFromName } from '../../../../util/get';
+import { getAvatarTextFromName } from '../../../../util/get';
 import { checkIsEmptyObj } from '../../../../util/check';
 import { getArrayDatesOfWeek, getArrayDatesOfMonth, getDateFormatForTimeKeeping } from '../../../../util/date';
 import { Select } from 'antd';
@@ -23,23 +23,28 @@ class TimeKeeping extends Component {
 
   constructor(props) {
     super(props);
+
     const currentDate = moment();
-    const days = getArrayDatesOfWeek(currentDate);
+    const dates = getArrayDatesOfWeek(currentDate);
+
+    this.messageLoadingKey = '111111111111';
 
     this.state = {
-      filteredInfo: null,
+      filteredInfo: {
+        departmentId: null,
+        fullName: null,
+      },
       sortedInfo: null,
       data: [],
-      selectedRowKeys: [],
-      columns: this.getColumns(days, {}, {}),
+      columns: this.getColumns(dates, {}, {}),
       displayFilter: true,
-      days,
+      dates,
       type: 'week',
       pickerFormat: 'Tuần w-YYYY',
       doTimeKeeping: {
         visible: false,
-        personnel: null,
-        day: null,
+        record: null,
+        date: null,
       },
     };
   }
@@ -47,13 +52,19 @@ class TimeKeeping extends Component {
   componentDidMount() {
     this.props.findManyDepartments();
 
+    let { dates, filteredInfo } = this.state;
+    this.fetchTimeKeeping(filteredInfo, dates);
+  }
+
+  fetchTimeKeeping = (filteredInfo, dates) => {
     this.props.findTimeKeeping({
-      dates: this.state.days.map(date => moment(date).format('YYYY-MM-DD')) + ''
+      dates: dates.map(date => moment(date).format('YYYY-MM-DD')) + '',
+      ...filteredInfo,
     });
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { error, isDeleted, ids, timeKeepingView } = this.props;
+    const { error, isDeleting, timeKeepingView } = this.props;
 
     if (error && error !== prevProps.error) {
       if (error) {
@@ -65,83 +76,34 @@ class TimeKeeping extends Component {
       }
     }
 
-    if (isDeleted !== undefined && isDeleted === true && ids !== prevProps.ids) {
-      const { ids } = this.props;
-      const description = `Deleted ${ids.length} user${ids.length > 1 ? 's' : ''}`;
-
-      notification.success({
-        message: 'SUCCESS',
-        description,
-        duration: 2.5,
-      });
-
-      this.setState({ selectedRowKeys: [] });
+    if (isDeleting !== undefined && isDeleting !== prevProps.isDeleting) {
+      if (isDeleting) {
+        message.loading({ content: 'Đang xóa...', key: this.messageLoadingKey });
+      }
+      if (!isDeleting) {
+        message.success({ content: 'Xóa xong', key: this.messageLoadingKey, duration: 0.4 });
+      }
     }
 
     if (timeKeepingView && timeKeepingView !== prevProps.timeKeepingView) {
-      // const pagination = { ...this.state.pagination, total: totalElements };
-
       this.setState({
         data: timeKeepingView,
-        // pagination,
       });
     }
   }
 
-  handleTableChange = (pagination, filters, sorter) => {
-    const { current } = pagination;
+  onDeleteTimeKeeping = (indexRecord, indexDate, record) => {
+    if (!record || !record.personnel || !record.timeKeepingList || !record.timeKeepingList[indexDate])
+      return;
 
-    this.setState({
-      pagination: { ...this.state.pagination, current },
-      filteredInfo: filters,
-      sortedInfo: sorter,
-    });
-
-    this.fetchPersonnel(pagination, filters, sorter);
-  };
-
-  fetchPersonnel = (pagination, filters, sorter) => {
-
-    filters = getFilterObject(
-      ['gender', 'username', 'createdBy', 'lastModifiedBy', 'address', 'status',
-        'email', 'identification', 'phoneNumber', 'fullName', 'position', 'degree', 'department', 'branch'],
-      filters,
-    );
-
-    const sortDirection = (sorter && sorter.order && sorter.order === 'ascend') ? 'ASC' : 'DESC';
-    const sortBy = (sorter && sorter.order && sorter.field) ? sorter.field : 'id';
-    const { current, pageSize } = pagination;
-
-    this.props.findManyPersonnel({
-      currentPage: current,
-      limit: pageSize,
-      sortBy,
-      sortDirection,
-      ...filters,
-    });
+    this.props.deleteTimeKeeping(indexRecord, indexDate, record.personnel.id, record.timeKeepingList[indexDate].id);
   }
 
-  onSelectChange = selectedRowKeys => {
-    this.setState({ selectedRowKeys });
-  };
-
-  menu = (
-    <Menu id='timekeeping-options'>
-      <Menu.Item className='menu-item'>
-        Tạo yêu cầu nghỉ phép
-      </Menu.Item>
-      <Menu.Item className='menu-item'>
-        <span style={{ color: '#e15258' }}>Xóa</span>
-      </Menu.Item>
-    </Menu>
-  );
-
-  // filteredInfo, sortedInfo from state
-  getColumns = (days) => {
+  getColumns = (dates) => {
 
     let firstColumn = {
       title: () => {
-        return (<Input placeholder='Tìm kiếm' className='input-search-personnel' prefix={<SearchOutlined />} />);
+        return (<Input.Search onSearch={this.onSearchByFullName} placeholder='Tìm kiếm' className='input-search-personnel' prefix={<SearchOutlined />} />);
       },
       width: 200,
       key: 'blank',
@@ -163,14 +125,14 @@ class TimeKeeping extends Component {
       },
     };
 
-    const columns = days.map((day, index) => {
+    const columns = dates.map((date, indexDate) => {
       return {
         title: () => {
-          if (days.length === 7) {
-            return (<div>{getDateFormatForTimeKeeping(day, 'week')}</div>);
+          if (dates.length === 7) {
+            return (<div>{getDateFormatForTimeKeeping(date, 'week')}</div>);
           }
-          if (days.length > 7) {
-            const tmp = getDateFormatForTimeKeeping(day, 'month').split(' ');
+          if (dates.length > 7) {
+            const tmp = getDateFormatForTimeKeeping(date, 'month').split(' ');
             const dayOfWeek = tmp[0];
             const dayOfMonth = tmp[1];
 
@@ -184,20 +146,41 @@ class TimeKeeping extends Component {
           return null;
         },
         dataIndex: 'id',
-        key: index,
-        render: (text, record, index) => (
-          <div className='timekeeping-day'>
-            <div className='content'>
-              <div className='keeping-status'></div>
+        key: 'date',
+        render: (text, record, indexRecord) => {
+          const timeKeeping = record.timeKeepingList[indexDate];
+          let status = timeKeeping?.status;
+
+          if (!status) {
+            const check = moment() > moment(date);
+            status = check === true ? 'Không chấm công' : 'Chưa đến ca';
+          }
+
+          const menu = (
+            <Menu id='timekeeping-options'>
+              <Menu.Item className='menu-item'>
+                Tạo yêu cầu nghỉ phép
+              </Menu.Item>
+              <Menu.Item disabled={timeKeeping === null} className='menu-item' onClick={() => this.onDeleteTimeKeeping(indexRecord, indexDate, record)}>
+                <span style={{ color: '#e15258' }}>Xóa</span>
+              </Menu.Item>
+            </Menu>
+          );
+
+          return (
+            <div className='timekeeping-day'>
+              <div className='content'>
+                <TimeKeepingDot dotColor={timeKeepingColors[status]} />
+              </div>
+              <div className='overlay'>
+                <Button onClick={() => this.showTimeKeepingModal(indexRecord, indexDate, record, date)} icon={<PlusOutlined />} />
+                <Dropdown trigger='click' overlay={menu} placement='topLeft'>
+                  <Button icon={<EllipsisOutlined />} />
+                </Dropdown>
+              </div>
             </div>
-            <div className='overlay'>
-              <Button onClick={() => this.showTimeKeepingModal(record, day)} icon={<PlusOutlined />} />
-              <Dropdown trigger='click' overlay={this.menu} placement='topLeft'>
-                <Button icon={<EllipsisOutlined />} />
-              </Dropdown>
-            </div>
-          </div>
-        ),
+          )
+        },
       }
     })
 
@@ -207,17 +190,20 @@ class TimeKeeping extends Component {
   onDatePickerChange = (date) => {
     const { type } = this.state;
     if (type === 'week') {
-      this.props.findManyPersonnel();
+      const dates = getArrayDatesOfWeek(date);
+      let { filteredInfo } = this.state;
 
-      const days = getArrayDatesOfWeek(date);
-      this.setState({ days, columns: this.getColumns(days) });
+      this.setState({ dates, columns: this.getColumns(dates) });
+
+      this.fetchTimeKeeping(filteredInfo, dates);
     }
 
     if (type === 'month') {
-      this.props.findManyPersonnel();
+      const dates = getArrayDatesOfMonth(date);
+      const { filteredInfo } = this.state;
 
-      const days = getArrayDatesOfMonth(date);
-      this.setState({ days, columns: this.getColumns(days) });
+      this.setState({ dates, columns: this.getColumns(dates) });
+      this.fetchTimeKeeping(filteredInfo, dates);
     }
   }
 
@@ -225,23 +211,42 @@ class TimeKeeping extends Component {
     this.setState({ type: value });
 
     if (value === 'week') {
-      this.props.findManyPersonnel();
+      const dates = getArrayDatesOfWeek(moment());
+      let { filteredInfo } = this.state;
 
-      const days = getArrayDatesOfWeek(moment());
-
-      this.setState({ days, pickerFormat: 'Tuần w-YYYY', columns: this.getColumns(days) });
+      this.setState({ dates, pickerFormat: 'Tuần w-YYYY', columns: this.getColumns(dates), displayFilter: true });
+      this.fetchTimeKeeping(filteredInfo, dates);
     }
 
     if (value === 'month') {
-      this.props.findManyPersonnel();
+      const dates = getArrayDatesOfMonth(moment());
+      const { filteredInfo } = this.state;
 
-      this.setState({
-        displayFilter: false,
-      });
-
-      const days = getArrayDatesOfMonth(moment());
-      this.setState({ days, pickerFormat: 'TM-YYYY', columns: this.getColumns(days) });
+      this.setState({ dates, pickerFormat: 'TM-YYYY', columns: this.getColumns(dates), displayFilter: false });
+      this.fetchTimeKeeping(filteredInfo, dates);
     }
+  }
+
+  onChangeDepartment = (departmentId) => {
+    let { dates, filteredInfo } = this.state;
+    filteredInfo = { ...filteredInfo, departmentId };
+
+    this.setState({ filteredInfo });
+
+    this.fetchTimeKeeping(filteredInfo, dates);
+  }
+
+  onSearchByFullName = (fullName) => {
+    if (fullName.trim() === '') {
+      fullName = null;
+    }
+
+    let { dates, filteredInfo } = this.state;
+    filteredInfo = { ...filteredInfo, fullName };
+
+    this.setState({ filteredInfo });
+
+    this.fetchTimeKeeping(filteredInfo, dates);
   }
 
   onToggleDisplayFilter = () => {
@@ -250,18 +255,22 @@ class TimeKeeping extends Component {
     this.setState({ displayFilter: !displayFilter });
   }
 
-  showTimeKeepingModal = (record, day) => {
+  showTimeKeepingModal = (indexRecord, indexDate, record, date) => {
     this.setState({
       doTimeKeeping: {
+        indexRecord,
+        indexDate,
         visible: true,
-        personnel: record,
-        day,
+        record,
+        date,
       },
     });
   }
 
   refreshData = () => {
-    this.props.findManyPersonnel();
+    let { filteredInfo, dates } = this.state;
+
+    this.fetchTimeKeeping(filteredInfo, dates);
   }
 
   onCancelDoTimeKeepingModal = () => {
@@ -269,7 +278,7 @@ class TimeKeeping extends Component {
       doTimeKeeping: {
         visible: false,
         personnel: null,
-        day: null,
+        date: null,
       },
     });
   }
@@ -279,25 +288,23 @@ class TimeKeeping extends Component {
       doTimeKeeping: {
         visible: false,
         personnel: null,
-        day: null,
+        date: null,
       },
     });
   }
 
   render() {
-    const { data, selectedRowKeys, displayFilter, doTimeKeeping, days } = this.state;
-    const { visible, personnel, day } = doTimeKeeping;
+    const { data, displayFilter, doTimeKeeping, dates } = this.state;
+    const { visible, record, date, indexRecord, indexDate } = doTimeKeeping;
     const { isLoading, departments = [] } = this.props;
-
-    const hasSelected = selectedRowKeys.length > 0;
 
     let { sortedInfo, filteredInfo, type, pickerFormat, columns } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
-    const departmentOptions = departments.map(({ id, name }) => ({ label: name, value: id }));
+    const departmentOptions = [{ label: 'Tất cả phòng', value: null }]
+      .concat(departments.map(({ id, name }) => ({ label: name, value: id })));
 
-    // columns with filteredInfo and sortedInfo
-    columns = this.getColumns(days, filteredInfo, sortedInfo);
+    columns = this.getColumns(dates, filteredInfo, sortedInfo);
 
     return (
       <>
@@ -335,9 +342,6 @@ class TimeKeeping extends Component {
             <Col md={{ span: 12 }}
               className='actions-right'
             >
-              <span style={{ marginRight: '8px', lineHeight: '30px' }}>
-                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-              </span>
               <Button style={{ marginRight: '2px', fontSize: 13, top: -1 }} type='default' icon={<DownloadOutlined />}>
                 Excel
               </Button>
@@ -352,6 +356,7 @@ class TimeKeeping extends Component {
             }}
             className={`filter-wrapper ${displayFilter ? '' : 'd-none'}`} >
             <Select
+              value={filteredInfo.departmentId}
               className='timekeeping-select-department'
               placeholder='Phòng ban'
               style={{
@@ -359,6 +364,7 @@ class TimeKeeping extends Component {
                 width: '100%',
                 marginBottom: 4,
               }}
+              onChange={this.onChangeDepartment}
               options={departmentOptions}
               showSearch
               optionFilterProp='children'
@@ -385,8 +391,8 @@ class TimeKeeping extends Component {
             <div className='note'>
               {
                 Object.keys(timeKeepingColors).map(key => (
-                  <div className='note-item'>
-                    <TimeKeepingDot dotColor={timeKeepingColors[key]} /><span>{key}</span>
+                  <div className='note-item' key={key}>
+                    <TimeKeepingDot style={{ marginRight: '6px' }} dotColor={timeKeepingColors[key]} /><span>{key}</span>
                   </div>
                 ))
               }
@@ -419,8 +425,10 @@ class TimeKeeping extends Component {
         </div>
         <DoTimeKeepingModal
           visible={visible}
-          personnel={personnel}
-          day={day}
+          record={record}
+          date={date}
+          indexRecord={indexRecord}
+          indexDate={indexDate}
           onCancel={this.onCancelDoTimeKeepingModal}
           onOk={this.onOkDoTimeKeepingModal}
         />
@@ -443,6 +451,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     findManyDepartments: () => dispatch(departmentAction.findManyDepartments()),
     findTimeKeeping: (params) => dispatch(timeKeepingAction.findTimeKeeping(params)),
+    deleteTimeKeeping: (indexRecord, indexDate, personnelId, timeKeepingId) => dispatch(timeKeepingAction.deleteTimeKeeping(indexRecord, indexDate, personnelId, timeKeepingId)),
   };
 };
 

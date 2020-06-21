@@ -38,7 +38,7 @@
       align-items: center;
 
       div:last-child {
-        margin-left: 6px;
+        margin-left: 9px;
       }
     }
   }
@@ -51,5 +51,10 @@
   ul.ant-list-items li.ant-list-item:hover {
     background-color: #f2f4f8;
     cursor: pointer;
+  }
+
+  ul.ant-list-items li.ant-list-item.active {
+    background-color: #f2f4f8;
+    border-right: 3px solid #24a949
   }
 }

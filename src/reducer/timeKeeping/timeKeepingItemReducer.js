@@ -2,7 +2,6 @@
 import { actionTypes } from '../../constant/actionTypes';
 
 const initialState = {
-  isLoading: false,
   item: {},
 };
 
@@ -32,6 +31,32 @@ export const timeKeepingItemReducer = (state = initialState, { type, payloads })
       return {
         ...state,
         isCreating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_ONE_TIME_KEEPING_SUCCESS: {
+      const { timeKeeping } = payloads;
+
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        item: timeKeeping,
+      }
+    }
+    case actionTypes.UPDATE_ONE_TIME_KEEPING_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_ONE_TIME_KEEPING_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
         success: undefined,
       }
     }

@@ -36,6 +36,72 @@ export const timeKeepingListReducer = (state = initialState, { type, payloads })
         isLoading: false,
       };
     }
+    case actionTypes.CREATE_ONE_TIME_KEEPING_SUCCESS: {
+      const { indexRecord, indexDate, timeKeeping } = payloads;
+      let { timeKeepingView } = state;
+
+      if (!timeKeepingView || !timeKeepingView[indexRecord]
+        || !timeKeepingView[indexRecord].timeKeepingList) {
+        return { ...state };
+      }
+
+      timeKeepingView[indexRecord].timeKeepingList[indexDate] = timeKeeping;
+      timeKeepingView = [...timeKeepingView];
+
+      return {
+        ...state,
+        timeKeepingView,
+      };
+    }
+    case actionTypes.UPDATE_ONE_TIME_KEEPING_SUCCESS: {
+      const { indexRecord, indexDate, timeKeeping } = payloads;
+      let { timeKeepingView } = state;
+
+      if (!timeKeepingView || !timeKeepingView[indexRecord]
+        || !timeKeepingView[indexRecord].timeKeepingList) {
+        return { ...state };
+      }
+
+      timeKeepingView[indexRecord].timeKeepingList[indexDate] = timeKeeping;
+      timeKeepingView = [...timeKeepingView];
+
+      return {
+        ...state,
+        timeKeepingView,
+      };
+    }
+    case actionTypes.DELETE_ONE_TIME_KEEPING_SUCCESS: {
+      const { indexRecord, indexDate, timeKeeping } = payloads;
+      let { timeKeepingView } = state;
+
+      if (!timeKeepingView || !timeKeepingView[indexRecord]
+        || !timeKeepingView[indexRecord].timeKeepingList) {
+        return { ...state };
+      }
+
+      timeKeepingView[indexRecord].timeKeepingList[indexDate] = timeKeeping;
+      timeKeepingView = [...timeKeepingView];
+
+      return {
+        ...state,
+        timeKeepingView,
+        isDeleting: false,
+      };
+    }
+    case actionTypes.DELETE_ONE_TIME_KEEPING_REQUEST: {
+      return {
+        ...state,
+        isDeleting: true,
+      };
+    }
+    case actionTypes.DELETE_ONE_TIME_KEEPING_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        isDeleting: false,
+        error,
+      };
+    }
     default:
       return state;
   }
