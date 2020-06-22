@@ -20,6 +20,10 @@ class RequestCreate extends Component {
     }
   }
 
+  onChange = activeKey => {
+    this.setState({ activeKey })
+  };
+
   componentDidMount() {
   }
 
@@ -111,11 +115,12 @@ class RequestCreate extends Component {
             wrapperCol={{ xs: 24 }}
             id='ContractCreateForm'
             onFinish={this.onCreateContract}
+            style={{ width:'100%'}}
           >
             <Row>
               <Col span={24} md={{ span: 12 }}>
                 <Form.Item
-                  name='fullName'
+                  name='staffName'
                   label='Nhân viên'
                   rules={[{ required: true, message: 'Vui lòng chọn nhân viên' }]}
                 >
@@ -124,7 +129,7 @@ class RequestCreate extends Component {
               </Col>
               <Col span={24} md={{ span: 6 }}>
                 <Form.Item
-                  name='validDate'
+                  name='startDate'
                   label='Ngày bắt đầu'
                   rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu nghỉ' }]}
                 >
@@ -133,7 +138,7 @@ class RequestCreate extends Component {
               </Col>
               <Col span={24} md={{ span: 6 }}>
                 <Form.Item
-                  name='expiredDate'
+                  name='endDate'
                   label='Ngày kết thúc'
                   rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc nghỉ' }]}
                 >
@@ -142,7 +147,7 @@ class RequestCreate extends Component {
               </Col>
               <Col span={24} md={{ span: 12 }}>
                 <Form.Item
-                  name='fullName'
+                  name='received'
                   label='Người kiếm duyệt'
                   rules={[{ required: true, message: 'Vui lòng chọn người kiếm duyệt' }]}
                 >
@@ -150,12 +155,15 @@ class RequestCreate extends Component {
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 6 }}>
-                <Form.Item name='status' label='Tình trạng phê duyệt'>
+                <Form.Item
+                  name='status'
+                  label='Tình trạng phê duyệt'
+                  rules={[{ required: true, message: 'Vui lòng chọn tình trạng phê duyệt' }]}
+                >
                   <Select
                     placeholder='Tình trạng phê duyệt'
                     onChange={null}
                     style={{ width: '80%', top: -2 }}
-                    rules={[{ required: true, message: 'Vui lòng chọn tình trạng phê duyệt' }]}
                   >
                     <Option value="0">Chờ phê duyệt</Option>
                     <Option value="1">Chấp thuận</Option>
@@ -164,7 +172,7 @@ class RequestCreate extends Component {
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 24 }}>
-                <Form.Item name='note' wrapperCol={{ span: 24 }} label='Lí Do'>
+                <Form.Item name='reason' wrapperCol={{ span: 24 }} label='Lí Do'>
                   <TextArea rows={4} />
                 </Form.Item>
               </Col>

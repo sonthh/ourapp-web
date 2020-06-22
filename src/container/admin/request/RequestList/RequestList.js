@@ -143,17 +143,17 @@ class RequestList extends Component {
   listRequestMenu = (
     <Menu>
       <Menu.Item>
-        <Link to={''}>
+        <Link to={'/admin/personnel/request/create'}>
           <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Tạm Ứng lương</span>
         </Link>
       </Menu.Item>
       <Menu.Item>
-      <Link to={''}>
+      <Link to={'/admin/personnel/request/create'}>
           <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Làm thêm giờ</span>
         </Link>
       </Menu.Item>
       <Menu.Item>
-      <Link to={''}>
+      <Link to={'/admin/personnel/request/create'}>
           <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Nghỉ phép</span>
         </Link>
       </Menu.Item>
