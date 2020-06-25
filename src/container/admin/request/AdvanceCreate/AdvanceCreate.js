@@ -9,7 +9,7 @@ import { getErrorMessage } from '../../../../util/get';
 
 const { Option } = Select
 
-class RequestCreate extends Component {
+class AdvanceCreate extends Component {
 
   constructor(props) {
     super(props);
@@ -130,31 +130,18 @@ class RequestCreate extends Component {
               <Col span={24} md={{ span: 6 }}>
                 <Form.Item
                   name='startDate'
-                  label='Ngày bắt đầu'
-                  rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu nghỉ' }]}
+                  label='Ngày quyệt định'
+                  rules={[{ required: true, message: 'Vui lòng chọn ngày quyệt định' }]}
                 >
-                  <DatePicker style={{ width: '80%' }} />
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 6 }}>
-                <Form.Item
-                  name='endDate'
-                  label='Ngày kết thúc'
-                  rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc nghỉ' }]}
-                >
-                  <DatePicker style={{ width: '80%' }} />
+                  <DatePicker style={{ width: '100%' }} />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item
-                  name='received'
-                  label='Người kiếm duyệt'
-                  rules={[{ required: true, message: 'Vui lòng chọn người kiếm duyệt' }]}
-                >
-                  <Input className={'select-personnel'} onClick={this.onClickOpenSelectForm} />
+                <Form.Item name='amount' label='Số tiền'>
+                  <Input />
                 </Form.Item>
               </Col>
-              <Col span={24} md={{ span: 6 }}>
+              <Col span={24} md={{ span: 12 }}>
                 <Form.Item
                   name='status'
                   label='Tình trạng phê duyệt'
@@ -163,7 +150,7 @@ class RequestCreate extends Component {
                   <Select
                     placeholder='Tình trạng phê duyệt'
                     onChange={null}
-                    style={{ width: '80%', top: -2 }}
+                    style={{ width: '100%', top: -2 }}
                   >
                     <Option value="0">Chờ phê duyệt</Option>
                     <Option value="1">Chấp thuận</Option>
@@ -214,4 +201,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(RequestCreate);
+export default connect(mapStateToProps, mapDispatchToProps)(AdvanceCreate);

@@ -143,17 +143,12 @@ class RequestList extends Component {
   listRequestMenu = (
     <Menu>
       <Menu.Item>
-        <Link to={'/admin/personnel/request/create'}>
+        <Link to={'/admin/personnel/request/advance/create'}>
           <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Tạm Ứng lương</span>
         </Link>
       </Menu.Item>
       <Menu.Item>
-      <Link to={'/admin/personnel/request/create'}>
-          <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Làm thêm giờ</span>
-        </Link>
-      </Menu.Item>
-      <Menu.Item>
-      <Link to={'/admin/personnel/request/create'}>
+      <Link to={'/admin/personnel/request/on-leave/create'}>
           <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Nghỉ phép</span>
         </Link>
       </Menu.Item>
@@ -232,11 +227,11 @@ class RequestList extends Component {
                 {/* {'hasSelected' ? `Selected ${'selectedRowKeys.length'} items` : ''} */}
               </span>
               <Dropdown overlay={this.listRequestMenu} placement='bottomLeft' trigger={['click']}>
-                <Button style={{marginRight: '2px'}} type='default' icon={<PlusCircleTwoTone />}>
+                <Button style={{marginRight: '2px'}} type='default' icon={<PlusCircleTwoTone className='plus-icon' />}>
                   Tạo mới
                 </Button>
               </Dropdown>
-              <Button style={{ marginRight: '2px' }} type='default' icon={<DownloadOutlined />}>
+              <Button style={{ marginRight: '2px' }} type='default' icon={<DownloadOutlined className='plus-icon' />}>
                 Xuất excel
               </Button>
             </Col>

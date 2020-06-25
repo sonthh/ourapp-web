@@ -18,7 +18,8 @@ import TimeKeeping from './container/admin/working/TimeKeeping/TimeKeeping';
 import ContractCreate from './container/admin/personnel/ContractCreate/ContractCreate';
 import PersonnelUpdate from './container/admin/personnel/PersonnelUpdate/PersonnelUpdate';
 import PermissionSetting from './container/admin/role/PermissionSetting/PermissionSetting';
-import RequestCreate from './container/admin/request/RequestCreate/RequestCreate';
+import AdvanceCreate from './container/admin/request/AdvanceCreate/AdvanceCreate';
+import OnLeaveCreate from './container/admin/request/OnLeaveCreate/OnLeaveCreate'
 
 export const adminModalRoutes = [
   {
@@ -98,8 +99,12 @@ export const adminRoutes = [
     exact: true,
   },
   {
-    path: '/personnel/request/create',
-    component: RequestCreate,
+    path: '/personnel/request/advance/create',
+    component: AdvanceCreate,
+  },
+  {
+    path: '/personnel/request/on-leave/create',
+    component: OnLeaveCreate,
   },
   {
     path: '/setting',
