@@ -8,6 +8,7 @@ import { branchReducer } from './branch/branchReducer';
 import { departmentReducer } from './department/departmentReducer';
 import { contractReducer } from './contract/contractReducer';
 import { timeKeepingReducer } from './timeKeeping/timeKeepingReducer';
+import { requestReducer } from './request/requestReducer';
 
 export const rootReducer = combineReducers({
   app: appReducer,
@@ -19,4 +20,5 @@ export const rootReducer = combineReducers({
   department: departmentReducer,
   contract: contractReducer,
   timeKeeping: timeKeepingReducer,
+  request: requestReducer,
 });

@@ -4,10 +4,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TextArea from 'antd/lib/input/TextArea';
 import SelectPersonnelModal from '../../../../component/modal/SelectPersonnelModal/SelectPersonnelModal';
-import * as contractAction from '../../../../action/contractAction';
+import * as requestAction from '../../../../action/requestAction';
 import { getErrorMessage } from '../../../../util/get';
-
-const { Option } = Select
+import SelectUserModal from '../../../../component/modal/SelectUserlModal/SelectUserModal';
 
 class AdvanceCreate extends Component {
 
@@ -16,7 +15,9 @@ class AdvanceCreate extends Component {
     this.formRef = React.createRef();
     this.state = {
       visibleSelectPersonnel: false,
+      visibleSelectUser: false,
       personnel: null,
+      user: null,
     }
   }
 
@@ -55,57 +56,61 @@ class AdvanceCreate extends Component {
     this.setState({ visibleSelectPersonnel: false });
   }
 
-  onClickOpenSelectForm = () => {
+  onCloseSelectUserModal = () => {
+    this.setState({ visibleSelectUser: false });
+  }
+
+  onClickOpenSelectPersonnelForm = () => {
     this.setState({ visibleSelectPersonnel: true });
+  }
+
+  onClickOpenSelectUserForm = () => {
+    this.setState({ visibleSelectUser: true });
   }
 
   onOkSelectPersonnelModal = () => {
     this.setState({ visibleSelectPersonnel: false });
   }
 
+  onOkSelectUserModal = () => {
+    this.setState({ visibleSelectUser: false });
+  }
+
   onSelectPersonnel = (personnel) => {
-    const { fullName } = personnel;
-    this.formRef.current.setFieldsValue({ fullName });
+    const { fullName: fullNamePersonnel } = personnel;
+    this.formRef.current.setFieldsValue({ fullNamePersonnel });
 
     this.setState({ visibleSelectPersonnel: false, personnel });
   }
 
-  onCreateContract = (values) => {
-    const { personnel } = this.state;
-    if (!personnel) {
-      notification.error({
-        message: 'Thông báo',
-        description: 'Vui lòng chọn nhân sự',
-        duration: 2.5,
-      });
+  onSelectUser = (user) => {
+    const { fullName: fullNameUser } = user;
+    this.formRef.current.setFieldsValue({ fullNameUser });
 
-      return;
-    }
-
-    let request = { ...values, signerId: personnel.id, personnelId: personnel.id };
-
-    this.props.createOneContract(request);
+    this.setState({ visibleSelectUser: false, user });
   }
 
-  taxTypes = [
-    'Không tính thuế',
-    'Hợp đồng lao động dưới 3 tháng',
-    'Hợp đồng lao động 3 tháng trở lên',
-  ];
+  onCreateAdvance = (values) => {
+    const { personnel, user } = this.state;
 
-  contractTypes = [
-    'Hợp đồng chính thức',
-    'Hợp đồng thử việc',
-    'Hợp đồng thời vụ',
+    let requestPayload = { ...values, personnelId: personnel.id, type: 'Advance', receiverId: user.id };
+
+    this.props.createOneRequest(requestPayload);
+  }
+
+  statusList = [
+    'Chờ phê duyệt',
+    'Châp thuận',
+    'Không chấp thuận',
   ];
 
   render() {
-    const { visibleSelectPersonnel } = this.state;
+    const { visibleSelectPersonnel, visibleSelectUser } = this.state;
     const { isCreating } = this.props;
 
     return (
       <>
-        <Row className={'ContractCreate'} style={{ marginBottom: '30px', padding: '24px' }}>
+        <Row className={'AdvanceCreate'} style={{ marginBottom: '30px', padding: '24px' }}>
           <Form
             layout='vertical'
             defaultValue={{}}
@@ -114,22 +119,22 @@ class AdvanceCreate extends Component {
             labelCol={{ xs: 24 }}
             wrapperCol={{ xs: 24 }}
             id='ContractCreateForm'
-            onFinish={this.onCreateContract}
-            style={{ width:'100%'}}
+            onFinish={this.onCreateAdvance}
+            style={{ width: '100%' }}
           >
             <Row>
               <Col span={24} md={{ span: 12 }}>
                 <Form.Item
-                  name='staffName'
+                  name='fullNamePersonnel'
                   label='Nhân viên'
                   rules={[{ required: true, message: 'Vui lòng chọn nhân viên' }]}
                 >
-                  <Input className={'select-personnel'} onClick={this.onClickOpenSelectForm} />
+                  <Input className={'select-personnel'} onClick={this.onClickOpenSelectPersonnelForm} />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 6 }}>
                 <Form.Item
-                  name='startDate'
+                  name='decidedDate'
                   label='Ngày quyệt định'
                   rules={[{ required: true, message: 'Vui lòng chọn ngày quyệt định' }]}
                 >
@@ -137,7 +142,11 @@ class AdvanceCreate extends Component {
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item name='amount' label='Số tiền'>
+                <Form.Item
+                  name='amount'
+                  label='Số tiền'
+                  rules={[{ required: true, message: 'Vui lòng nhập số  tiền' }]}
+                >
                   <Input />
                 </Form.Item>
               </Col>
@@ -151,11 +160,17 @@ class AdvanceCreate extends Component {
                     placeholder='Tình trạng phê duyệt'
                     onChange={null}
                     style={{ width: '100%', top: -2 }}
-                  >
-                    <Option value="0">Chờ phê duyệt</Option>
-                    <Option value="1">Chấp thuận</Option>
-                    <Option value="2">Không chấp thuận </Option>
-                  </Select>
+                    options={this.statusList.map(each => ({ value: each, label: each }))}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={24} md={{ span: 24 }}>
+                <Form.Item
+                  name='fullNameUser'
+                  label='Người phê duyệt'
+                  rules={[{ required: true, message: 'Vui lòng chọn người phê duyệt' }]}
+                >
+                  <Input className={'select-personnel'} onClick={this.onClickOpenSelectUserForm} />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 24 }}>
@@ -181,23 +196,29 @@ class AdvanceCreate extends Component {
             onOk={this.onOkSelectPersonnelModal}
             onSelectPersonnel={this.onSelectPersonnel}
           />
+          <SelectUserModal
+            visible={visibleSelectUser}
+            onClose={this.onCloseSelectUserModal}
+            onOk={this.onOkSelectUserModal}
+            onSelectUser={this.onSelectUser}
+          />
         </Row>
       </>
     )
   }
 }
 
-const mapStateToProps = ({ contract }) => {
-  const { contractItem } = contract;
+const mapStateToProps = ({ request }) => {
+  const { requestItem } = request;
 
   return {
-    ...contractItem,
+    ...requestItem,
   }
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createOneContract: (contractRequest) => dispatch(contractAction.createOneContract(contractRequest)),
+    createOneRequest: (requestPayload) => dispatch(requestAction.createOneRequest(requestPayload)),
   }
 };
 
