@@ -46,3 +46,25 @@ export const findManyRequests = (params = {}) => {
     }
   };
 };
+
+export const countRequests = (params = {}) => {
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.COUNT_REQUEST_REQUEST,
+    });
+
+    try {
+      const countRequest = await requestService.countRequests(params);
+
+      dispatch({
+        type: actionTypes.COUNT_REQUEST_SUCCESS,
+        payloads: { countRequest },
+      })
+    } catch (error) {
+      dispatch({
+        type: actionTypes.COUNT_REQUEST_FAILURE,
+        payloads: { error },
+      })
+    }
+  }
+}

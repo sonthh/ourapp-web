@@ -6,6 +6,7 @@ const initialState = {
   isDeleted: false,
   isLoadingDelete: false,
   dataList: {},
+  countRequest: {},
 };
 
 export const requestListReducer = (state = initialState, { type, payloads }) => {
@@ -34,6 +35,28 @@ export const requestListReducer = (state = initialState, { type, payloads }) => 
         ...state,
         error,
         isLoading: false,
+      };
+    }
+    case actionTypes.COUNT_REQUEST_REQUEST: {
+
+      return {
+        ...state,
+      };
+    }
+    case actionTypes.COUNT_REQUEST_SUCCESS: {
+      const { countRequest } = payloads;
+
+      return {
+        ...state,
+        countRequest,
+      };
+    }
+    case actionTypes.COUNT_REQUEST_FAILURE: {
+      const { error } = payloads;
+
+      return {
+        ...state,
+        error,
       };
     }
     default:
