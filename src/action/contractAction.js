@@ -25,6 +25,28 @@ export const createOneContract = (contractRequest) => {
   };
 };
 
+export const updateOneContract = (contractId, contractRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_ONE_CONTRACT_REQUEST,
+    });
+
+    try {
+      const contract = await contractService.updateOneContract(contractId, contractRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_ONE_CONTRACT_SUCCESS,
+        payloads: { contract },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_ONE_CONTRACT_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
 
 export const findManyContracts = (params = {}) => {
 
@@ -43,6 +65,29 @@ export const findManyContracts = (params = {}) => {
     } catch (error) {
       dispatch({
         type: actionTypes.FIND_MANY_CONTRACTS_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const findOneContract = (id) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.FIND_ONE_CONTRACT_REQUEST,
+    });
+
+    try {
+      const contract = await contractService.findOneContract(id);
+
+      dispatch({
+        type: actionTypes.FIND_ONE_CONTRACT_SUCCESS,
+        payloads: { contract },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.FIND_ONE_CONTRACT_FAILURE,
         payloads: { error },
       });
     }

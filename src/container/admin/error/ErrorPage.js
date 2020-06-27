@@ -13,6 +13,8 @@ export default class ErrorPage extends Component {
     errorCode: '404',
   };
 
+  redirect = '/admin/working-day/timekeeping';
+
   componentDidMount() {
     const { match } = this.props;
 
@@ -26,7 +28,7 @@ export default class ErrorPage extends Component {
 
     setTimeout(() => {
       if (window.location.href.includes('/admin/error/')) {
-        this.props.history.push('/admin/dashboard');
+        this.props.history.push(this.redirect);
       }
     }, timeToRedirect);
   }
@@ -34,12 +36,11 @@ export default class ErrorPage extends Component {
   render() {
     const errorCodes = ['404', '403', '500'];
     let { errorCode } = this.state;
-    const redirect = '/admin/dashboard';
     let description = '';
     const targetTime = new Date().getTime() + timeToRedirect;
     const actions = (
       <div>
-        <Button type="primary"><Link to='/admin/dashboard'>Back home</Link></Button>
+        <Button type="primary"><Link to={this.redirect}>Back home</Link></Button>
         <CountDown style={{ fontSize: 20 }} target={targetTime} />
       </div>
     );
@@ -65,7 +66,7 @@ export default class ErrorPage extends Component {
         type={errorCode}
         desc={description}
         actions={actions}
-        redirect={redirect}
+        redirect={this.redirect}
         backText='Back home'
       />
     );

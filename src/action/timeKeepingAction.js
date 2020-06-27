@@ -71,7 +71,7 @@ export const deleteTimeKeeping = (indexRecord, indexDate, personnelId, timeKeepi
   };
 };
 
-export const findTimeKeeping = (params) => {  
+export const findTimeKeeping = (params) => {
 
   return async (dispatch) => {
     dispatch({
@@ -88,6 +88,30 @@ export const findTimeKeeping = (params) => {
     } catch (error) {
       dispatch({
         type: actionTypes.FIND_TIME_KEEPING_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+
+export const exportExcel = (params) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.TIME_KEEPING_EXPORT_EXCEL_REQUEST,
+    });
+
+    try {
+      const fileData = await timeKeepingService.exportExcel(params);
+
+      dispatch({
+        type: actionTypes.TIME_KEEPING_EXPORT_EXCEL_SUCCESS,
+        payloads: { fileData },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.TIME_KEEPING_EXPORT_EXCEL_FAILURE,
         payloads: { error },
       });
     }

@@ -102,6 +102,29 @@ export const timeKeepingListReducer = (state = initialState, { type, payloads })
         error,
       };
     }
+    case actionTypes.TIME_KEEPING_EXPORT_EXCEL_REQUEST: {
+      return {
+        ...state,
+        isExporting: true,
+      };
+    }
+    case actionTypes.TIME_KEEPING_EXPORT_EXCEL_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        isExporting: false,
+        error,
+      };
+    }
+    case actionTypes.TIME_KEEPING_EXPORT_EXCEL_SUCCESS: {
+      const { fileData } = payloads;
+
+      return {
+        ...state,
+        isExporting: false,
+        fileData,
+      };
+    }
     default:
       return state;
   }

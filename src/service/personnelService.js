@@ -311,3 +311,58 @@ export const updateAdditionalInfo = async (personnelId, additionalInfoRequest) =
     return Promise.reject(error);
   }
 };
+
+export const addSalary = async (personnelId, salaryRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/salary/add`, salaryRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const updateSalary = async (personnelId, salaryRequest) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/salary/update`, salaryRequest);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const addAllowance = async (personnelId, allowanceReq) => {
+  try {
+    const { data } = await axios
+      .post(`${config.API_URL}/personnel/${personnelId}/allowances`, allowanceReq);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const updateAllowance = async (personnelId, allowanceId, allowanceReq) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/personnel/${personnelId}/allowances/${allowanceId}`, allowanceReq);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const deleteAllowance = async (personnelId, allowanceId) => {
+  try {
+    const { data } = await axios
+      .delete(`${config.API_URL}/personnel/${personnelId}/allowances/${allowanceId}`);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};

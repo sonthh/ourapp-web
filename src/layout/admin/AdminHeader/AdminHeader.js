@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { toggleMenu } from '../../../action/appAction';
 import { logout, getCurrentUser } from '../../../util/auth';
 import { Redirect, Link } from 'react-router-dom';
-import Notice from '../../../component/common/Notice';
+// import Notice from '../../../component/common/Notice';
 import MainMenu from '../MainMenu';
 import PropTypes from 'prop-types';
 import './index.scss';
@@ -104,7 +104,7 @@ class AdminHeader extends Component {
         <Row justify='space-between'>
           {leftHeader}
           <Col>
-            <Notice />
+            {/* <Notice /> */}
             <Dropdown trigger={['click']} overlay={userMenu} placement="bottomRight">
               <div className='menu-avatar-wrapper'>
                 <Avatar style={{ top: '-4px' }} size='small' src={authData.avatar} />

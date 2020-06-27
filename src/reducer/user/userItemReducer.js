@@ -65,7 +65,7 @@ export const userItemReducer = (state = initialState, { type, payloads }) => {
       return {
         ...state,
         isUpdatingUser: false,
-        success: 'Tạo thành công',
+        success: 'Sửa thành công',
         item: user,
       }
     }

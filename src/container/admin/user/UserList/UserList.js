@@ -179,7 +179,7 @@ class UserList extends Component {
   // filteredInfo, sortedInfo from state
   getColumns = (filteredInfo, sortedInfo, isColumnsFixed = false) => ([
     {
-      title: 'Avatar',
+      title: 'Ảnh',
       dataIndex: 'username',
       key: 'avatar',
       width: 75,
@@ -190,43 +190,43 @@ class UserList extends Component {
       ),
     },
     {
-      title: 'Username',
+      title: 'Tên người dùng',
       dataIndex: 'username',
       key: 'username',
       width: 140,
       minWidth: 140,
       filteredValue: filteredInfo.username || null,
-      ...getColumnSearchProps(this, 'username'),
+      ...getColumnSearchProps(this, 'username', 'tên người dùng'),
       render: (username) => (
         <Paragraph style={{ marginBottom: 0 }} ellipsis={{ suffix: ' ', rows: 1 }}>{username}</Paragraph>
       ),
     },
     {
-      title: 'Full name',
+      title: 'Họ tên',
       dataIndex: 'fullName',
       key: 'fullName',
       width: 150,
       minWidth: 150,
       filteredValue: filteredInfo.fullName || null,
-      ...getColumnSearchProps(this, 'fullName'),
+      ...getColumnSearchProps(this, 'fullName', 'họ tên'),
       render: fullName => fullName || 'No',
     },
     {
-      title: 'Identification',
+      title: 'CMND',
       dataIndex: 'identification',
       key: 'identification',
       width: 150,
       minWidth: 150,
       filteredValue: filteredInfo.identification || null,
-      ...getColumnSearchProps(this, 'identification'),
+      ...getColumnSearchProps(this, 'identification', 'CMND'),
       render: identification => identification || 'No',
     },
     {
-      title: 'Gender',
+      title: 'Giới tính',
       dataIndex: 'gender',
       key: 'gender',
-      width: 95,
-      minWidth: 95,
+      width: 130,
+      minWidth: 130,
       filteredValue: filteredInfo.gender || null,
       filters: [
         {
@@ -242,11 +242,11 @@ class UserList extends Component {
       render: gender => (<GenderTag gender={gender} />),
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      width: 95,
-      minWidth: 95,
+      width: 130,
+      minWidth: 130,
       filteredValue: filteredInfo.status || null,
       filters: [
         {
@@ -262,27 +262,27 @@ class UserList extends Component {
       render: status => (<StatusTag status={status} />),
     },
     {
-      title: 'Address',
+      title: 'Địa chỉ',
       dataIndex: 'address',
       key: 'address',
       width: 150,
       minWidth: 150,
       filteredValue: filteredInfo.address || null,
-      ...getColumnSearchProps(this, 'address'),
+      ...getColumnSearchProps(this, 'address', 'địa chỉ'),
       render: address => address || 'No',
     },
     {
-      title: 'Phone number',
+      title: 'SĐT',
       dataIndex: 'phoneNumber',
       key: 'phoneNumber',
       width: 150,
       minWidth: 150,
       filteredValue: filteredInfo.phoneNumber || null,
-      ...getColumnSearchProps(this, 'phoneNumber', 'Phone number'),
+      ...getColumnSearchProps(this, 'phoneNumber', 'SĐT'),
       render: phoneNumber => phoneNumber || 'No',
     },
     {
-      title: 'Birthday',
+      title: 'Sinh nhật',
       dataIndex: 'birthDay',
       key: 'birthDay',
       sorter: true,
@@ -304,7 +304,7 @@ class UserList extends Component {
       ),
     },
     {
-      title: 'Created date',
+      title: 'Ngày tạo',
       dataIndex: 'createdDate',
       key: 'createdDate',
       sorter: true,
@@ -314,13 +314,13 @@ class UserList extends Component {
       render: createdDate => getDateFormat(createdDate) || 'No',
     },
     {
-      title: 'Create by',
+      title: 'Tạo bởi',
       dataIndex: 'createdBy',
       key: 'createdBy',
       width: 190,
       minWidth: 190,
       filteredValue: filteredInfo.createdBy || null,
-      ...getColumnSearchProps(this, 'createdBy', 'created by'),
+      ...getColumnSearchProps(this, 'createdBy', 'người tạo'),
       render: createdBy => (
         <AvatarAndTitle
           src={createdBy ? createdBy.avatar : null}
@@ -329,7 +329,7 @@ class UserList extends Component {
       ),
     },
     {
-      title: 'Last modified date',
+      title: 'Ngày sửa',
       dataIndex: 'lastModifiedDate',
       width: 160,
       minWidth: 160,
@@ -339,13 +339,13 @@ class UserList extends Component {
       render: lastModifiedDate => getDateFormat(lastModifiedDate),
     },
     {
-      title: 'Last modifed by',
+      title: 'Sửa bởi',
       dataIndex: 'lastModifiedBy',
       key: 'lastModifiedBy',
       width: 190,
       minWidth: 190,
       filteredValue: filteredInfo.lastModifiedBy || null,
-      ...getColumnSearchProps(this, 'lastModifiedBy', 'last modified by'),
+      ...getColumnSearchProps(this, 'lastModifiedBy', 'người sửa'),
       render: lastModifiedBy => (
         <AvatarAndTitle
           src={lastModifiedBy ? lastModifiedBy.avatar : null}
@@ -354,7 +354,7 @@ class UserList extends Component {
       ),
     },
     {
-      title: 'Operations',
+      title: 'Hành động',
       key: 'operation',
       width: 100,
       minWidth: 100,
@@ -372,7 +372,7 @@ class UserList extends Component {
           <Popconfirm
             icon={<DeleteOutlined />}
             placement='bottomRight'
-            title={`Are you sure delete this item?`}
+            title={`Bạn có muốn xóa?`}
             onConfirm={() => this.handleDeleteOneUser(id)}
           >
             <Button
@@ -477,7 +477,7 @@ class UserList extends Component {
     return (
       <>
         <Helmet>
-          <title>Account user</title>
+          <title>Người dùng</title>
         </Helmet>
         <div style={{ marginBottom: 16 }}>
           <Row justify='space-between'>
@@ -497,7 +497,7 @@ class UserList extends Component {
               className='actions-right'
             >
               <span style={{ marginRight: '8px', lineHeight: '30px' }}>
-                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+                {hasSelected ? `Chọn ${selectedRowKeys.length} dòng` : ''}
               </span>
               <Link to={{ pathname: '/admin/user/manage/add', state: { background: location } }} >
                 <Button style={{ marginRight: 2 }} type='default' icon={<PlusCircleTwoTone />}>
@@ -508,7 +508,7 @@ class UserList extends Component {
               <Popconfirm
                 icon={<DeleteOutlined />}
                 placement='bottomLeft'
-                title={`Are you sure delete ${selectedRowKeys.length} selected items?`}
+                title={`Bạn có muốn xóa ${selectedRowKeys.length} người dùng?`}
                 onConfirm={this.onDeleteMany}
                 disabled={!hasSelected}
               >
@@ -525,13 +525,13 @@ class UserList extends Component {
               onClick={this.clearSorters}
               disabled={checkIsEmptyObj(sortedInfo) || !sortedInfo.order}
             >
-              Reset sắp xếp
+              Bỏ sắp xếp
               </Button>
             <Button
               onClick={this.clearFilters}
               disabled={checkIsEmptyObj(filteredInfo)}
             >
-              Reset filter
+              Bỏ lọc
               </Button>
             <Button
               onClick={this.clearFiltersAndSorters}
@@ -540,7 +540,7 @@ class UserList extends Component {
                 || checkIsEmptyObj(filteredInfo) || !sortedInfo.order
               }
             >
-              Reset filter và sắp xếp
+              Bỏ lọc & sắp xếp
             </Button>
             <Button
               onClick={this.clearSelected}
@@ -550,11 +550,11 @@ class UserList extends Component {
             </Button>
             <Button onClick={this.onClickToggleFixed}>
               <Checkbox
-                style={{ marginRight: '2px' }}
+                style={{ marginRight: 4 }}
                 checked={this.state.isColumnsFixed}
                 defaultChecked={this.state.isColumnsFixed}
                 onChange={this.onChangeColumnsFixed}
-              />Fixed operations
+              />Hiện hành động
             </Button>
           </div>
           <Table

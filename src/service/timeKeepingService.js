@@ -44,3 +44,17 @@ export const findTimeKeeping = async (params = {}) => {
     return Promise.reject(error);
   }
 };
+
+export const exportExcel = async (params = {}) => {
+  try {
+    const { data } = await axios
+      .get(`${config.API_URL}/timeKeeping/export/excel`, {
+        responseType: 'blob',
+        params,
+      });
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};

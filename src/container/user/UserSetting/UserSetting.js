@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './index.scss';
-import { Tabs, Row, Col, Input, Form, Upload, message, Button, Spin, notification, Avatar, List, Switch } from 'antd';
+import { Tabs, Row, Col, Input, Form, Upload, message, Button, Spin, notification, Avatar, Switch } from 'antd';
 import responsive from '../../../constant/responsive'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { getBase64Url } from '../../../util/file';
@@ -255,27 +255,6 @@ class UserSetting extends Component {
                     <Input.Password />
                   </Form.Item>
                 </Form>
-              </Col>
-            </Row>
-          </TabPane>
-          <TabPane tab='Message Notification' key='4'>
-            <Row style={{ padding: '0 35px' }}>
-              <Col span={24}>
-                <List
-                  className="demo-loadmore-list"
-                  itemLayout="horizontal"
-                  dataSource={this.list}
-                  renderItem={item => (
-                    <List.Item
-                      actions={item.actions}
-                    >
-                      <List.Item.Meta
-                        title={item.title}
-                        description={item.description}
-                      />
-                    </List.Item>
-                  )}
-                />
               </Col>
             </Row>
           </TabPane>

@@ -3,16 +3,17 @@ import './index.scss';
 import {
   Modal, Form, Input, Checkbox, Select, Spin, Button, notification, Radio, DatePicker, Tabs
 } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { LoadingOutlined, EditOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import * as userAction from '../../../../action/userAction';
 import * as roleAction from '../../../../action/roleAction';
 import moment from 'moment';
 import { FcBusinessman, FcBusinesswoman } from 'react-icons/fc';
 import { getErrorMessage } from '../../../../util/get';
+import { Helmet } from 'react-helmet';
 
 const { TabPane } = Tabs;
-const dateFormat = 'MMMM DD YYYY';
+const dateFormat = 'DD/MM/YYYY';
 
 class UserEdit extends Component {
 
@@ -108,150 +109,170 @@ class UserEdit extends Component {
     const { isUpdatingUser, isLoading } = this.props;
     const roleOptions = roleList.map(role => ({ label: role.name, value: role.id }));
 
-    const footer = [
-      <Button key='back' onClick={this.handleCancelModal}>
-        Cancel
-      </Button>,
-      <Button
-        key='submit' type='primary'
-        loading={isUpdatingUser}
-        disabled={isLoading} onClick={this.handleOkModal}
-        form='userUpdatingForm' htmlType='submit'
-      >
-        Edit
-      </Button >,
-    ]
-    return (
-
-      <Modal
-        title='Update user'
-        visible={visibleModal}
-        footer={footer}
-        onCancel={this.handleCancelModal}
-        onOk={this.onSubmitForm}
-        bodyStyle={{ padding: '0px' }}
-        className={'UserEditContainer'}
-      >
-        <Spin
-          spinning={isLoading}
-          indicator={<LoadingOutlined />}
+    const footer = (
+      <div className='modal-footer-wrapper'>
+        <Button key='back' size='small' onClick={this.handleCancelModal}>
+          Hủy
+        </Button>
+        <Button
+          icon={<EditOutlined />}
+          size='small'
+          key='submit' type='primary'
+          loading={isUpdatingUser}
+          disabled={isLoading} onClick={this.handleOkModal}
+          form='userUpdatingForm' htmlType='submit'
         >
-          <Form
-            ref={this.formRef}
-            autoComplete='off'
-            labelCol={{ xs: 6 }}
-            wrapperCol={{ xs: 18 }}
-            id='userUpdatingForm'
-            onFinish={this.onSubmitForm}
+          Sửa
+        </Button >
+      </div>
+    );
+
+    return (
+      <>
+        <Helmet>
+          <title>Sửa người dùng</title>
+        </Helmet>
+        <Modal
+          title='Sửa người dùng'
+          visible={visibleModal}
+          footer={footer}
+          onCancel={this.handleCancelModal}
+          onOk={this.onSubmitForm}
+          bodyStyle={{ padding: '0px' }}
+          className={'ModalFormContainer'}
+        >
+          <Spin
+            spinning={isLoading}
+            indicator={<LoadingOutlined />}
           >
-            <Tabs type='card'>
-              <TabPane className={'tab-pane'} tab='Account' key='1'>
-                <Form.Item
-                  name='username'
-                  label='Username'
-                  rules={[{ required: true, whitespace: true, min: 6 }]}
-                  validateFirst={true}
-                >
-                  <Input disabled={item.id} />
-                </Form.Item>
-                <Form.Item
-                  name='password'
-                  label='Password'
-                  rules={[{ whitespace: true, min: 6 }]}
-                >
-                  <Input type='password' />
-                </Form.Item>
+            <Form
+              ref={this.formRef}
+              autoComplete='off'
+              labelCol={{ xs: 6 }}
+              wrapperCol={{ xs: 18 }}
+              id='userUpdatingForm'
+              onFinish={this.onSubmitForm}
+            >
+              <Tabs type='card'>
+                <TabPane className={'tab-pane'} tab='Tài khoản' key='1'>
+                  <Form.Item
+                    colon={false}
+                    name='username'
+                    label='Tên người dùng'
+                    rules={[{ required: true, whitespace: true, min: 6 }]}
+                    validateFirst={true}
+                  >
+                    <Input disabled={item.id} />
+                  </Form.Item>
+                  <Form.Item
+                    colon={false}
+                    name='password'
+                    label='Mật khẩu'
+                    rules={[{ whitespace: true, min: 6 }]}
+                  >
+                    <Input type='password' />
+                  </Form.Item>
 
-                <Form.Item
-                  name='roleIds'
-                  label='Roles'
-                  rules={[{ required: true, message: 'please select at least a role' }]}
-                >
-                  <Checkbox.Group options={roleOptions} />
-                </Form.Item>
+                  <Form.Item
+                    colon={false}
+                    name='roleIds'
+                    label='Nhóm quyền'
+                    rules={[{ required: true, message: 'Chọn 1 nhóm quyền' }]}
+                  >
+                    <Checkbox.Group options={roleOptions} />
+                  </Form.Item>
 
-                <Form.Item
-                  name='status'
-                  label='Status'
-                  rules={[{ required: true }]}
-                >
-                  <Select placeholder='User status'>
-                    <Select.Option value='ACTIVE'>Active</Select.Option>
-                    <Select.Option value='INACTIVE'>Inactive</Select.Option>
-                  </Select>
-                </Form.Item>
-              </TabPane>
-              <TabPane className={'tab-pane'} tab='Info' key='2'>
-                <Form.Item
-                  name='fullName'
-                  label='Full name'
-                  rules={[{ whitespace: true, min: 6 }]}
-                  validateFirst={true}
-                >
-                  <Input />
-                </Form.Item>
+                  <Form.Item
+                    colon={false}
+                    name='status'
+                    label='Trạng thái'
+                    rules={[{ required: true }]}
+                  >
+                    <Select placeholder='Trạng thái'>
+                      <Select.Option value='ACTIVE'>Kích hoạt</Select.Option>
+                      <Select.Option value='INACTIVE'>Bị chặn</Select.Option>
+                    </Select>
+                  </Form.Item>
+                </TabPane>
+                <TabPane className={'tab-pane'} tab='Thông tin' key='2'>
+                  <Form.Item
+                    colon={false}
+                    name='fullName'
+                    label='Họ tên'
+                    rules={[{ whitespace: true, min: 6 }]}
+                    validateFirst={true}
+                  >
+                    <Input />
+                  </Form.Item>
 
-                <Form.Item
-                  name='address'
-                  label='Address'
-                  rules={[{ whitespace: true, min: 6 }]}
-                  validateFirst={true}
-                >
-                  <Input />
-                </Form.Item>
+                  <Form.Item
+                    colon={false}
+                    name='address'
+                    label='Địa chỉ'
+                    rules={[{ whitespace: true, min: 6 }]}
+                    validateFirst={true}
+                  >
+                    <Input />
+                  </Form.Item>
 
-                <Form.Item
-                  name='phoneNumber'
-                  label='Phone number'
-                  rules={[{ whitespace: true, min: 6 }]}
-                  validateFirst={true}
-                >
-                  <Input />
-                </Form.Item>
+                  <Form.Item
+                    colon={false}
+                    name='phoneNumber'
+                    label='SĐT'
+                    rules={[{ whitespace: true, min: 6 }]}
+                    validateFirst={true}
+                  >
+                    <Input />
+                  </Form.Item>
 
-                <Form.Item
-                  name='identification'
-                  label='Identification'
-                  rules={[{ whitespace: true, min: 6 }]}
-                  validateFirst={true}
-                >
-                  <Input />
-                </Form.Item>
+                  <Form.Item
+                    colon={false}
+                    name='identification'
+                    label='CMND'
+                    rules={[{ whitespace: true, min: 6 }]}
+                    validateFirst={true}
+                  >
+                    <Input />
+                  </Form.Item>
 
-                <Form.Item
-                  name='email'
-                  label='Email'
-                  rules={[{ whitespace: true, min: 6 }]}
-                  validateFirst={true}
-                >
-                  <Input />
-                </Form.Item>
+                  <Form.Item
+                    colon={false}
+                    name='email'
+                    label='Email'
+                    rules={[{ whitespace: true, min: 6 }]}
+                    validateFirst={true}
+                  >
+                    <Input />
+                  </Form.Item>
 
-                <Form.Item
-                  name='gender'
-                  label='Gender'
-                >
-                  <Radio.Group>
-                    <Radio.Button value='MALE'>
-                      <FcBusinessman />
-                    </Radio.Button>
-                    <Radio.Button value='FEMALE'>
-                      <FcBusinesswoman />
-                    </Radio.Button>
-                  </Radio.Group>
-                </Form.Item>
+                  <Form.Item
+                    colon={false}
+                    name='gender'
+                    label='Giới tính'
+                  >
+                    <Radio.Group>
+                      <Radio.Button value='MALE'>
+                        <FcBusinessman />
+                      </Radio.Button>
+                      <Radio.Button value='FEMALE'>
+                        <FcBusinesswoman />
+                      </Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
 
-                <Form.Item
-                  name='birthDay'
-                  label='Birth day'
-                >
-                  <DatePicker format={dateFormat} disabledDate={this.disabledDate} />
-                </Form.Item>
-              </TabPane>
-            </Tabs>
-          </Form>
-        </Spin>
-      </Modal >
+                  <Form.Item
+                    colon={false}
+                    name='birthDay'
+                    label='Sinh nhật'
+                  >
+                    <DatePicker format={dateFormat} disabledDate={this.disabledDate} />
+                  </Form.Item>
+                </TabPane>
+              </Tabs>
+            </Form>
+          </Spin>
+        </Modal >
+      </>
     );
   }
 }

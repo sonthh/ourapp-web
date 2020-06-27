@@ -274,7 +274,7 @@ class Contract extends Component {
       fixed: isColumnsFixed ? 'right' : null,
       render: (id) => (
         <>
-          <Link to={`/admin/contract/${id}/edit`} >
+          <Link to={`/admin/personnel/contracts/${id}/update`} >
             <Button
               type='default'
               icon={<EditTwoTone />}

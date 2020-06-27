@@ -607,6 +607,126 @@ export const personnelItemReducer = (state = initialState, { type, payloads }) =
         isUpdated,
       }
     }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_SALARY_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_SALARY_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_SALARY_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_SALARY_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_SALARY_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_SALARY_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_ALLOWANCE_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_ALLOWANCE_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_ADD_ALLOWANCE_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_ALLOWANCE_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_ALLOWANCE_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_UPDATE_ALLOWANCE_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_DELETE_ALLOWANCE_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_DELETE_ALLOWANCE_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_PERSONNEL_DELETE_ALLOWANCE_SUCCESS: {
+      const { isUpdated } = payloads;
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Xóa thành công',
+        isUpdated,
+      }
+    }
     default:
       return state;
   }

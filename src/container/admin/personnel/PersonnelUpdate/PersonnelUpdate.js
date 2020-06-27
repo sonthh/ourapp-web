@@ -19,6 +19,8 @@ import * as contractAction from '../../../../action/contractAction';
 import { getDateFormat } from '../../../../util/date';
 import { NavLink, Link } from 'react-router-dom';
 import { getBase64Url } from '../../../../util/file';
+import UpdateSalaryForm from '../UpdateSalaryForm/UpdateSalaryForm';
+import UpdateAllowanceForm from '../UpdateAllowanceForm/UpdateAllowanceForm';
 
 const { TabPane } = Tabs;
 const { Title } = Typography;
@@ -119,6 +121,16 @@ class PersonnelUpdate extends Component {
       hash: '#work-history',
       title: 'Lịch sử làm việc',
       component: <UpdateWorkHistoryForm personnelId={this.props.match.params.id} />,
+    },
+    {
+      hash: '#salary',
+      title: 'Lương',
+      component: <UpdateSalaryForm personnelId={this.props.match.params.id} />,
+    },
+    {
+      hash: '#allowance',
+      title: 'Trợ cấp',
+      component: <UpdateAllowanceForm personnelId={this.props.match.params.id} />,
     },
     {
       hash: '#healthy-status',
@@ -235,7 +247,7 @@ class PersonnelUpdate extends Component {
       dataIndex: 'id',
       render: (id) => (
         <>
-          <Link to={`/admin/contracts/${id}/update`} >
+          <Link to={`/admin/personnel/contracts/${id}/update`} >
             <Button
               type='default'
               icon={<EyeOutlined />}
@@ -251,7 +263,7 @@ class PersonnelUpdate extends Component {
   render() {
     const { isLoading, isUploadingAvatar } = this.props;
     const { fullName, phoneNumber, email, birthDay, address = 'Địa chỉ', hash, avatarUrl, displayUploadButton } = this.state;
-    const isBasicInfoTab = !['#contract', '#salary'].includes(hash);
+    const isBasicInfoTab = !['#contract'].includes(hash);
     return (
       <>
         <Row style={{ padding: '0 35px' }} className='personnel-header'>
@@ -314,7 +326,6 @@ class PersonnelUpdate extends Component {
           <Tabs className='personnel-tabs' onChange={this.onChangeTab}>
             <TabPane tab='Hồ sơ' key='#basic-info' />
             <TabPane tab='Hợp đồng' key='#contract' />
-            <TabPane tab='Lương - phụ cấp' key='#salary' />
           </Tabs>
           {
             isBasicInfoTab ? (

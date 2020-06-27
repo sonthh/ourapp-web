@@ -19,6 +19,7 @@ import { messaging } from './config/init-fcm';
 import { notification, ConfigProvider } from 'antd';
 import * as authService from './service/authService';
 import { setTokenSentToServer, isTokenSentToServer } from './util/auth';
+import { HomePage } from './container/HomePage';
 
 const devToolsCompose = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 const composeEnhancer = process.env.NODE_ENV !== 'production' && devToolsCompose ? devToolsCompose : compose;
@@ -72,6 +73,7 @@ ReactDOM.render(
         <Switch>
           <Route path='/admin' render={props => <AdminLayout {...props} />} />
           <Route path='/auth' render={props => <AuthLayout {...props} />} />
+          <Route path='/' exact={true} component={HomePage} />
           <Redirect from='/' to='/admin/error/404' />
         </Switch>
       </BrowserRouter>

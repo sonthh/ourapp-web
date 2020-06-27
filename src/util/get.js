@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { checkAuth } from './auth';
+import moment from 'moment';
 
 // helper function for filtering data in ant design table components
 export const getFilterObject = (keys = [], filterObject = {}) => {
@@ -36,11 +37,13 @@ export const getErrorMessage = (error) => {
 };
 
 export const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route {...rest} render={(props) => (
-    checkAuth()
+  <Route
+    {...rest}
+    render={(props) => (checkAuth()
       ? <Component {...props} />
       : <Redirect to={{ pathname: '/auth/login', state: { from: props.location } }} />
-  )} />
+    )}
+  />
 );
 
 export const getRequestArrayFromFormValues = (values, requestLength, prefixName) => {
@@ -70,7 +73,9 @@ export const domains = {
   'PERSONNEL': 'Nhân sự',
   'ROLE': 'Nhóm quyền',
   'BRANCH': 'Chi nhánh',
-  'DEPARTMENT': 'Phòng ban'
+  'DEPARTMENT': 'Phòng ban',
+  'CONTRACT': 'Hợp đồng',
+  'TIMEKEEPING': 'Chấm công'
 };
 
 export const actions = {
@@ -86,7 +91,7 @@ export const scopes = {
 };
 
 export const getPermissionGroup = (permissions) => {
-  const arr = ['USER', 'PERSONNEL', 'ROLE', 'BRANCH', 'DEPARTMENT'];
+  const arr = ['USER', 'PERSONNEL', 'ROLE', 'BRANCH', 'DEPARTMENT', 'CONTRACT', 'TIMEKEEPING'];
   let result = {};
   arr.forEach(each => result[each] = []);
 
@@ -127,4 +132,20 @@ export const getAvatarTextFromName = (name) => {
   }
 
   return text;
+}
+
+export const getFormRequestForDateFields = (dateFields = [], formValues) => {
+  if (!formValues) return null;
+
+  const result = { ...formValues };
+
+  dateFields.forEach(each => {
+    const value = result[each];
+    if (!value)
+      return;
+
+    result[each] = moment(value).format('YYYY-MM-DD');
+  });
+
+  return result;
 }

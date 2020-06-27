@@ -18,6 +18,8 @@ import * as timeKeepingAction from '../../../../action/timeKeepingAction';
 import DoTimeKeepingModal from '../../../../component/modal/DoTimeKeepingModal/DoTimeKeepingModal';
 import TimeKeepingDot from '../../../../component/common/TimeKeepingDot/TimeKeepingDot';
 import { timeKeepingColors } from '../../../../constant/colors';
+import FileSaver from 'file-saver';
+import ExcelProgressModal from '../../../../component/modal/ExcelProgressModal/ExcelProgressModal';
 
 class TimeKeeping extends Component {
 
@@ -46,6 +48,7 @@ class TimeKeeping extends Component {
         record: null,
         date: null,
       },
+      displayExcelDownload: false,
     };
   }
 
@@ -187,8 +190,9 @@ class TimeKeeping extends Component {
     return [firstColumn].concat(columns);
   };
 
-  onDatePickerChange = (date) => {
+  onDatePickerChange = (date, dateString) => {
     const { type } = this.state;
+
     if (type === 'week') {
       const dates = getArrayDatesOfWeek(date);
       let { filteredInfo } = this.state;
@@ -207,10 +211,10 @@ class TimeKeeping extends Component {
     }
   }
 
-  onChangeType = (value) => {
-    this.setState({ type: value });
+  onChangeType = (type) => {
+    this.setState({ type });
 
-    if (value === 'week') {
+    if (type === 'week') {
       const dates = getArrayDatesOfWeek(moment());
       let { filteredInfo } = this.state;
 
@@ -218,7 +222,7 @@ class TimeKeeping extends Component {
       this.fetchTimeKeeping(filteredInfo, dates);
     }
 
-    if (value === 'month') {
+    if (type === 'month') {
       const dates = getArrayDatesOfMonth(moment());
       const { filteredInfo } = this.state;
 
@@ -268,7 +272,7 @@ class TimeKeeping extends Component {
   }
 
   refreshData = () => {
-    let { filteredInfo, dates } = this.state;
+    const { filteredInfo, dates } = this.state;
 
     this.fetchTimeKeeping(filteredInfo, dates);
   }
@@ -293,10 +297,33 @@ class TimeKeeping extends Component {
     });
   }
 
+  onExportExcel = () => {
+    let { filteredInfo, dates } = this.state;
+    this.props.exportExcel({
+      dates: dates.map(date => moment(date).format('YYYY-MM-DD')) + '',
+      ...filteredInfo,
+    });
+
+    this.setState({ displayExcelDownload: true });
+  }
+
+  saveExcelToClient = () => {
+    const { fileData } = this.props;
+
+    if (!fileData) return;
+
+    const blob = new Blob([fileData]);
+    FileSaver.saveAs(blob, 'BangChamCong.xlsx');
+  }
+
+  closeExcelDownload = () => {
+    this.setState({ displayExcelDownload: false });
+  }
+
   render() {
-    const { data, displayFilter, doTimeKeeping, dates } = this.state;
+    const { data, displayFilter, doTimeKeeping, dates, displayExcelDownload } = this.state;
     const { visible, record, date, indexRecord, indexDate } = doTimeKeeping;
-    const { isLoading, departments = [] } = this.props;
+    const { isLoading, departments = [], isExporting } = this.props;
 
     let { sortedInfo, filteredInfo, type, pickerFormat, columns } = this.state;
     sortedInfo = sortedInfo || {};
@@ -342,7 +369,11 @@ class TimeKeeping extends Component {
             <Col md={{ span: 12 }}
               className='actions-right'
             >
-              <Button style={{ marginRight: '2px', fontSize: 13, top: -1 }} type='default' icon={<DownloadOutlined />}>
+              <Button
+                style={{ marginRight: '2px', fontSize: 13, top: -1 }}
+                type='default' icon={<DownloadOutlined />}
+                onClick={this.onExportExcel}
+              >
                 Excel
               </Button>
             </Col>
@@ -432,6 +463,13 @@ class TimeKeeping extends Component {
           onCancel={this.onCancelDoTimeKeepingModal}
           onOk={this.onOkDoTimeKeepingModal}
         />
+        <ExcelProgressModal
+          title='Bạn đang xuất dữ liệu chấm công'
+          visible={displayExcelDownload}
+          onClose={this.closeExcelDownload}
+          onOk={this.saveExcelToClient}
+          isExporting={isExporting}
+        />
       </>
     );
   }
@@ -452,6 +490,7 @@ const mapDispatchToProps = (dispatch) => {
     findManyDepartments: () => dispatch(departmentAction.findManyDepartments()),
     findTimeKeeping: (params) => dispatch(timeKeepingAction.findTimeKeeping(params)),
     deleteTimeKeeping: (indexRecord, indexDate, personnelId, timeKeepingId) => dispatch(timeKeepingAction.deleteTimeKeeping(indexRecord, indexDate, personnelId, timeKeepingId)),
+    exportExcel: (params) => dispatch(timeKeepingAction.exportExcel(params)),
   };
 };
 

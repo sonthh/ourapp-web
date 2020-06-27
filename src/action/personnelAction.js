@@ -647,3 +647,118 @@ export const updateAddtionalInfo = (personnelId, additionalInfo) => {
     }
   };
 };
+
+export const addSalary = (personnelId, salaryRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_ADD_SALARY_REQUEST,
+    });
+
+    try {
+      const isUpdated = await personnelService.addSalary(personnelId, salaryRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_SALARY_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_SALARY_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const updateSalary = (personnelId, salaryRequest) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_UPDATE_SALARY_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.updateSalary(personnelId, salaryRequest);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_SALARY_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_SALARY_REQUEST,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const addAllowance = (personnelId, allowanceReq) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_ADD_ALLOWANCE_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.addAllowance(personnelId, allowanceReq);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_ALLOWANCE_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_ADD_ALLOWANCE_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const updateAllowance = (personnelId, allowanceId, allowanceReq) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_UPDATE_ALLOWANCE_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.updateAllowance(personnelId, allowanceId, allowanceReq);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_ALLOWANCE_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_UPDATE_ALLOWANCE_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+export const deleteAllowance = (personnelId, allowanceId) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_PERSONNEL_DELETE_ALLOWANCE_REQUEST,
+    });;
+
+    try {
+      const isUpdated = await personnelService.deleteAllowance(personnelId, allowanceId);
+
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_DELETE_ALLOWANCE_SUCCESS,
+        payloads: { isUpdated },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_PERSONNEL_DELETE_ALLOWANCE_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};

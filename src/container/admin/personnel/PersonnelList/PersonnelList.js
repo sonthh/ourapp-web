@@ -630,7 +630,7 @@ class PersonnelList extends Component {
               className='actions-right'
             >
               <span style={{ marginRight: '8px', lineHeight: '30px' }}>
-                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+                {hasSelected ? `Chọn ${selectedRowKeys.length} dòng` : ''}
               </span>
               <Link to={'/admin/personnel/create'} >
                 <Button style={{ marginRight: '2px' }} type='default' icon={<PlusCircleTwoTone />}>
@@ -714,6 +714,7 @@ class PersonnelList extends Component {
           onOk={(selectedColums) => this.handleExcelRequest(selectedColums)}
         />
         <ExcelProgressModal
+          title='Bạn đang xuất dữ liệu nhân sự'
           visible={displayExcelDownload}
           onClose={this.closeExcelDownload}
           onOk={this.saveExcelToClient}

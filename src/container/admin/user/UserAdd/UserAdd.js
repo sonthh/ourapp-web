@@ -11,6 +11,7 @@ import moment from 'moment';
 import { FcBusinessman, FcBusinesswoman } from 'react-icons/fc';
 import { getErrorMessage } from '../../../../util/get';
 import { setAll } from '../../../../util/object';
+import { PlusOutlined } from '@ant-design/icons';
 
 const { TabPane } = Tabs;
 const dateFormat = 'MMMM DD YYYY';
@@ -95,28 +96,32 @@ class UserAdd extends Component {
     const { isLoading, isCreatingUser } = this.props;
     const roleOptions = roleList.map(role => ({ label: role.name, value: role.id }));
 
-    const footer = [
-      <Button key='back' onClick={this.handleCancelModal}>
-        Cancel
-      </Button>,
-      <Button
-        key='submit' type='primary'
-        loading={isCreatingUser}
-        disabled={isLoading} onClick={this.handleOkModal}
-        form='userCreatingForm' htmlType='submit'
-      >
-        Add
-      </Button >,
-    ];
+    const footer = (
+      <div className='modal-footer-wrapper'>
+        <Button size='small' key='back' onClick={this.handleCancelModal}>
+          Hủy
+        </Button>
+        <Button
+          icon={<PlusOutlined />}
+          size='small'
+          key='submit' type='primary'
+          loading={isCreatingUser}
+          disabled={isLoading} onClick={this.handleOkModal}
+          form='userCreatingForm' htmlType='submit'
+        >
+          Thêm
+      </Button >
+      </div>
+    );
 
     return (
       <>
         <Helmet>
-          <title>Add user</title>
+          <title>Thêm người dùng</title>
         </Helmet>
         <Modal
-          className={'UserAddContainer'}
-          title='Add a new user'
+          className={'ModalFormContainer'}
+          title='Thêm người dùng'
           visible={visibleModal}
           footer={footer}
           onCancel={this.handleCancelModal}
@@ -134,10 +139,10 @@ class UserAdd extends Component {
               onFinish={this.onSubmitForm}
             >
               <Tabs type='card'>
-                <TabPane className={'tab-pane'} tab='Account' key='1'>
+                <TabPane className={'tab-pane'} tab='Tài khoản' key='1'>
                   <Form.Item
                     name='username'
-                    label='Username'
+                    label='Tên người dùng'
                     rules={[{ required: true, whitespace: true, min: 6 }]}
                     validateFirst={true}
                   >
@@ -145,7 +150,7 @@ class UserAdd extends Component {
                   </Form.Item>
                   <Form.Item
                     name='password'
-                    label='Password'
+                    label='Mật khẩu'
                     rules={[{ required: true, whitespace: true, min: 6 }]}
                   >
                     <Input type='password' />
@@ -153,7 +158,7 @@ class UserAdd extends Component {
 
                   <Form.Item
                     name='roleIds'
-                    label='Roles'
+                    label='Nhóm quyền'
                     rules={[{ required: true, message: 'please select at least a role' }]}
                   >
                     <Checkbox.Group options={roleOptions} />
@@ -161,19 +166,19 @@ class UserAdd extends Component {
 
                   <Form.Item
                     name='status'
-                    label='Status'
+                    label='Trạng thái'
                     rules={[{ required: true }]}
                   >
                     <Select placeholder='User status'>
-                      <Select.Option value='ACTIVE'>Active</Select.Option>
-                      <Select.Option value='INACTIVE'>Inactive</Select.Option>
+                      <Select.Option value='ACTIVE'>Kích hoạt</Select.Option>
+                      <Select.Option value='INACTIVE'>Bị chặn</Select.Option>
                     </Select>
                   </Form.Item>
                 </TabPane>
-                <TabPane className={'tab-pane'} tab='Info' key='2'>
+                <TabPane className={'tab-pane'} tab='Thông tin' key='2'>
                   <Form.Item
                     name='fullName'
-                    label='Full name'
+                    label='Họ tên'
                     rules={[{ whitespace: true, min: 6 }]}
                     validateFirst={true}
                   >
@@ -182,7 +187,7 @@ class UserAdd extends Component {
 
                   <Form.Item
                     name='address'
-                    label='Address'
+                    label='Địa chỉ'
                     rules={[{ whitespace: true, min: 6 }]}
                     validateFirst={true}
                   >
@@ -191,7 +196,7 @@ class UserAdd extends Component {
 
                   <Form.Item
                     name='phoneNumber'
-                    label='Phone number'
+                    label='SĐT'
                     rules={[{ whitespace: true, min: 6 }]}
                     validateFirst={true}
                   >
@@ -200,7 +205,7 @@ class UserAdd extends Component {
 
                   <Form.Item
                     name='identification'
-                    label='Identification'
+                    label='CMND'
                     rules={[{ whitespace: true, min: 6 }]}
                     validateFirst={true}
                   >
@@ -218,7 +223,7 @@ class UserAdd extends Component {
 
                   <Form.Item
                     name='gender'
-                    label='Gender'
+                    label='Giới tính'
                   >
                     <Radio.Group>
                       <Radio.Button value='MALE'>
@@ -232,7 +237,7 @@ class UserAdd extends Component {
 
                   <Form.Item
                     name='birthDay'
-                    label='Birth day'
+                    label='Sinh nhật'
                   >
                     <DatePicker format={dateFormat} disabledDate={this.disabledDate} />
                   </Form.Item>

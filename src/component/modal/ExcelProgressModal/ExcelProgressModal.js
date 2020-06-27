@@ -3,7 +3,7 @@ import './index.scss';
 import { Modal, Progress, Card, Button, Spin } from 'antd';
 import { DownloadOutlined, CheckOutlined } from '@ant-design/icons';
 
-export default class ExcelProgress extends Component {
+export default class ExcelProgressModal extends Component {
 
   state = {
     percent: 1,
@@ -51,7 +51,7 @@ export default class ExcelProgress extends Component {
   }
 
   render() {
-    const { visible, isExporting } = this.props;
+    const { visible, isExporting, title } = this.props;
     const { percent } = this.state;
 
     return (
@@ -63,7 +63,7 @@ export default class ExcelProgress extends Component {
       >
         <Card
           title={
-            <div className='title'>Bạn đang xuất dữ liệu nhân sự từ hệ thống</div>
+            <div className='title'>{title}</div>
           }
           bordered={false}
         >

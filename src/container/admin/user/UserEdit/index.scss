@@ -7,8 +7,55 @@
   }
 }
 
-.UserEditContainer {
+.ModalFormContainer {
+  top: 24px;
+
   .ant-modal-close:hover {
     animation: spin 0.3s linear;
+  }
+
+  .ant-form-item-label {
+    text-align: left;
+
+    > label {
+      font-size: 13px;
+    }
+  }
+
+  .ant-modal-title {
+    font-size: 14px;
+  }
+
+  .ant-tabs-tab {
+    font-size: 13px;
+  }
+
+  .tab-pane {
+    padding: 0 30px;
+  }
+
+  .ant-form-item-label > label.ant-form-item-required::before {
+    display: none;
+  }
+
+  .ant-form-item-label > label.ant-form-item-required::after {
+    display: inline-block;
+    margin-right: 4px;
+    color: #ff4d4f;
+    font-size: 14px;
+    font-family: SimSun, sans-serif;
+    line-height: 1;
+    content: "*";
+  }
+
+  .modal-footer-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-left: 5px;
+    margin-right: 5px;
+
+    > button {
+      font-size: 12px;
+    }
   }
 }
