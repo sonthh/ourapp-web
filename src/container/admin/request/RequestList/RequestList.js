@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Button, Select, Tabs, Table, Badge, DatePicker, Menu, Dropdown, notification } from "antd";
 import './index.scss';
-import { FilterTwoTone, ReloadOutlined, PlusCircleTwoTone, DownloadOutlined } from '@ant-design/icons'
+import { FilterTwoTone, ReloadOutlined, PlusCircleTwoTone, DownloadOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom';
 import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
 import * as requestAction from '../../../../action/requestAction'
@@ -242,7 +242,7 @@ class RequestList extends Component {
 
   render() {
     const { isColumnsFixed, data, pagination } = this.state;
-    // const { isLoading } = this.props;
+    const { isLoading } = this.props;
 
     // const rowSelection = {
     //   selectedRowKeys,
@@ -272,6 +272,13 @@ class RequestList extends Component {
     const listRequest = (
       <Table
         style={{ fontSize: '13px' }}
+        locale={{
+          emptyText: (
+            <div style={{ padding: '20px 0' }}>
+              {isLoading === true ? 'Đang tải dữ liệu' : 'Không tìm thấy dữ liệu'}
+            </div>
+          ),
+        }}
         bordered={true}
         components={this.components}
         onRow={this.onRow}
@@ -281,6 +288,10 @@ class RequestList extends Component {
         rowKey={record => record.id}
         onChange={this.handleTableChange}
         scroll={{ x: 'max-content' }}
+        loading={{
+          spinning: isLoading,
+          indicator: (<LoadingOutlined />),
+        }}
       />
     )
     return (
