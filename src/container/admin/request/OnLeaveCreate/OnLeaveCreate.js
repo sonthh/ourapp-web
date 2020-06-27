@@ -1,14 +1,16 @@
-import { Button, Form, Row, Col, Input, DatePicker, Divider, notification, Select } from 'antd';
+import { Button, Form, Row, Col, Input, DatePicker, Divider, notification, Select, Typography } from 'antd';
 import './index.scss';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TextArea from 'antd/lib/input/TextArea';
 import SelectPersonnelModal from '../../../../component/modal/SelectPersonnelModal/SelectPersonnelModal';
-import * as contractAction from '../../../../action/contractAction';
+import * as requestAction from '../../../../action/requestAction';
 import { getErrorMessage } from '../../../../util/get';
+import { Link } from 'react-router-dom';
+import { UnorderedListOutlined } from '@ant-design/icons'
+import SelectUserModal from '../../../../component/modal/SelectUserlModal/SelectUserModal';
 
-const { Option } = Select
-
+const { Title } = Typography;
 class OnLeaveCreate extends Component {
 
   constructor(props) {
@@ -16,7 +18,9 @@ class OnLeaveCreate extends Component {
     this.formRef = React.createRef();
     this.state = {
       visibleSelectPersonnel: false,
+      visibleSelectUser: false,
       personnel: null,
+      user: null,
     }
   }
 
@@ -48,6 +52,8 @@ class OnLeaveCreate extends Component {
         description: success,
         duration: 2.5,
       });
+
+      this.props.history.push(`/admin/personnel/request`);
     }
   }
 
@@ -55,162 +61,198 @@ class OnLeaveCreate extends Component {
     this.setState({ visibleSelectPersonnel: false });
   }
 
-  onClickOpenSelectForm = () => {
+  onCloseSelectUserModal = () => {
+    this.setState({ visibleSelectUser: false });
+  }
+
+  onClickOpenSelectPersonnelForm = () => {
     this.setState({ visibleSelectPersonnel: true });
+  }
+
+  onClickOpenSelectUserForm = () => {
+    this.setState({ visibleSelectUser: true });
   }
 
   onOkSelectPersonnelModal = () => {
     this.setState({ visibleSelectPersonnel: false });
   }
 
+  onOkSelectUserModal = () => {
+    this.setState({ visibleSelectUser: false });
+  }
+
   onSelectPersonnel = (personnel) => {
-    const { fullName } = personnel;
-    this.formRef.current.setFieldsValue({ fullName });
+    const { fullName: fullNamePersonnel } = personnel;
+    this.formRef.current.setFieldsValue({ fullNamePersonnel });
 
     this.setState({ visibleSelectPersonnel: false, personnel });
   }
 
-  onCreateContract = (values) => {
-    const { personnel } = this.state;
-    if (!personnel) {
-      notification.error({
-        message: 'Thông báo',
-        description: 'Vui lòng chọn nhân sự',
-        duration: 2.5,
-      });
+  onSelectUser = (user) => {
+    const { fullName: fullNameUser } = user;
+    this.formRef.current.setFieldsValue({ fullNameUser });
 
-      return;
-    }
-
-    let request = { ...values, signerId: personnel.id, personnelId: personnel.id };
-
-    this.props.createOneContract(request);
+    this.setState({ visibleSelectUser: false, user });
   }
 
-  taxTypes = [
-    'Không tính thuế',
-    'Hợp đồng lao động dưới 3 tháng',
-    'Hợp đồng lao động 3 tháng trở lên',
-  ];
+  onCreateOnLeave = (values) => {
+    const { personnel, user } = this.state;
 
-  contractTypes = [
-    'Hợp đồng chính thức',
-    'Hợp đồng thử việc',
-    'Hợp đồng thời vụ',
+    let requestPayload = { ...values, personnelId: personnel.id, type: 'OnLeave', receiverId: user.id };
+
+    this.props.createOneRequest(requestPayload);
+  }
+
+  statusList = [
+    'Chờ phê duyệt',
+    'Châp thuận',
+    'Từ chối',
   ];
 
   render() {
-    const { visibleSelectPersonnel } = this.state;
+    const { visibleSelectPersonnel, visibleSelectUser } = this.state;
     const { isCreating } = this.props;
 
     return (
       <>
-        <Row className={'ContractCreate'} style={{ marginBottom: '30px', padding: '24px' }}>
-          <Form
-            layout='vertical'
-            defaultValue={{}}
-            ref={this.formRef}
-            autoComplete='off'
-            labelCol={{ xs: 24 }}
-            wrapperCol={{ xs: 24 }}
-            id='ContractCreateForm'
-            onFinish={this.onCreateContract}
-            style={{ width:'100%'}}
-          >
-            <Row>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item
-                  name='staffName'
-                  label='Nhân viên'
-                  rules={[{ required: true, message: 'Vui lòng chọn nhân viên' }]}
-                >
-                  <Input className={'select-personnel'} onClick={this.onClickOpenSelectForm} />
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 6 }}>
-                <Form.Item
-                  name='startDate'
-                  label='Ngày bắt đầu'
-                  rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu nghỉ' }]}
-                >
-                  <DatePicker style={{ width: '80%' }} />
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 6 }}>
-                <Form.Item
-                  name='endDate'
-                  label='Ngày kết thúc'
-                  rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc nghỉ' }]}
-                >
-                  <DatePicker style={{ width: '80%' }} />
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item
-                  name='received'
-                  label='Người kiếm duyệt'
-                  rules={[{ required: true, message: 'Vui lòng chọn người kiếm duyệt' }]}
-                >
-                  <Input className={'select-personnel'} onClick={this.onClickOpenSelectForm} />
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 6 }}>
-                <Form.Item
-                  name='status'
-                  label='Tình trạng phê duyệt'
-                  rules={[{ required: true, message: 'Vui lòng chọn tình trạng phê duyệt' }]}
-                >
-                  <Select
-                    placeholder='Tình trạng phê duyệt'
-                    onChange={null}
-                    style={{ width: '80%', top: -2 }}
+        <div className='card-container'>
+          <Row justify='space-between' className='child-card-container wrapper-title'>
+            <Col span={24} md={{ span: 24 }}>
+              <Button
+                type='primary'
+                style={{ marginRight: '25px', float: "right" }}
+                icon={<UnorderedListOutlined />}>
+                <Link to={'/admin/personnel/request'}>
+                  <span style={{ color: '#ffffff', marginLeft: '5px' }}>Danh sách</span>
+                </Link>
+              </Button>
+            </Col>
+          </Row>
+        </div>
+        <div className='card-container'>
+          <Row className={'ContractCreate'} style={{ marginBottom: '30px', padding: '24px' }}>
+            <Form
+              layout='vertical'
+              defaultValue={{}}
+              ref={this.formRef}
+              autoComplete='off'
+              labelCol={{ xs: 24 }}
+              wrapperCol={{ xs: 24 }}
+              id='ContractCreateForm'
+              onFinish={this.onCreateOnLeave}
+              style={{ width: '100%' }}
+            >
+              <Row>
+                <Col span={24} md={{ span: 24 }} className='wrapper-title'>
+                  <Title className='form-title advance-form' level={4}>THÔNG TIN NGHỈ PHÉP</Title>
+                  <Divider className='divider-advance' />
+                </Col>
+                <Col span={24} md={{ span: 24 }}>
+                  <Form.Item
+                    name='info'
+                    label='Tiêu đề'
+                    rules={[{ required: true, message: 'Vui lòng thông tin' }]}
                   >
-                    <Option value="0">Chờ phê duyệt</Option>
-                    <Option value="1">Chấp thuận</Option>
-                    <Option value="2">Không chấp thuận </Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 24 }}>
-                <Form.Item name='reason' wrapperCol={{ span: 24 }} label='Lí Do'>
-                  <TextArea rows={4} />
-                </Form.Item>
-              </Col>
-              <Divider />
-              <Col span={24}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}>
-                <Button style={{ marginRight: 20 }} onClick={() => this.props.history.goBack()}>Hủy</Button>
-                <Button style={{ fontSize: 13 }} loading={isCreating} type='primary' htmlType='submit'>Thêm mới</Button>
-              </Col>
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col span={24} md={{ span: 12 }}>
+                  <Form.Item
+                    name='fullNamePersonnel'
+                    label='Nhân viên'
+                    rules={[{ required: true, message: 'Vui lòng chọn nhân viên' }]}
+                  >
+                    <Input className={'select-personnel'} onClick={this.onClickOpenSelectPersonnelForm} />
+                  </Form.Item>
+                </Col>
+                <Col span={24} md={{ span: 6 }}>
+                  <Form.Item
+                    name='startDate'
+                    label='Ngày bắt đầu'
+                    rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu nghỉ' }]}
+                  >
+                    <DatePicker style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={24} md={{ span: 6 }}>
+                  <Form.Item
+                    name='endDate'
+                    label='Ngày kết thúc'
+                    rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc nghỉ' }]}
+                  >
+                    <DatePicker style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={24} md={{ span: 12 }}>
+                  <Form.Item
+                    name='fullNameUser'
+                    label='Người kiếm duyệt'
+                    rules={[{ required: true, message: 'Vui lòng chọn người kiếm duyệt' }]}
+                  >
+                    <Input className={'select-personnel'} onClick={this.onClickOpenSelectUserForm} />
+                  </Form.Item>
+                </Col>
+                <Col span={24} md={{ span: 12 }}>
+                  <Form.Item
+                    name='status'
+                    label='Tình trạng phê duyệt'
+                    rules={[{ required: true, message: 'Vui lòng chọn tình trạng phê duyệt' }]}
+                  >
+                    <Select
+                      placeholder='Tình trạng phê duyệt'
+                      onChange={null}
+                      style={{ width: '100%', top: -2 }}
+                      options={this.statusList.map(each => ({ value: each, label: each }))}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={24} md={{ span: 24 }}>
+                  <Form.Item name='reason' wrapperCol={{ span: 24 }} label='Lí Do'>
+                    <TextArea rows={4} />
+                  </Form.Item>
+                </Col>
+                <Divider />
+                <Col span={24}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}>
+                  <Button style={{ marginRight: 20 }} onClick={() => this.props.history.goBack()}>Hủy</Button>
+                  <Button style={{ fontSize: 13 }} loading={isCreating} type='primary' htmlType='submit'>Thêm mới</Button>
+                </Col>
 
-            </Row>
-          </Form>
-          <SelectPersonnelModal
-            visible={visibleSelectPersonnel}
-            onClose={this.onCloseSelectPersonnelModal}
-            onOk={this.onOkSelectPersonnelModal}
-            onSelectPersonnel={this.onSelectPersonnel}
-          />
-        </Row>
+              </Row>
+            </Form>
+            <SelectPersonnelModal
+              visible={visibleSelectPersonnel}
+              onClose={this.onCloseSelectPersonnelModal}
+              onOk={this.onOkSelectPersonnelModal}
+              onSelectPersonnel={this.onSelectPersonnel}
+            />
+            <SelectUserModal
+              visible={visibleSelectUser}
+              onClose={this.onCloseSelectUserModal}
+              onOk={this.onOkSelectUserModal}
+              onSelectUser={this.onSelectUser}
+            />
+          </Row>
+        </div>
       </>
     )
   }
 }
 
-const mapStateToProps = ({ contract }) => {
-  const { contractItem } = contract;
+const mapStateToProps = ({ request }) => {
+  const { requestItem } = request;
 
   return {
-    ...contractItem,
+    ...requestItem,
   }
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createOneContract: (contractRequest) => dispatch(contractAction.createOneContract(contractRequest)),
+    createOneRequest: (requestPayload) => dispatch(requestAction.createOneRequest(requestPayload)),
   }
 };
 

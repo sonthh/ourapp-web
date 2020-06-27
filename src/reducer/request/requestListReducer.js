@@ -11,14 +11,14 @@ const initialState = {
 export const requestListReducer = (state = initialState, { type, payloads }) => {
 
   switch (type) {
-    case actionTypes.FIND_MANY_CONTRACTS_REQUEST: {
+    case actionTypes.FIND_MANY_REQUEST_REQUEST: {
 
       return {
         ...state,
         isLoading: true
       };
     }
-    case actionTypes.FIND_MANY_CONTRACTS_SUCCESS: {
+    case actionTypes.FIND_MANY_REQUEST_SUCCESS: {
       const { dataList } = payloads;
 
       return {
@@ -27,7 +27,7 @@ export const requestListReducer = (state = initialState, { type, payloads }) => 
         isLoading: false,
       };
     }
-    case actionTypes.FIND_MANY_CONTRACTS_FAILURE: {
+    case actionTypes.FIND_MANY_REQUEST_FAILURE: {
       const { error } = payloads;
 
       return {

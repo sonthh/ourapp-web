@@ -24,3 +24,25 @@ export const createOneRequest = (requestPayload) => {
     }
   };
 };
+
+export const findManyRequests = (params = {}) => {
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.FIND_MANY_REQUEST_REQUEST,
+    });
+
+    try {
+      const dataList = await requestService.findManyRequests(params)
+
+      dispatch({
+        type: actionTypes.FIND_MANY_REQUEST_SUCCESS,
+        payloads: { dataList },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.FIND_MANY_REQUEST_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};

@@ -149,3 +149,8 @@ export const getFormRequestForDateFields = (dateFields = [], formValues) => {
 
   return result;
 }
+
+export const typeRequest = {
+  'Advance': 'Tạm ứng lương',
+  'OnLeave': 'Nghỉ phép',
+};

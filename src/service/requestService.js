@@ -11,3 +11,14 @@ export const addRequest = async (requestPayload) => {
     return Promise.reject(error);
   }
 };
+
+export const findManyRequests = async (params = {}) => {
+  try {
+    const { data } = await axios
+      .get(`${config.API_URL}/requests`, { params });
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error)
+  }
+};
