@@ -18,6 +18,8 @@ import TimeKeeping from './container/admin/working/TimeKeeping/TimeKeeping';
 import ContractCreate from './container/admin/personnel/ContractCreate/ContractCreate';
 import PersonnelUpdate from './container/admin/personnel/PersonnelUpdate/PersonnelUpdate';
 import PermissionSetting from './container/admin/role/PermissionSetting/PermissionSetting';
+import AdvanceCreate from './container/admin/request/AdvanceCreate/AdvanceCreate';
+import OnLeaveCreate from './container/admin/request/OnLeaveCreate/OnLeaveCreate'
 
 export const adminModalRoutes = [
   {
@@ -94,6 +96,15 @@ export const adminRoutes = [
   {
     path: '/personnel/request',
     component: RequestList,
+    exact: true,
+  },
+  {
+    path: '/personnel/request/advance/create',
+    component: AdvanceCreate,
+  },
+  {
+    path: '/personnel/request/on-leave/create',
+    component: OnLeaveCreate,
   },
   {
     path: '/setting',
@@ -115,5 +126,5 @@ export const authRoutes = [
   {
     path: '/login',
     component: Login,
-  },
+  },  
 ];
