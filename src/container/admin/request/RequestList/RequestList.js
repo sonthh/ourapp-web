@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Select, Tabs, Table, Badge, DatePicker, Menu, Dropdown } from "antd";
+import { Row, Col, Button, Select, Tabs, Table, Badge, DatePicker, Menu, Dropdown, notification } from "antd";
 import './index.scss';
-import { FilterTwoTone, ReloadOutlined, DollarOutlined, FieldTimeOutlined, UnorderedListOutlined, PlusCircleTwoTone, DownloadOutlined } from '@ant-design/icons'
-import { IoIosAirplane } from "react-icons/io";
+import { FilterTwoTone, ReloadOutlined, PlusCircleTwoTone, DownloadOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom';
 import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
-import { getColumnSearchProps } from '../../../../util/table'
-
-const { Option } = Select;
+import * as requestAction from '../../../../action/requestAction'
+import { connect } from 'react-redux';
+import { getDateFormat } from '../../../../util/date';
+import { typeRequest } from '../../../../util/get';
 
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
@@ -19,7 +19,10 @@ class RequestList extends Component {
 
     const isColumnsFixed = localStorage.getItem('isColumnFixed') === 'true' || false;
     this.state = {
-      filteredInfo: null,
+      filteredInfo: {
+        status: this.statusList[0],
+        type: null,
+      },
       sortedInfo: null,
       data: [],
       paganation: {
@@ -29,76 +32,139 @@ class RequestList extends Component {
       columns: this.getColumns({}, {}),
       isColumnsFixed,
       displayFilter: false,
+
     };
   }
 
-  onChange = activeKey => {
-    this.setState({ activeKey })
-  };
-
-  callback = key => {
-    console.log(key);
+  componentDidMount() {
+    this.props.findManyRequests({});
   }
 
-  getColumns = (filteredInfo, sortedInfo, isColumnsFixed = false) => ([
+  componentDidUpdate(prevProps, prevState) {
+    const { error, isDeleted, ids, dataList, isDeletedOnePersonnel, deletedId } = this.props;
+
+    if (error && error !== prevProps.error) {
+      if (error) {
+        notification.error({
+          message: 'Lỗi',
+          description: 'Something went wrong',
+          duration: 2.5,
+        });
+      }
+    }
+
+    if (isDeletedOnePersonnel !== undefined && isDeletedOnePersonnel === true
+      && deletedId !== prevProps.deletedId) {
+
+      const description = `Xóa thành công`;
+      notification.success({
+        message: 'Thành công',
+        description,
+        duration: 2.5,
+      });
+    }
+
+    if (isDeleted !== undefined && isDeleted === true && ids !== prevProps.ids) {
+      const { ids } = this.props;
+      const description = `Đã xóa ${ids.length} hồ sơ`;
+
+      notification.success({
+        message: 'Thành công',
+        description,
+        duration: 2.5,
+      });
+
+      this.setState({ selectedRowKeys: [] });
+    }
+
+    if (dataList && dataList !== prevProps.dataList) {
+      const { content, totalElements } = dataList;
+      const pagination = { ...this.state.pagination, total: totalElements };
+
+      this.setState({
+        data: content,
+        pagination,
+      });
+    }
+  }
+
+  onChangeTab = status => {
+    let { filteredInfo } = this.state;
+    filteredInfo = {
+      ...filteredInfo,
+      status,
+    }
+    this.setState({
+      filteredInfo
+    });
+
+    this.props.findManyRequests({ ...filteredInfo });
+  }
+
+  getColumns = (sortedInfo, isColumnsFixed = false) => ([
     {
       title: 'STT',
-      dataIndex: 'stt',
-      key: 'stt',
-      width: 75,
-      minWidth: 75,
-      fixed: isColumnsFixed ? 'left' : null,
+      dataIndex: 'id',
+      key: 'STT',
+      width: 80,
+      minWidth: 80,
+      render: (text, record, index) => {
+        return <div>{index + 1}</div>
+      }
     },
     {
       title: 'Loại',
-      dataIndex: 'loai',
-      key: 'loai',
+      dataIndex: 'type',
+      key: 'type',
       width: 100,
       minWidth: 100,
       fixed: isColumnsFixed ? 'left' : null,
+      render: type => typeRequest[type] || '',
     },
     {
       title: 'Người yêu cầu',
-      dataIndex: 'Nguoi yeu cau',
-      key: 'nguoiyeucau',
+      dataIndex: ['personnel', 'fullName'],
+      key: 'fullName',
       width: 100,
       minWidth: 100,
-      fixed: isColumnsFixed ? 'left' : null,
-      filteredValue: null,
-      ...getColumnSearchProps(this, 'nguoiyeucau'),
+      // filteredValue: filteredInfo.fullName || null,
+      // ...getColumnSearchProps(this, 'fullName', 'họ tên'),
     },
     {
       title: 'Thông tin yêu cầu',
-      dataIndex: 'thongtinyeucau',
-      key: 'thongtinyeucau',
+      dataIndex: 'info',
+      key: 'info',
       width: 150,
       minWidth: 150,
       fixed: isColumnsFixed ? 'left' : null,
     },
     {
       title: 'Lí do',
-      dataIndex: 'lido',
-      key: 'lido',
+      dataIndex: 'reason',
+      key: 'reason',
       width: 150,
       minWidth: 150,
       fixed: isColumnsFixed ? 'left' : null,
     },
     {
       title: 'Người nhận',
-      dataIndex: 'nguoinhan',
-      key: 'nguoinhan',
+      dataIndex: ['receiver', 'fullName'],
+      key: 'receiver',
       width: 100,
       minWidth: 100,
-      fixed: isColumnsFixed ? 'left' : null,
-      ...getColumnSearchProps(this, 'nguoiyeucau'),
+      // fixed: isColumnsFixed ? 'left' : null,
+      // ...getColumnSearchProps(this, 'nguoiyeucau'),
     },
     {
       title: 'Ngày gửi',
-      dataIndex: 'ngaygui',
-      key: 'ngaygui',
+      dataIndex: 'createdDate',
+      key: 'createdDate',
       width: 150,
       minWidth: 150,
+      sorter: true,
+      sortOrder: sortedInfo.columnKey === 'createdDate' && sortedInfo.order,
       fixed: isColumnsFixed ? 'left' : null,
+      render: createdDate => getDateFormat(createdDate) || 'No',
     },
   ]);
 
@@ -148,14 +214,34 @@ class RequestList extends Component {
         </Link>
       </Menu.Item>
       <Menu.Item>
-      <Link to={'/admin/personnel/request/on-leave/create'}>
+        <Link to={'/admin/personnel/request/on-leave/create'}>
           <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Nghỉ phép</span>
         </Link>
       </Menu.Item>
     </Menu>
   )
+
+  statusList = [
+    'Chờ phê duyệt',
+    'Châp thuận',
+    'Từ chối',
+  ];
+
+  onChangeReqType = (type) => {
+    let { filteredInfo } = this.state;
+    filteredInfo = {
+      ...filteredInfo,
+      type,
+    }
+    this.setState({
+      filteredInfo
+    });
+
+    this.props.findManyRequests({ ...filteredInfo });
+  }
+
   render() {
-    const { isColumnsFixed } = this.state;
+    const { isColumnsFixed, data, pagination } = this.state;
     // const { isLoading } = this.props;
 
     // const rowSelection = {
@@ -190,6 +276,8 @@ class RequestList extends Component {
         components={this.components}
         onRow={this.onRow}
         columns={columns}
+        dataSource={data}
+        pagination={pagination}
         rowKey={record => record.id}
         onChange={this.handleTableChange}
         scroll={{ x: 'max-content' }}
@@ -197,8 +285,8 @@ class RequestList extends Component {
     )
     return (
       <>
-        <div>
-          <Row justify='space-between'>
+        <div className='card-container-main'>
+          <Row justify='space-between' className='child-card-container'>
             <Col span={24} md={{ span: 12 }}>
               <Button
                 style={{ marginRight: '2px' }}
@@ -209,15 +297,11 @@ class RequestList extends Component {
                 icon={<ReloadOutlined />}>
               </Button>
               <Select
-                defaultValue="-1"
-                onChange={null}
+                value={filteredInfo.type}
+                onChange={this.onChangeReqType}
                 style={{ width: 160, top: -2 }}
-              >
-                <Option value="0"><DollarOutlined className='icon-option' />Tạm ứng lương</Option>
-                <Option value="1"><FieldTimeOutlined className='icon-option' />Làm thêm giờ</Option>
-                <Option value="2"><IoIosAirplane className='icon-option' />Nghỉ phép </Option>
-                <Option value="-1"><UnorderedListOutlined className='icon-option' />Tất cả</Option>
-              </Select>
+                options={[{ label: 'Tất cả', value: null }, ...Object.keys(typeRequest).map(key => ({ value: key, label: typeRequest[key] }))]}
+              />
             </Col>
             <Col
               md={{ span: 12 }}
@@ -227,7 +311,7 @@ class RequestList extends Component {
                 {/* {'hasSelected' ? `Selected ${'selectedRowKeys.length'} items` : ''} */}
               </span>
               <Dropdown overlay={this.listRequestMenu} placement='bottomLeft' trigger={['click']}>
-                <Button style={{marginRight: '2px'}} type='default' icon={<PlusCircleTwoTone className='plus-icon' />}>
+                <Button style={{ marginRight: '2px' }} type='default' icon={<PlusCircleTwoTone className='plus-icon' />}>
                   Tạo mới
                 </Button>
               </Dropdown>
@@ -237,8 +321,8 @@ class RequestList extends Component {
             </Col>
           </Row>
         </div>
-        <div className='card-container'>
-          <Tabs onChange={this.callback} type="card"
+        <div className='card-container-main'>
+          <Tabs onChange={this.onChangeTab} type="card" defaultActiveKey={filteredInfo.status}
             tabBarExtraContent={
               <>
                 <div className='extra-container'>
@@ -254,11 +338,8 @@ class RequestList extends Component {
                   <Badge count={5} className='count-icon' style={{ backgroundColor: '#ffbf00' }} />
                 </>
               }
-              key="1"
+              key={this.statusList[0]}
             >
-              <div className='table-wrapper'>
-                { listRequest }
-              </div>
             </TabPane>
             <TabPane
               tab={
@@ -267,11 +348,8 @@ class RequestList extends Component {
                   <Badge count={5} className='count-icon' style={{ backgroundColor: '#00a854' }} />
                 </>
               }
-              key="2"
+              key={this.statusList[1]}
             >
-              <div className='table-wrapper'>
-                { listRequest }
-              </div>
             </TabPane>
             <TabPane
               tab={
@@ -280,19 +358,32 @@ class RequestList extends Component {
                   <Badge count={5} className='count-icon' style={{ backgroundColor: '#f04134' }} />
                 </>
               }
-              key="3"
+              key={this.statusList[2]}
             >
-              <div className='table-wrapper'>
-                { listRequest }
-              </div>
+
             </TabPane>
+
           </Tabs>
+          <div className='table-wrapper'>
+            {listRequest}
+          </div>
         </div>
       </>
     );
   }
-
-
 }
 
-export default RequestList;
+const mapStateToProps = ({ request }) => {
+  const { requestList } = request;
+  return { ...requestList };
+}
+
+const maDispatchToProps = (dispatch) => {
+  return {
+    findManyRequests: (params = {}) => {
+      dispatch(requestAction.findManyRequests(params))
+    }
+  }
+}
+
+export default connect(mapStateToProps, maDispatchToProps)(RequestList);
