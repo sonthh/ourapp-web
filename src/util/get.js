@@ -128,3 +128,8 @@ export const getAvatarTextFromName = (name) => {
 
   return text;
 }
+
+export const typeRequest = {
+  'Advance': 'Tạm ứng lương',
+  'OnLeave': 'Nghỉ phép',
+};

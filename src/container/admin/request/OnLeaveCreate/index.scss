@@ -1,4 +1,4 @@
-.ContractCreate {
+.AdvanceCreate {
   .ant-col {
     position: relative;
     padding-left: 10px !important;
@@ -9,4 +9,17 @@
     cursor: pointer;
     caret-color: transparent;
   }
+}
+
+.advance-form {
+  font-weight: 500 !important;
+}
+
+.divider-advance{
+  margin-top: 0px !important;
+}
+
+.AdvanceCreate .ant-row > .wrapper-title {
+  padding-left: 20px !important;
+  padding-right: 20px !important;
 }
