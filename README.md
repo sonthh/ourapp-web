@@ -32,3 +32,10 @@ npm run start
 ## Links
 * https://redux.js.org/
 * https://reactjs.org/
+
+## Run api local 
+
+## Run xampp: 
+```
+  sudo /opt/lampp/lampp start
+```

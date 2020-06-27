@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Select, Tabs, Table, Badge, DatePicker } from "antd";
+import { Row, Col, Button, Select, Tabs, Table, Badge, DatePicker, Menu, Dropdown } from "antd";
 import './index.scss';
 import { FilterTwoTone, ReloadOutlined, DollarOutlined, FieldTimeOutlined, UnorderedListOutlined, PlusCircleTwoTone, DownloadOutlined } from '@ant-design/icons'
 import { IoIosAirplane } from "react-icons/io";
@@ -139,6 +139,21 @@ class RequestList extends Component {
       displayFilter: !this.state.displayFilter,
     });
   }
+
+  listRequestMenu = (
+    <Menu>
+      <Menu.Item>
+        <Link to={'/admin/personnel/request/advance/create'}>
+          <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Tạm Ứng lương</span>
+        </Link>
+      </Menu.Item>
+      <Menu.Item>
+      <Link to={'/admin/personnel/request/on-leave/create'}>
+          <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Nghỉ phép</span>
+        </Link>
+      </Menu.Item>
+    </Menu>
+  )
   render() {
     const { isColumnsFixed } = this.state;
     // const { isLoading } = this.props;
@@ -168,6 +183,18 @@ class RequestList extends Component {
       }),
     }))
 
+    const listRequest = (
+      <Table
+        style={{ fontSize: '13px' }}
+        bordered={true}
+        components={this.components}
+        onRow={this.onRow}
+        columns={columns}
+        rowKey={record => record.id}
+        onChange={this.handleTableChange}
+        scroll={{ x: 'max-content' }}
+      />
+    )
     return (
       <>
         <div>
@@ -199,14 +226,12 @@ class RequestList extends Component {
               <span style={{ marginRight: '8px', lineHeight: '30px' }}>
                 {/* {'hasSelected' ? `Selected ${'selectedRowKeys.length'} items` : ''} */}
               </span>
-              <Link to={'/admin/personnel/request/create'}>
-                <Button style={{ marginRight: '2px' }}
-                  type='default'
-                  icon={<PlusCircleTwoTone />}>
+              <Dropdown overlay={this.listRequestMenu} placement='bottomLeft' trigger={['click']}>
+                <Button style={{marginRight: '2px'}} type='default' icon={<PlusCircleTwoTone className='plus-icon' />}>
                   Tạo mới
                 </Button>
-              </Link>
-              <Button style={{ marginRight: '2px' }} type='default' icon={<DownloadOutlined />}>
+              </Dropdown>
+              <Button style={{ marginRight: '2px' }} type='default' icon={<DownloadOutlined className='plus-icon' />}>
                 Xuất excel
               </Button>
             </Col>
@@ -232,16 +257,7 @@ class RequestList extends Component {
               key="1"
             >
               <div className='table-wrapper'>
-                <Table
-                  style={{ fontSize: '13px' }}
-                  bordered={true}
-                  components={this.components}
-                  onRow={this.onRow}
-                  columns={columns}
-                  rowKey={record => record.id}
-                  onChange={this.handleTableChange}
-                  scroll={{ x: 'max-content' }}
-                />
+                { listRequest }
               </div>
             </TabPane>
             <TabPane
@@ -254,16 +270,7 @@ class RequestList extends Component {
               key="2"
             >
               <div className='table-wrapper'>
-                <Table
-                  style={{ fontSize: '13px' }}
-                  bordered={true}
-                  components={this.components}
-                  onRow={this.onRow}
-                  columns={columns}
-                  rowKey={record => record.id}
-                  onChange={this.handleTableChange}
-                  scroll={{ x: 'max-content' }}
-                />
+                { listRequest }
               </div>
             </TabPane>
             <TabPane
@@ -276,16 +283,7 @@ class RequestList extends Component {
               key="3"
             >
               <div className='table-wrapper'>
-                <Table
-                  style={{ fontSize: '13px' }}
-                  bordered={true}
-                  components={this.components}
-                  onRow={this.onRow}
-                  columns={columns}
-                  rowKey={record => record.id}
-                  onChange={this.handleTableChange}
-                  scroll={{ x: 'max-content' }}
-                />
+                { listRequest }
               </div>
             </TabPane>
           </Tabs>

@@ -20,6 +20,7 @@ import TimeKeepingDot from '../../../../component/common/TimeKeepingDot/TimeKeep
 import { timeKeepingColors } from '../../../../constant/colors';
 import FileSaver from 'file-saver';
 import ExcelProgressModal from '../../../../component/modal/ExcelProgressModal/ExcelProgressModal';
+import CreateRequestModal from '../../../../component/modal/CreateRequestModal/CreateRequestModal';
 
 class TimeKeeping extends Component {
 
@@ -49,6 +50,7 @@ class TimeKeeping extends Component {
         date: null,
       },
       displayExcelDownload: false,
+      visibleCreateRequest: false,
     };
   }
 
@@ -161,10 +163,17 @@ class TimeKeeping extends Component {
 
           const menu = (
             <Menu id='timekeeping-options'>
-              <Menu.Item className='menu-item'>
+              <Menu.Item
+                className='menu-item'
+                onClick={() => this.showCreateRequestModal(indexRecord, indexDate, record, date)}
+              >
                 Tạo yêu cầu nghỉ phép
               </Menu.Item>
-              <Menu.Item disabled={timeKeeping === null} className='menu-item' onClick={() => this.onDeleteTimeKeeping(indexRecord, indexDate, record)}>
+              <Menu.Item
+                disabled={timeKeeping === null}
+                className='menu-item'
+                onClick={() => this.onDeleteTimeKeeping(indexRecord, indexDate, record)}
+              >
                 <span style={{ color: '#e15258' }}>Xóa</span>
               </Menu.Item>
             </Menu>
@@ -176,7 +185,10 @@ class TimeKeeping extends Component {
                 <TimeKeepingDot dotColor={timeKeepingColors[status]} />
               </div>
               <div className='overlay'>
-                <Button onClick={() => this.showTimeKeepingModal(indexRecord, indexDate, record, date)} icon={<PlusOutlined />} />
+                <Button
+                  onClick={() => this.showTimeKeepingModal(indexRecord, indexDate, record, date)}
+                  icon={<PlusOutlined />}
+                />
                 <Dropdown trigger='click' overlay={menu} placement='topLeft'>
                   <Button icon={<EllipsisOutlined />} />
                 </Dropdown>
@@ -271,6 +283,18 @@ class TimeKeeping extends Component {
     });
   }
 
+  showCreateRequestModal = (indexRecord, indexDate, record, date) => {
+    this.setState({
+      doTimeKeeping: {
+        indexRecord,
+        indexDate,
+        record,
+        date,
+      },
+      visibleCreateRequest: true,
+    });
+  }
+
   refreshData = () => {
     const { filteredInfo, dates } = this.state;
 
@@ -284,6 +308,17 @@ class TimeKeeping extends Component {
         personnel: null,
         date: null,
       },
+    });
+  }
+
+  onCancelCreateRequestModal = () => {
+    this.setState({
+      doTimeKeeping: {
+        visible: false,
+        personnel: null,
+        date: null,
+      },
+      visibleCreateRequest: false,
     });
   }
 
@@ -321,7 +356,7 @@ class TimeKeeping extends Component {
   }
 
   render() {
-    const { data, displayFilter, doTimeKeeping, dates, displayExcelDownload } = this.state;
+    const { data, displayFilter, doTimeKeeping, dates, displayExcelDownload, visibleCreateRequest } = this.state;
     const { visible, record, date, indexRecord, indexDate } = doTimeKeeping;
     const { isLoading, departments = [], isExporting } = this.props;
 
@@ -469,6 +504,15 @@ class TimeKeeping extends Component {
           onClose={this.closeExcelDownload}
           onOk={this.saveExcelToClient}
           isExporting={isExporting}
+        />
+        <CreateRequestModal
+          visible={visibleCreateRequest}
+          record={record}
+          date={date}
+          indexRecord={indexRecord}
+          indexDate={indexDate}
+          onCancel={this.onCancelCreateRequestModal}
+        // onOk={this.onOkDoTimeKeepingModal}
         />
       </>
     );

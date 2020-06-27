@@ -19,6 +19,8 @@ import ContractCreate from './container/admin/personnel/ContractCreate/ContractC
 import PersonnelUpdate from './container/admin/personnel/PersonnelUpdate/PersonnelUpdate';
 import PermissionSetting from './container/admin/role/PermissionSetting/PermissionSetting';
 import ContractUpdate from './container/admin/personnel/ContractUpdate/ContractUpdate';
+import AdvanceCreate from './container/admin/request/AdvanceCreate/AdvanceCreate';
+import OnLeaveCreate from './container/admin/request/OnLeaveCreate/OnLeaveCreate'
 
 export const adminModalRoutes = [
   {
@@ -99,6 +101,15 @@ export const adminRoutes = [
   {
     path: '/personnel/request',
     component: RequestList,
+    exact: true,
+  },
+  {
+    path: '/personnel/request/advance/create',
+    component: AdvanceCreate,
+  },
+  {
+    path: '/personnel/request/on-leave/create',
+    component: OnLeaveCreate,
   },
   {
     path: '/setting',
@@ -120,5 +131,5 @@ export const authRoutes = [
   {
     path: '/login',
     component: Login,
-  },
+  },  
 ];

@@ -1,4 +1,4 @@
-import { Button, Form, Select, Row, Col, Input, DatePicker, Divider, notification } from 'antd';
+import { Button, Form, Row, Col, Input, DatePicker, Divider, notification, Select } from 'antd';
 import './index.scss';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -7,7 +7,9 @@ import SelectPersonnelModal from '../../../../component/modal/SelectPersonnelMod
 import * as contractAction from '../../../../action/contractAction';
 import { getErrorMessage } from '../../../../util/get';
 
-class ContractCreate extends Component {
+const { Option } = Select
+
+class OnLeaveCreate extends Component {
 
   constructor(props) {
     super(props);
@@ -17,6 +19,10 @@ class ContractCreate extends Component {
       personnel: null,
     }
   }
+
+  onChange = activeKey => {
+    this.setState({ activeKey })
+  };
 
   componentDidMount() {
   }
@@ -42,8 +48,6 @@ class ContractCreate extends Component {
         description: success,
         duration: 2.5,
       });
-
-      this.props.history.push(`/admin/personnel/contracts`);
     }
   }
 
@@ -111,60 +115,64 @@ class ContractCreate extends Component {
             wrapperCol={{ xs: 24 }}
             id='ContractCreateForm'
             onFinish={this.onCreateContract}
+            style={{ width:'100%'}}
           >
             <Row>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item name='fullName' label='Họ và tên'>
+                <Form.Item
+                  name='staffName'
+                  label='Nhân viên'
+                  rules={[{ required: true, message: 'Vui lòng chọn nhân viên' }]}
+                >
                   <Input className={'select-personnel'} onClick={this.onClickOpenSelectForm} />
                 </Form.Item>
               </Col>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item name='contractNumber' label='Số hợp đồng'>
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item name='contractType' label='Loại hợp đồng' >
-                  <Select options={this.contractTypes.map(each => ({ value: each, label: each }))} />
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item name='taxType' label='Loại thuế thu nhập cá nhân' >
-                  <Select options={this.taxTypes.map(each => ({ value: each, label: each }))} />
-                </Form.Item>
-              </Col>
               <Col span={24} md={{ span: 6 }}>
-                <Form.Item name='validDate' label='Ngày ký'>
+                <Form.Item
+                  name='startDate'
+                  label='Ngày bắt đầu'
+                  rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu nghỉ' }]}
+                >
                   <DatePicker style={{ width: '80%' }} />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 6 }}>
-                <Form.Item name='expiredDate' label='Ngày hết hạn'>
+                <Form.Item
+                  name='endDate'
+                  label='Ngày kết thúc'
+                  rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc nghỉ' }]}
+                >
                   <DatePicker style={{ width: '80%' }} />
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 12 }}>
-                <Form.Item name='salary' label='Mức lương'>
-                  <Input />
+                <Form.Item
+                  name='received'
+                  label='Người kiếm duyệt'
+                  rules={[{ required: true, message: 'Vui lòng chọn người kiếm duyệt' }]}
+                >
+                  <Input className={'select-personnel'} onClick={this.onClickOpenSelectForm} />
                 </Form.Item>
               </Col>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item name='probationTime' label='Thời gian thử việc'>
-                  <Input placeholder='Đơn vị tháng' />
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item name='workAt' label='Địa điểm làm việc'>
-                  <Input />
-                </Form.Item>
-              </Col>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item name='startWorkDate' label='Ngày bắt đầu làm'>
-                  <DatePicker style={{ width: '80%' }} />
+              <Col span={24} md={{ span: 6 }}>
+                <Form.Item
+                  name='status'
+                  label='Tình trạng phê duyệt'
+                  rules={[{ required: true, message: 'Vui lòng chọn tình trạng phê duyệt' }]}
+                >
+                  <Select
+                    placeholder='Tình trạng phê duyệt'
+                    onChange={null}
+                    style={{ width: '80%', top: -2 }}
+                  >
+                    <Option value="0">Chờ phê duyệt</Option>
+                    <Option value="1">Chấp thuận</Option>
+                    <Option value="2">Không chấp thuận </Option>
+                  </Select>
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 24 }}>
-                <Form.Item name='note' wrapperCol={{ span: 24 }} label='Ghi chú'>
+                <Form.Item name='reason' wrapperCol={{ span: 24 }} label='Lí Do'>
                   <TextArea rows={4} />
                 </Form.Item>
               </Col>
@@ -206,4 +214,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ContractCreate);
+export default connect(mapStateToProps, mapDispatchToProps)(OnLeaveCreate);
