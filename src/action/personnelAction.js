@@ -762,3 +762,26 @@ export const deleteAllowance = (personnelId, allowanceId) => {
     }
   };
 };
+
+export const findSalary = (params) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.FIND_SALARY_REQUEST,
+    });
+
+    try {
+      const salaryView = await personnelService.findSalary(params);
+
+      dispatch({
+        type: actionTypes.FIND_SALARY_SUCCESS,
+        payloads: { salaryView },
+      });
+    } catch (error) {
+      dispatch({
+        type: actionTypes.FIND_SALARY_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};

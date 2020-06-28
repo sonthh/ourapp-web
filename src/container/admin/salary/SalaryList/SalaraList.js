@@ -12,7 +12,7 @@ import { Select } from 'antd';
 import moment from 'moment';
 import { Helmet } from 'react-helmet';
 import * as departmentAction from '../../../../action/departmentAction';
-import * as timeKeepingAction from '../../../../action/timeKeepingAction';
+import * as personnelAction from '../../../../action/personnelAction';
 import DoTimeKeepingModal from '../../../../component/modal/DoTimeKeepingModal/DoTimeKeepingModal';
 import FileSaver from 'file-saver';
 import ExcelProgressModal from '../../../../component/modal/ExcelProgressModal/ExcelProgressModal';
@@ -24,14 +24,13 @@ class SalaryList extends Component {
     super(props);
 
     const currentDate = moment();
-    const dates = getArrayDatesOfWeek(currentDate);
+    const dates = getArrayDatesOfMonth(currentDate);
 
     this.messageLoadingKey = '111111111111';
 
     this.state = {
       filteredInfo: {
         departmentId: null,
-        fullName: null,
       },
       sortedInfo: null,
       data: [],
@@ -54,11 +53,12 @@ class SalaryList extends Component {
     this.props.findManyDepartments();
 
     let { dates, filteredInfo } = this.state;
-    this.fetchTimeKeeping(filteredInfo, dates);
+
+    this.fetchSalary(filteredInfo, dates);
   }
 
-  fetchTimeKeeping = (filteredInfo, dates) => {
-    this.props.findTimeKeeping({
+  fetchSalary = (filteredInfo, dates) => {
+    this.props.findSalary({
       dates: dates.map(date => moment(date).format('YYYY-MM-DD')) + '',
       ...filteredInfo,
     });
@@ -187,7 +187,7 @@ class SalaryList extends Component {
 
       this.setState({ dates, columns: this.getColumns(dates) });
 
-      this.fetchTimeKeeping(filteredInfo, dates);
+      this.fetchSalary(filteredInfo, dates);
     }
 
     if (type === 'month') {
@@ -195,7 +195,7 @@ class SalaryList extends Component {
       const { filteredInfo } = this.state;
 
       this.setState({ dates, columns: this.getColumns(dates) });
-      this.fetchTimeKeeping(filteredInfo, dates);
+      this.fetchSalary(filteredInfo, dates);
     }
   }
 
@@ -207,7 +207,7 @@ class SalaryList extends Component {
       let { filteredInfo } = this.state;
 
       this.setState({ dates, pickerFormat: 'Tuần w-YYYY', columns: this.getColumns(dates), displayFilter: true });
-      this.fetchTimeKeeping(filteredInfo, dates);
+      this.fetchSalary(filteredInfo, dates);
     }
 
     if (type === 'month') {
@@ -215,7 +215,7 @@ class SalaryList extends Component {
       const { filteredInfo } = this.state;
 
       this.setState({ dates, pickerFormat: 'TM-YYYY', columns: this.getColumns(dates), displayFilter: false });
-      this.fetchTimeKeeping(filteredInfo, dates);
+      this.fetchSalary(filteredInfo, dates);
     }
   }
 
@@ -225,7 +225,7 @@ class SalaryList extends Component {
 
     this.setState({ filteredInfo });
 
-    this.fetchTimeKeeping(filteredInfo, dates);
+    this.fetchSalary(filteredInfo, dates);
   }
 
   onSearchByFullName = (fullName) => {
@@ -238,7 +238,7 @@ class SalaryList extends Component {
 
     this.setState({ filteredInfo });
 
-    this.fetchTimeKeeping(filteredInfo, dates);
+    this.fetchSalary(filteredInfo, dates);
   }
 
   onToggleDisplayFilter = () => {
@@ -274,7 +274,7 @@ class SalaryList extends Component {
   refreshData = () => {
     const { filteredInfo, dates } = this.state;
 
-    this.fetchTimeKeeping(filteredInfo, dates);
+    this.fetchSalary(filteredInfo, dates);
   }
 
   onCancelDoTimeKeepingModal = () => {
@@ -471,9 +471,10 @@ class SalaryList extends Component {
   }
 }
 
-const mapStateToProps = ({ timeKeeping, department }) => {
+const mapStateToProps = ({ timeKeeping, department, personnel }) => {
   const { timeKeepingList } = timeKeeping;
   const { departmentList, } = department;
+  // const { time } = personnel;
 
   return {
     ...timeKeepingList,
@@ -484,9 +485,7 @@ const mapStateToProps = ({ timeKeeping, department }) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     findManyDepartments: () => dispatch(departmentAction.findManyDepartments()),
-    findTimeKeeping: (params) => dispatch(timeKeepingAction.findTimeKeeping(params)),
-    deleteTimeKeeping: (indexRecord, indexDate, personnelId, timeKeepingId) => dispatch(timeKeepingAction.deleteTimeKeeping(indexRecord, indexDate, personnelId, timeKeepingId)),
-    exportExcel: (params) => dispatch(timeKeepingAction.exportExcel(params)),
+    findSalary: (params) => dispatch(personnelAction.findSalary(params)),
   };
 };
 

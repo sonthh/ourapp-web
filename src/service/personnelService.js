@@ -366,3 +366,17 @@ export const deleteAllowance = async (personnelId, allowanceId) => {
     return Promise.reject(error);
   }
 };
+
+export const findSalary = async (params = {}) => {
+  try {
+    const { data } = await axios
+      .get(`${config.API_URL}/personnel/salary`, { params });
+
+    console.log(data);
+
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
