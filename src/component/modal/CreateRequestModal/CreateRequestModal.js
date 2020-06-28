@@ -7,6 +7,7 @@ import { getErrorMessage } from '../../../util/get';
 import TextArea from 'antd/lib/input/TextArea';
 import SelectUserModal from '../SelectUserlModal/SelectUserModal';
 import * as requestAction from '../../../action/requestAction';
+import moment from 'moment';
 
 const { Title } = Typography;
 class CreateRequestModal extends Component {
@@ -99,8 +100,8 @@ class CreateRequestModal extends Component {
       personnelId: record.personnel.id,
       type: 'OnLeave',
       receiverId: user.id,
-      startDate: date,
-      endDate: date,
+      startDate: moment(date).format('YYYY-MM-DD'),
+      endDate: moment(date).format('YYYY-MM-DD'),
     };
 
     this.props.createOneRequest(requestPayload);
@@ -134,8 +135,8 @@ class CreateRequestModal extends Component {
 
   statusList = [
     'Chờ phê duyệt',
-    'Châp thuận',
-    'Từ chối',
+    'Chấp thuận',
+    'Không chấp thuận',
   ];
 
   render() {

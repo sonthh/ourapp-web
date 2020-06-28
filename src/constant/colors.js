@@ -19,4 +19,5 @@ export const timeKeepingColors = {
   'Vào trễ':              'rgb(255, 203, 118)',
   'Vắng mặt':             'rgb(255, 0, 0)',
   'Nghỉ phép':            'rgb(102, 0, 255)',
+  'Chờ chấp nhận nghỉ phép': 'rgb(128, 32, 0)',
 };

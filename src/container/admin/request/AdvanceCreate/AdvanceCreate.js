@@ -105,7 +105,7 @@ class AdvanceCreate extends Component {
 
   statusList = [
     'Chờ phê duyệt',
-    'Châp thuận',
+    'Chấp thuận',
     'Từ chối',
   ];
 

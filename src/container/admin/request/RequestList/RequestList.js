@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Select, Tabs, Table, Badge, DatePicker, Menu, Dropdown, notification } from "antd";
+import { Row, Col, Button, Select, Tabs, Table, Badge, Menu, Dropdown, notification } from "antd";
 import './index.scss';
 import { ReloadOutlined, PlusCircleTwoTone, DownloadOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom';
@@ -9,9 +9,9 @@ import { connect } from 'react-redux';
 import { getDateFormat } from '../../../../util/date';
 import { typeRequest } from '../../../../util/get';
 import { Helmet } from 'react-helmet';
+import TableRowPopup from '../../../../component/popup/TableRowPopup/TableRowPopup';
 
 const { TabPane } = Tabs;
-const { RangePicker } = DatePicker;
 
 class RequestList extends Component {
 
@@ -33,12 +33,16 @@ class RequestList extends Component {
       columns: this.getColumns({}, {}),
       isColumnsFixed,
       displayFilter: false,
-
+      popup: {
+        visible: false,
+        x: 0, y: 0,
+        index: 0,
+      },
     };
   }
 
   componentDidMount() {
-    this.props.findManyRequests({});
+    this.props.findManyRequests({ status: 'Chờ phê duyệt' });
     this.props.countRequests({})
   }
 
@@ -108,8 +112,8 @@ class RequestList extends Component {
       title: 'STT',
       dataIndex: 'id',
       key: 'STT',
-      width: 80,
-      minWidth: 80,
+      width: 30,
+      minWidth: 30,
       render: (text, record, index) => {
         return <div>{index + 1}</div>
       }
@@ -120,7 +124,6 @@ class RequestList extends Component {
       key: 'type',
       width: 100,
       minWidth: 100,
-      fixed: isColumnsFixed ? 'left' : null,
       render: type => typeRequest[type] || '',
     },
     {
@@ -129,8 +132,6 @@ class RequestList extends Component {
       key: 'fullName',
       width: 100,
       minWidth: 100,
-      // filteredValue: filteredInfo.fullName || null,
-      // ...getColumnSearchProps(this, 'fullName', 'họ tên'),
     },
     {
       title: 'Thông tin yêu cầu',
@@ -138,7 +139,6 @@ class RequestList extends Component {
       key: 'info',
       width: 150,
       minWidth: 150,
-      fixed: isColumnsFixed ? 'left' : null,
     },
     {
       title: 'Lí do',
@@ -146,7 +146,6 @@ class RequestList extends Component {
       key: 'reason',
       width: 150,
       minWidth: 150,
-      fixed: isColumnsFixed ? 'left' : null,
     },
     {
       title: 'Người nhận',
@@ -154,18 +153,13 @@ class RequestList extends Component {
       key: 'receiver',
       width: 100,
       minWidth: 100,
-      // fixed: isColumnsFixed ? 'left' : null,
-      // ...getColumnSearchProps(this, 'nguoiyeucau'),
     },
     {
       title: 'Ngày gửi',
       dataIndex: 'createdDate',
       key: 'createdDate',
-      width: 150,
-      minWidth: 150,
-      sorter: true,
-      sortOrder: sortedInfo.columnKey === 'createdDate' && sortedInfo.order,
-      fixed: isColumnsFixed ? 'left' : null,
+      width: 100,
+      minWidth: 100,
       render: createdDate => getDateFormat(createdDate) || 'No',
     },
   ]);
@@ -225,7 +219,7 @@ class RequestList extends Component {
 
   statusList = [
     'Chờ phê duyệt',
-    'Châp thuận',
+    'Chấp thuận',
     'Từ chối',
   ];
 
@@ -247,18 +241,49 @@ class RequestList extends Component {
     const { filteredInfo } = this.state;
 
     this.props.findManyRequests({ ...filteredInfo });
+    this.props.countRequests({ type: filteredInfo.type })
+  }
+
+  onRow = (record, index) => ({
+    onContextMenu: event => {
+      event.preventDefault();
+
+      if (!this.state.popup.visible) {
+        const that = this;
+        document.addEventListener(`click`, function onClickOutside() {
+          that.setState({ popup: { visible: false } })
+          document.removeEventListener(`click`, onClickOutside)
+        });
+      }
+
+      if (record.status !== 'Chờ phê duyệt') return;
+
+      this.setState({
+        popup: {
+          index,
+          record,
+          visible: true,
+          x: event.clientX,
+          y: event.clientY
+        }
+      });
+    }
+  });
+
+  onApprove = () => {
+    const { record } = this.state.popup;
+    console.log(record);
+    this.props.updateRequest(record.id, { status: 'Chấp thuận' })
+  }
+
+  onReject = () => {
+    const { record } = this.state.popup;
+    this.props.updateRequest(record.id, { status: 'Từ chối' })
   }
 
   render() {
-    const { isColumnsFixed, data, pagination } = this.state;
-    const { isLoading, countRequest } = this.props;
-
-    // const rowSelection = {
-    //   selectedRowKeys,
-    //   onChange: this.onSelectChange,
-    // };
-
-    // const hasSelected = selectedRowKeys.length > 0;
+    const { isColumnsFixed, data } = this.state;
+    const { isLoading, countRequest } = this.props;    
 
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
@@ -270,7 +295,6 @@ class RequestList extends Component {
       ...col,
       filteredValue: columnsInfo[index].filteredValue,
       sortOrder: columnsInfo[index].sortOrder,
-      fixed: columnsInfo[index].fixed,
       onHeaderCell: column => ({
         width: column.width,
         minWidth: column.minWidth,
@@ -278,13 +302,13 @@ class RequestList extends Component {
       }),
     }))
 
-    const listRequest = (
+    const requestTable = (
       <Table
         style={{ fontSize: '13px' }}
         locale={{
           emptyText: (
             <div style={{ padding: '20px 0' }}>
-              {isLoading === true ? 'Đang tải dữ liệu' : 'Không tìm thấy dữ liệu'}
+              {isLoading === true ? 'Đang tải dữ liệu' : 'Không có yêu cầu'}
             </div>
           ),
         }}
@@ -293,7 +317,8 @@ class RequestList extends Component {
         onRow={this.onRow}
         columns={columns}
         dataSource={data}
-        pagination={pagination}
+        pagination={false}
+        // pagination={pagination}
         rowKey={record => record.id}
         onChange={this.handleTableChange}
         scroll={{ x: 'max-content' }}
@@ -321,7 +346,10 @@ class RequestList extends Component {
                 value={filteredInfo.type}
                 onChange={this.onChangeReqType}
                 style={{ width: 160, top: -2 }}
-                options={[{ label: 'Tất cả', value: null }, ...Object.keys(typeRequest).map(key => ({ value: key, label: typeRequest[key] }))]}
+                options={[
+                  { label: 'Tất cả', value: null },
+                  ...Object.keys(typeRequest).map(key => ({ value: key, label: typeRequest[key] }))
+                ]}
               />
             </Col>
             <Col
@@ -344,19 +372,19 @@ class RequestList extends Component {
         </div>
         <div className='card-container-main'>
           <Tabs onChange={this.onChangeTab} type="card" defaultActiveKey={filteredInfo.status}
-            tabBarExtraContent={
-              <>
-                <div className='extra-container'>
-                  <RangePicker />
-                </div>
-              </>
-            }
+          // tabBarExtraContent={
+          //   <>
+          //     <div className='extra-container'>
+          //       <RangePicker />
+          //     </div>
+          //   </>
+          // }
           >
             <TabPane
               tab={
                 <>
                   <span>Yêu cầu phê duyệt </span>
-                  <Badge count={countRequest.waiting} className='count-icon' style={{ backgroundColor: '#ffbf00' }} />
+                  <Badge showZero={true} count={countRequest.waiting} className='count-icon' style={{ backgroundColor: '#ffbf00' }} />
                 </>
               }
               key={this.statusList[0]}
@@ -366,7 +394,7 @@ class RequestList extends Component {
               tab={
                 <>
                   <span>Chấp thuận</span>
-                  <Badge count={countRequest.approved} className='count-icon' style={{ backgroundColor: '#00a854' }} />
+                  <Badge showZero={true} count={countRequest.approved} className='count-icon' style={{ backgroundColor: '#00a854' }} />
                 </>
               }
               key={this.statusList[1]}
@@ -376,7 +404,7 @@ class RequestList extends Component {
               tab={
                 <>
                   <span>Từ chối </span>
-                  <Badge count={countRequest.rejected} className='count-icon' style={{ backgroundColor: '#f04134' }} />
+                  <Badge showZero={true} count={countRequest.rejected} className='count-icon' style={{ backgroundColor: '#f04134' }} />
                 </>
               }
               key={this.statusList[2]}
@@ -386,17 +414,18 @@ class RequestList extends Component {
 
           </Tabs>
           <div className='table-wrapper'>
-            {listRequest}
+            {requestTable}
           </div>
         </div>
+        <TableRowPopup {...this.state.popup} onReject={this.onReject} onApprove={this.onApprove} />
       </>
     );
   }
 }
 
 const mapStateToProps = ({ request }) => {
-  const { requestList } = request;
-  return { ...requestList };
+  const { requestList, requestItem } = request;
+  return { ...requestList, ...requestItem };
 }
 
 const maDispatchToProps = (dispatch) => {
@@ -406,6 +435,9 @@ const maDispatchToProps = (dispatch) => {
     },
     countRequests: (params = {}) => {
       dispatch(requestAction.countRequests(params))
+    },
+    updateRequest: (requestId, requestPayload) => {
+      dispatch(requestAction.updateOneRequest(requestId, requestPayload))
     },
   }
 }

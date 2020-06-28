@@ -156,6 +156,14 @@ class TimeKeeping extends Component {
           const timeKeeping = record.timeKeepingList[indexDate];
           let status = timeKeeping?.status;
 
+          if (status === 'Nghỉ phép' && timeKeeping && timeKeeping.request) {
+            if (timeKeeping.request.status === 'Chấp thuận') {
+              status = 'Nghỉ phép';
+            } else {
+              status = 'Chờ chấp nhận nghỉ phép';
+            }
+          }
+
           if (!status) {
             const check = moment() > moment(date);
             status = check === true ? 'Không chấm công' : 'Chưa đến ca';
@@ -164,6 +172,7 @@ class TimeKeeping extends Component {
           const menu = (
             <Menu id='timekeeping-options'>
               <Menu.Item
+                disabled={timeKeeping && timeKeeping.request !== null}
                 className='menu-item'
                 onClick={() => this.showCreateRequestModal(indexRecord, indexDate, record, date)}
               >

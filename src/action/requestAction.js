@@ -68,3 +68,27 @@ export const countRequests = (params = {}) => {
     }
   }
 }
+
+export const updateOneRequest = (requestId, requestPayload) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.UPDATE_ONE_REQUEST_REQUEST,
+    });
+
+    try {
+      const request = await requestService.updateRequest(requestId, requestPayload);
+      
+      dispatch({
+        type: actionTypes.UPDATE_ONE_REQUEST_SUCCESS,
+        payloads: { requestId, request },
+      });
+
+    } catch (error) {
+      dispatch({
+        type: actionTypes.UPDATE_ONE_REQUEST_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
