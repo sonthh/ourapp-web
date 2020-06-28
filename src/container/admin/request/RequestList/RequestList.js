@@ -8,6 +8,7 @@ import * as requestAction from '../../../../action/requestAction'
 import { connect } from 'react-redux';
 import { getDateFormat } from '../../../../util/date';
 import { typeRequest } from '../../../../util/get';
+import { Helmet } from 'react-helmet';
 
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
@@ -305,6 +306,9 @@ class RequestList extends Component {
 
     return (
       <>
+        <Helmet>
+          <title>Yêu cầu</title>
+        </Helmet>
         <div className='card-container-main'>
           <Row justify='space-between' className='child-card-container'>
             <Col span={24} md={{ span: 12 }}>

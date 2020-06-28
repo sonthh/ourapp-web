@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './index.scss';
 import { Modal, Button, notification, message, Row, Col, Form, Input, Select, Divider, Typography } from 'antd';
-import * as timeKeepingAction from '../../../action/timeKeepingAction';
 import { connect } from 'react-redux';
 import { getDateFormatForTitle } from '../../../util/date';
 import { getErrorMessage } from '../../../util/get';
@@ -100,12 +99,12 @@ class CreateRequestModal extends Component {
       personnelId: record.personnel.id,
       type: 'OnLeave',
       receiverId: user.id,
-      startDade: date,
+      startDate: date,
       endDate: date,
     };
 
     this.props.createOneRequest(requestPayload);
-    this.props.onOK();
+    this.props.onOk();
   }
 
   footer = (
