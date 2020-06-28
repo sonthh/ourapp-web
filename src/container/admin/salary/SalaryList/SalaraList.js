@@ -4,7 +4,7 @@ import {
   Table, Button, notification, Col, Row, DatePicker
 } from 'antd';
 import {
-  ReloadOutlined, LoadingOutlined, DownloadOutlined
+  ReloadOutlined, LoadingOutlined,
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
 import { getArrayDatesOfMonth } from '../../../../util/date';
@@ -72,6 +72,13 @@ class SalaryList extends Component {
     }
   }
 
+  formatter = new Intl.NumberFormat('it-IT', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0
+  })
+  
+
   getColumns = (sortedInfo, isColumnsFixed = false) => ([
     {
       title: 'STT',
@@ -87,8 +94,8 @@ class SalaryList extends Component {
       title: 'Tên nhân viên',
       dataIndex: ['personnel', 'fullName'],
       key: 'fullName',
-      width: 100,
-      minWidth: 100,
+      width: 150,
+      minWidth: 150,
     },
     {
       title: 'Chức vụ',
@@ -101,25 +108,41 @@ class SalaryList extends Component {
       title: 'Số ngày làm',
       dataIndex: 'timeOn',
       key: 'timeOn',
-      width: 150,
-      minWidth: 150,
-      fixed: isColumnsFixed ? 'left' : null,
+      width: 80,
+      minWidth: 80,
+      render: text => {
+        return <div className='text-right'>{text}</div>
+      }
     },
     {
       title: 'Số ngày nghỉ',
       dataIndex: 'timeOff',
       key: 'timeOff',
-      width: 150,
-      minWidth: 150,
-      fixed: isColumnsFixed ? 'left' : null,
+      width: 80,
+      minWidth: 80,
+      render: text => {
+        return <div className='text-right'>{text}</div>
+      }
+    },
+    {
+      title: 'Số ngày đi trễ',
+      dataIndex: 'late',
+      key: 'late',
+      width: 80,
+      minWidth: 80,
+      render: text => {
+        return <div className='text-right'>{text}</div>
+      }
     },
     {
       title: 'Tổng phụ cấp',
-      dataIndex: 'amount',
-      key: 'total',
+      dataIndex: 'allowance',
+      key: 'allowance',
       width: 150,
       minWidth: 150,
-      fixed: isColumnsFixed ? 'left' : null,
+      render: text => {
+        return <div className='text-right'>{this.formatter.format(text)}</div>
+      }
     },
     {
       title: 'Tổng tiền phạt',
@@ -127,13 +150,19 @@ class SalaryList extends Component {
       key: 'fare',
       width: 100,
       minWidth: 100,
+      render: text => {
+        return <div className='text-right'>{this.formatter.format(text)}</div>
+      }
     },
     {
       title: 'Tổng tạm ứng',
-      dataIndex: 'totalAdvance',
-      key: 'totalAdvance',
+      dataIndex: 'advance',
+      key: 'advance',
       width: 150,
       minWidth: 150,
+      render: text => {
+        return <div className='text-right'>{this.formatter.format(text)}</div>
+      }
     },
     {
       title: 'Tổng lương lãnh',
@@ -141,6 +170,9 @@ class SalaryList extends Component {
       key: 'totalSalary',
       width: 150,
       minWidth: 150,
+      render: text => {
+        return <div className='text-right'>{this.formatter.format(text -  text % 1000)}</div>
+      }
     },
   ]);
 
@@ -231,7 +263,7 @@ class SalaryList extends Component {
     const { data, dates, displayExcelDownload } = this.state;
     const { isLoading, departments = [], isExporting } = this.props;
 
-    let { sortedInfo, filteredInfo, type, pickerFormat, columns } = this.state;
+    let { sortedInfo, filteredInfo, pickerFormat, columns } = this.state;
     sortedInfo = sortedInfo || {};
     filteredInfo = filteredInfo || {};
     const departmentOptions = [{ label: 'Tất cả phòng', value: null }]
@@ -254,7 +286,7 @@ class SalaryList extends Component {
               </Button>
               <DatePicker
                 style={{
-                  width: '15%',
+                  width: 100,
                   top: -1,
                   marginRight: 2,
                 }}
@@ -267,8 +299,8 @@ class SalaryList extends Component {
                 value={filteredInfo.departmentId}
                 placeholder='Phòng ban'
                 style={{
-                  top: -1,
-                  width: '20%',
+                  top: -2,
+                  width: 200,
                   marginBottom: 4,
                 }}
                 onChange={this.onChangeDepartment}
@@ -284,19 +316,18 @@ class SalaryList extends Component {
             <Col md={{ span: 12 }}
               className='actions-right'
             >
-              <Button
+              {/* <Button
                 style={{ marginRight: '2px', fontSize: 13, top: -1 }}
                 type='primary' icon={<DownloadOutlined />}
                 onClick={this.onExportExcel}
               >
                 Excel
-              </Button>
+              </Button> */}
             </Col>
           </Row>
         </div>
         <div className='filter-table-wrapper'>
           <Table
-            className={`TimeKeepingTable TimeKeepingTable-${type}`}
             style={{ fontSize: '13px', width: '100%' }}
             locale={{
               emptyText: (
