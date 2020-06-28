@@ -78,7 +78,7 @@ export const updateOneRequest = (requestId, requestPayload) => {
 
     try {
       const request = await requestService.updateRequest(requestId, requestPayload);
-      
+
       dispatch({
         type: actionTypes.UPDATE_ONE_REQUEST_SUCCESS,
         payloads: { requestId, request },
@@ -87,6 +87,31 @@ export const updateOneRequest = (requestId, requestPayload) => {
     } catch (error) {
       dispatch({
         type: actionTypes.UPDATE_ONE_REQUEST_FAILURE,
+        payloads: { error },
+      });
+    }
+  };
+};
+
+
+export const deleteOneRequest = (requestId) => {
+
+  return async (dispatch) => {
+    dispatch({
+      type: actionTypes.DELETE_ONE_REQUEST_REQUEST,
+    });
+
+    try {
+      const isDeleted = await requestService.updateRequest(requestId, { status: 'xxxxxxx' });
+
+      dispatch({
+        type: actionTypes.DELETE_ONE_REQUEST_SUCCESS,
+        payloads: { isDeleted, id: requestId },
+      });
+
+    } catch (error) {
+      dispatch({
+        type: actionTypes.DELETE_ONE_REQUEST_FAILURE,
         payloads: { error },
       });
     }

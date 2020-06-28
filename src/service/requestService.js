@@ -44,3 +44,15 @@ export const updateRequest = async (requestId, requestPayload) => {
     return Promise.reject(error);
   }
 };
+
+export const deleteRequest = async (requestId) => {
+  try {
+    const { data } = await axios
+      .delete(`${config.API_URL}/requests/${requestId}`);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
