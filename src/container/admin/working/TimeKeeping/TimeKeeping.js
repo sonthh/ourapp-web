@@ -322,6 +322,17 @@ class TimeKeeping extends Component {
     });
   }
 
+  onOkCreateRequestModal = () => {
+    this.setState({
+      doTimeKeeping: {
+        visible: false,
+        personnel: null,
+        date: null,
+      },
+      visibleCreateRequest: false,
+    });
+  }
+
   onOkDoTimeKeepingModal = () => {
     this.setState({
       doTimeKeeping: {
@@ -512,7 +523,7 @@ class TimeKeeping extends Component {
           indexRecord={indexRecord}
           indexDate={indexDate}
           onCancel={this.onCancelCreateRequestModal}
-        // onOk={this.onOkDoTimeKeepingModal}
+          onOk={this.onOkCreateRequestModal}
         />
       </>
     );
