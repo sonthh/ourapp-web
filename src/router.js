@@ -20,7 +20,8 @@ import PersonnelUpdate from './container/admin/personnel/PersonnelUpdate/Personn
 import PermissionSetting from './container/admin/role/PermissionSetting/PermissionSetting';
 import ContractUpdate from './container/admin/personnel/ContractUpdate/ContractUpdate';
 import AdvanceCreate from './container/admin/request/AdvanceCreate/AdvanceCreate';
-import OnLeaveCreate from './container/admin/request/OnLeaveCreate/OnLeaveCreate'
+import OnLeaveCreate from './container/admin/request/OnLeaveCreate/OnLeaveCreate';
+import SalaryList from './container/admin/salary/SalaryList/SalaraList';
 
 export const adminModalRoutes = [
   {
@@ -110,6 +111,10 @@ export const adminRoutes = [
   {
     path: '/personnel/request/on-leave/create',
     component: OnLeaveCreate,
+  },
+  {
+    path: '/salary/salary-table',
+    component: SalaryList,
   },
   {
     path: '/setting',

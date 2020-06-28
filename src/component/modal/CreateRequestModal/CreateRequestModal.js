@@ -105,7 +105,7 @@ class CreateRequestModal extends Component {
     };
 
     this.props.createOneRequest(requestPayload);
-    this.props.onOK();
+    this.props.onOk();
   }
 
   footer = (
