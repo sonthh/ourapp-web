@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Button, Select, Tabs, Table, Badge, DatePicker, Menu, Dropdown, notification } from "antd";
 import './index.scss';
-import { FilterTwoTone, ReloadOutlined, PlusCircleTwoTone, DownloadOutlined, LoadingOutlined } from '@ant-design/icons'
+import { ReloadOutlined, PlusCircleTwoTone, DownloadOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom';
 import { ResizeableTitle } from '../../../../component/common/ResizeableTitle';
 import * as requestAction from '../../../../action/requestAction'
@@ -38,6 +38,7 @@ class RequestList extends Component {
 
   componentDidMount() {
     this.props.findManyRequests({});
+    this.props.countRequests({})
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -210,7 +211,7 @@ class RequestList extends Component {
     <Menu>
       <Menu.Item>
         <Link to={'/admin/personnel/request/advance/create'}>
-          <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Tạm Ứng lương</span>
+          <span style={{ color: '#1890ff' }}><PlusCircleTwoTone className='plus-icon' />Tạm ứng lương</span>
         </Link>
       </Menu.Item>
       <Menu.Item>
@@ -238,11 +239,18 @@ class RequestList extends Component {
     });
 
     this.props.findManyRequests({ ...filteredInfo });
+    this.props.countRequests({ type })
+  }
+
+  refreshData = () => {
+    const { filteredInfo } = this.state;
+
+    this.props.findManyRequests({ ...filteredInfo });
   }
 
   render() {
     const { isColumnsFixed, data, pagination } = this.state;
-    const { isLoading } = this.props;
+    const { isLoading, countRequest } = this.props;
 
     // const rowSelection = {
     //   selectedRowKeys,
@@ -294,6 +302,7 @@ class RequestList extends Component {
         }}
       />
     )
+
     return (
       <>
         <div className='card-container-main'>
@@ -301,10 +310,7 @@ class RequestList extends Component {
             <Col span={24} md={{ span: 12 }}>
               <Button
                 style={{ marginRight: '2px' }}
-                icon={<FilterTwoTone />}>
-              </Button>
-              <Button
-                style={{ marginRight: '2px' }}
+                onClick={this.refreshData}
                 icon={<ReloadOutlined />}>
               </Button>
               <Select
@@ -346,7 +352,7 @@ class RequestList extends Component {
               tab={
                 <>
                   <span>Yêu cầu phê duyệt </span>
-                  <Badge count={5} className='count-icon' style={{ backgroundColor: '#ffbf00' }} />
+                  <Badge count={countRequest.waiting} className='count-icon' style={{ backgroundColor: '#ffbf00' }} />
                 </>
               }
               key={this.statusList[0]}
@@ -356,7 +362,7 @@ class RequestList extends Component {
               tab={
                 <>
                   <span>Chấp thuận</span>
-                  <Badge count={5} className='count-icon' style={{ backgroundColor: '#00a854' }} />
+                  <Badge count={countRequest.approved} className='count-icon' style={{ backgroundColor: '#00a854' }} />
                 </>
               }
               key={this.statusList[1]}
@@ -366,7 +372,7 @@ class RequestList extends Component {
               tab={
                 <>
                   <span>Từ chối </span>
-                  <Badge count={5} className='count-icon' style={{ backgroundColor: '#f04134' }} />
+                  <Badge count={countRequest.rejected} className='count-icon' style={{ backgroundColor: '#f04134' }} />
                 </>
               }
               key={this.statusList[2]}
@@ -393,7 +399,10 @@ const maDispatchToProps = (dispatch) => {
   return {
     findManyRequests: (params = {}) => {
       dispatch(requestAction.findManyRequests(params))
-    }
+    },
+    countRequests: (params = {}) => {
+      dispatch(requestAction.countRequests(params))
+    },
   }
 }
 
