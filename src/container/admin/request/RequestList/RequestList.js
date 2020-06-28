@@ -159,8 +159,6 @@ class RequestList extends Component {
       key: 'createdDate',
       width: 100,
       minWidth: 100,
-      sorter: true,
-      sortOrder: sortedInfo.columnKey === 'createdDate' && sortedInfo.order,
       render: createdDate => getDateFormat(createdDate) || 'No',
     },
   ]);

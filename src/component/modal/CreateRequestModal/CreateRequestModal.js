@@ -7,6 +7,7 @@ import { getErrorMessage } from '../../../util/get';
 import TextArea from 'antd/lib/input/TextArea';
 import SelectUserModal from '../SelectUserlModal/SelectUserModal';
 import * as requestAction from '../../../action/requestAction';
+import moment from 'moment';
 
 const { Title } = Typography;
 class CreateRequestModal extends Component {
@@ -99,8 +100,8 @@ class CreateRequestModal extends Component {
       personnelId: record.personnel.id,
       type: 'OnLeave',
       receiverId: user.id,
-      startDade: date,
-      endDate: date,
+      startDate: moment(date).format('YYYY-MM-DD'),
+      endDate: moment(date).format('YYYY-MM-DD'),
     };
 
     this.props.createOneRequest(requestPayload);
