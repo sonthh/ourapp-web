@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, Select, Tabs, Table, Badge, Menu, Dropdown, notification } from "antd";
+import { Row, Col, Button, Select, Tabs, Table, Badge, Menu, Dropdown, notification, Typography, Divider } from "antd";
 import './index.scss';
 import { ReloadOutlined, PlusCircleTwoTone, DownloadOutlined, LoadingOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom';
@@ -10,6 +10,9 @@ import { getDateFormat } from '../../../../util/date';
 import { typeRequest } from '../../../../util/get';
 import { Helmet } from 'react-helmet';
 import TableRowPopup from '../../../../component/popup/TableRowPopup/TableRowPopup';
+import SplitPane from 'react-split-pane';
+
+const { Title } = Typography;
 
 const { TabPane } = Tabs;
 
@@ -38,6 +41,7 @@ class RequestList extends Component {
         x: 0, y: 0,
         index: 0,
       },
+      currentRequest: null,
     };
   }
 
@@ -107,7 +111,7 @@ class RequestList extends Component {
     this.props.findManyRequests({ ...filteredInfo });
   }
 
-  getColumns = (sortedInfo, isColumnsFixed = false) => ([
+  getColumns = () => ([
     {
       title: 'STT',
       dataIndex: 'id',
@@ -267,7 +271,10 @@ class RequestList extends Component {
           y: event.clientY
         }
       });
-    }
+    },
+    onClick: () => {
+      this.setState({ currentRequest: record, clickedIndex: index });
+    },
   });
 
   onApprove = () => {
@@ -281,9 +288,17 @@ class RequestList extends Component {
     this.props.updateRequest(record.id, { status: 'Từ chối' })
   }
 
+  deleteRequest = () => {
+    const { currentRequest, clickedIndex } = this.state;
+    if (!currentRequest) return;
+
+    console.log(currentRequest, clickedIndex);
+    this.props.deleteRequest(clickedIndex);
+  }
+
   render() {
-    const { isColumnsFixed, data } = this.state;
-    const { isLoading, countRequest } = this.props;    
+    const { isColumnsFixed, data, currentRequest } = this.state;
+    const { isLoading, countRequest } = this.props;
 
     let { sortedInfo, filteredInfo } = this.state;
     sortedInfo = sortedInfo || {};
@@ -334,6 +349,7 @@ class RequestList extends Component {
         <Helmet>
           <title>Yêu cầu</title>
         </Helmet>
+
         <div className='card-container-main'>
           <Row justify='space-between' className='child-card-container'>
             <Col span={24} md={{ span: 12 }}>
@@ -370,53 +386,137 @@ class RequestList extends Component {
             </Col>
           </Row>
         </div>
-        <div className='card-container-main'>
-          <Tabs onChange={this.onChangeTab} type="card" defaultActiveKey={filteredInfo.status}
-          // tabBarExtraContent={
-          //   <>
-          //     <div className='extra-container'>
-          //       <RangePicker />
-          //     </div>
-          //   </>
-          // }
-          >
-            <TabPane
-              tab={
-                <>
-                  <span>Yêu cầu phê duyệt </span>
-                  <Badge showZero={true} count={countRequest.waiting} className='count-icon' style={{ backgroundColor: '#ffbf00' }} />
-                </>
-              }
-              key={this.statusList[0]}
-            >
-            </TabPane>
-            <TabPane
-              tab={
-                <>
-                  <span>Chấp thuận</span>
-                  <Badge showZero={true} count={countRequest.approved} className='count-icon' style={{ backgroundColor: '#00a854' }} />
-                </>
-              }
-              key={this.statusList[1]}
-            >
-            </TabPane>
-            <TabPane
-              tab={
-                <>
-                  <span>Từ chối </span>
-                  <Badge showZero={true} count={countRequest.rejected} className='count-icon' style={{ backgroundColor: '#f04134' }} />
-                </>
-              }
-              key={this.statusList[2]}
-            >
+        <SplitPane split="horizontal" minSize='95%' defaultSize='60%' allowResize={true}>
 
-            </TabPane>
+          <div className='card-container-main'>
+            <Tabs onChange={this.onChangeTab} type="card" defaultActiveKey={filteredInfo.status}
+            // tabBarExtraContent={
+            //   <>
+            //     <div className='extra-container'>
+            //       <RangePicker />
+            //     </div>
+            //   </>
+            // }
+            >
+              <TabPane
+                tab={
+                  <>
+                    <span>Yêu cầu phê duyệt </span>
+                    <Badge showZero={true} count={countRequest.waiting} className='count-icon' style={{ backgroundColor: '#ffbf00' }} />
+                  </>
+                }
+                key={this.statusList[0]}
+              >
+              </TabPane>
+              <TabPane
+                tab={
+                  <>
+                    <span>Chấp thuận</span>
+                    <Badge showZero={true} count={countRequest.approved} className='count-icon' style={{ backgroundColor: '#00a854' }} />
+                  </>
+                }
+                key={this.statusList[1]}
+              >
+              </TabPane>
+              <TabPane
+                tab={
+                  <>
+                    <span>Từ chối </span>
+                    <Badge showZero={true} count={countRequest.rejected} className='count-icon' style={{ backgroundColor: '#f04134' }} />
+                  </>
+                }
+                key={this.statusList[2]}
+              >
 
-          </Tabs>
-          <div className='table-wrapper'>
-            {requestTable}
+              </TabPane>
+
+            </Tabs>
+            <div className='table-wrapper'>
+              {requestTable}
+            </div>
           </div>
-        </div>
+          <div className='card-container-main' style={{
+            backgroundColor: '#fff',
+            minHeight: '100px',
+            marginTop: '0px',
+            paddingTop: '5px'
+          }}>
+            <Row>
+              <Col span={24} md={{ span: 24 }} className='wrapper-title'>
+                <Title style={{ marginTop: 15 }} className='form-title advance-form' level={4}>THÔNG TIN YÊU CẦU</Title>
+                <Divider className='divider-advance' />
+              </Col>
+              <Col span={18} md={{ span: 18 }} >
+                <Row>
+
+                  {currentRequest &&
+                    <>
+                      <Col className='text-bold' span={6} md={{ span: 6 }}>
+                        <div>Thông tin yêu cầu</div>
+                      </Col>
+                      <Col span={6} md={{ span: 6 }}>
+                        <div>{currentRequest.info}</div>
+                      </Col>
+                      <Col className='text-bold' span={6} md={{ span: 6 }}>
+                        <div>Lý do</div>
+                      </Col>
+                      <Col span={6} md={{ span: 6 }}>
+                        <div>{currentRequest.reason}</div>
+                      </Col>
+                      <Col className='text-bold' span={6} md={{ span: 6 }}>
+                        <div>Người gởi yêu cầu</div>
+                      </Col>
+                      <Col span={6} md={{ span: 6 }}>
+                        <div>{currentRequest?.personnel?.fullName}</div>
+                      </Col>
+                      <Col className='text-bold' span={6} md={{ span: 6 }}>
+                        <div>Người xác nhận</div>
+                      </Col>
+                      <Col span={6} md={{ span: 6 }}>
+                        <div>{currentRequest?.receiver?.fullName}</div>
+                      </Col>
+
+                      {
+                        currentRequest.type === 'OnLeave' &&
+                        <>
+                          <Col className='text-bold' span={6} md={{ span: 6 }}>
+                            <div>Thời gian nghỉ</div>
+                          </Col>
+                          <Col span={6} md={{ span: 6 }}>
+                            <div>Từ {getDateFormat(currentRequest.startDate)} đến {getDateFormat(currentRequest.endDate)}</div>
+                          </Col>
+                        </>
+                      }
+                      {
+                        currentRequest.type === 'Advance' &&
+                        <>
+                          <Col className='text-bold' span={6} md={{ span: 6 }}>
+                            <div>Số tiền</div>
+                          </Col>
+                          <Col span={6} md={{ span: 6 }}>
+                            <div>{currentRequest.amount}</div>
+                          </Col>
+                          <Col className='text-bold' span={6} md={{ span: 6 }}>
+                            <div>Ngày quyết định</div>
+                          </Col>
+                          <Col span={6} md={{ span: 6 }}>
+                            <div>{getDateFormat(currentRequest.decidedDate)}</div>
+                          </Col>
+                        </>
+                      }
+                    </>
+                  }
+                </Row>
+              </Col>
+              {/* <Col span={6} md={{ span: 6 }} >
+                {
+                  currentRequest && currentRequest?.status !== 'Chờ phê duyệt' &&
+                  <Button onClick={this.deleteRequest} icon={<CloseOutlined />} type='danger'>Xóa</Button>
+                }
+              </Col> */}
+            </Row>
+          </div>
+        </SplitPane>
         <TableRowPopup {...this.state.popup} onReject={this.onReject} onApprove={this.onApprove} />
       </>
     );
@@ -438,6 +538,9 @@ const maDispatchToProps = (dispatch) => {
     },
     updateRequest: (requestId, requestPayload) => {
       dispatch(requestAction.updateOneRequest(requestId, requestPayload))
+    },
+    deleteRequest: (requestId) => {
+      dispatch(requestAction.deleteOneRequest(requestId))
     },
   }
 }

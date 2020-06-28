@@ -13,7 +13,7 @@ export const requestListReducer = (state = initialState, { type, payloads }) => 
 
   switch (type) {
     case actionTypes.FIND_MANY_REQUEST_REQUEST: {
-      
+
       return {
         ...state,
         isLoading: true
@@ -90,6 +90,37 @@ export const requestListReducer = (state = initialState, { type, payloads }) => 
         countRequest: {
           approved, waiting, rejected,
         }
+      }
+    }
+    case actionTypes.DELETE_ONE_REQUEST_REQUEST: {
+      return {
+        ...state,
+        isDeleting: true,
+      };
+    }
+    case actionTypes.DELETE_ONE_REQUEST_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        isDeleting: false,
+        error,
+      };
+    }
+    case actionTypes.DELETE_ONE_REQUEST_SUCCESS: {
+      const { id, isDeleted } = payloads;
+      let { dataList } = state;
+      let { content } = dataList;
+
+      content = content.filter(item => item.id !== id);
+
+      return {
+        ...state,
+        dataList: {
+          ...dataList,
+          content,
+        },
+        isDeleted,
+        isDeleting: false,
       }
     }
     default:
