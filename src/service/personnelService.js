@@ -372,9 +372,6 @@ export const findSalary = async (params = {}) => {
     const { data } = await axios
       .get(`${config.API_URL}/personnel/salary`, { params });
 
-    console.log(data);
-
-
     return data;
   } catch (error) {
     return Promise.reject(error);

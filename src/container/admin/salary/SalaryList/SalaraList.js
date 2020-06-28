@@ -1,22 +1,20 @@
 import React, { Component } from 'react';
 import './index.scss';
 import {
-  Table, Button, notification, Col, Row, DatePicker, message
+  Table, Button, notification, Col, Row, DatePicker
 } from 'antd';
 import {
-  FilterTwoTone, ReloadOutlined, LoadingOutlined, DownloadOutlined
+  ReloadOutlined, LoadingOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import { connect } from 'react-redux';
-import { getArrayDatesOfWeek, getArrayDatesOfMonth } from '../../../../util/date';
+import { getArrayDatesOfMonth } from '../../../../util/date';
 import { Select } from 'antd';
 import moment from 'moment';
 import { Helmet } from 'react-helmet';
 import * as departmentAction from '../../../../action/departmentAction';
 import * as personnelAction from '../../../../action/personnelAction';
-import DoTimeKeepingModal from '../../../../component/modal/DoTimeKeepingModal/DoTimeKeepingModal';
 import FileSaver from 'file-saver';
 import ExcelProgressModal from '../../../../component/modal/ExcelProgressModal/ExcelProgressModal';
-import CreateRequestModal from '../../../../component/modal/CreateRequestModal/CreateRequestModal';
 
 class SalaryList extends Component {
 
@@ -26,8 +24,6 @@ class SalaryList extends Component {
     const currentDate = moment();
     const dates = getArrayDatesOfMonth(currentDate);
 
-    this.messageLoadingKey = '111111111111';
-
     this.state = {
       filteredInfo: {
         departmentId: null,
@@ -35,17 +31,9 @@ class SalaryList extends Component {
       sortedInfo: null,
       data: [],
       columns: this.getColumns(dates, {}, {}),
-      displayFilter: true,
       dates,
-      type: 'month',
       pickerFormat: 'M-YYYY',
-      doTimeKeeping: {
-        visible: false,
-        record: null,
-        date: null,
-      },
       displayExcelDownload: false,
-      visibleCreateRequest: false,
     };
   }
 
@@ -65,7 +53,7 @@ class SalaryList extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { error, isDeleting, timeKeepingView } = this.props;
+    const { error, salaryView } = this.props;
 
     if (error && error !== prevProps.error) {
       if (error) {
@@ -77,27 +65,11 @@ class SalaryList extends Component {
       }
     }
 
-    if (isDeleting !== undefined && isDeleting !== prevProps.isDeleting) {
-      if (isDeleting) {
-        message.loading({ content: 'Đang xóa...', key: this.messageLoadingKey });
-      }
-      if (!isDeleting) {
-        message.success({ content: 'Xóa xong', key: this.messageLoadingKey, duration: 0.4 });
-      }
-    }
-
-    if (timeKeepingView && timeKeepingView !== prevProps.timeKeepingView) {
+    if (salaryView && salaryView !== prevProps.salaryView) {
       this.setState({
-        data: timeKeepingView,
+        data: salaryView,
       });
     }
-  }
-
-  onDeleteTimeKeeping = (indexRecord, indexDate, record) => {
-    if (!record || !record.personnel || !record.timeKeepingList || !record.timeKeepingList[indexDate])
-      return;
-
-    this.props.deleteTimeKeeping(indexRecord, indexDate, record.personnel.id, record.timeKeepingList[indexDate].id);
   }
 
   getColumns = (sortedInfo, isColumnsFixed = false) => ([
@@ -117,8 +89,6 @@ class SalaryList extends Component {
       key: 'fullName',
       width: 100,
       minWidth: 100,
-      // filteredValue: filteredInfo.fullName || null,
-      // ...getColumnSearchProps(this, 'fullName', 'họ tên'),
     },
     {
       title: 'Chức vụ',
@@ -126,8 +96,6 @@ class SalaryList extends Component {
       key: 'position',
       width: 100,
       minWidth: 100,
-      // filteredValue: filteredInfo.fullName || null,
-      // ...getColumnSearchProps(this, 'fullName', 'họ tên'),
     },
     {
       title: 'Số ngày làm',
@@ -159,8 +127,6 @@ class SalaryList extends Component {
       key: 'fare',
       width: 100,
       minWidth: 100,
-      // fixed: isColumnsFixed ? 'left' : null,
-      // ...getColumnSearchProps(this, 'nguoiyeucau'),
     },
     {
       title: 'Tổng tạm ứng',
@@ -179,44 +145,11 @@ class SalaryList extends Component {
   ]);
 
   onDatePickerChange = (date, dateString) => {
-    const { type } = this.state;
+    const dates = getArrayDatesOfMonth(date);
+    const { filteredInfo } = this.state;
 
-    if (type === 'week') {
-      const dates = getArrayDatesOfWeek(date);
-      let { filteredInfo } = this.state;
-
-      this.setState({ dates, columns: this.getColumns(dates) });
-
-      this.fetchSalary(filteredInfo, dates);
-    }
-
-    if (type === 'month') {
-      const dates = getArrayDatesOfMonth(date);
-      const { filteredInfo } = this.state;
-
-      this.setState({ dates, columns: this.getColumns(dates) });
-      this.fetchSalary(filteredInfo, dates);
-    }
-  }
-
-  onChangeType = (type) => {
-    this.setState({ type });
-
-    if (type === 'week') {
-      const dates = getArrayDatesOfWeek(moment());
-      let { filteredInfo } = this.state;
-
-      this.setState({ dates, pickerFormat: 'Tuần w-YYYY', columns: this.getColumns(dates), displayFilter: true });
-      this.fetchSalary(filteredInfo, dates);
-    }
-
-    if (type === 'month') {
-      const dates = getArrayDatesOfMonth(moment());
-      const { filteredInfo } = this.state;
-
-      this.setState({ dates, pickerFormat: 'TM-YYYY', columns: this.getColumns(dates), displayFilter: false });
-      this.fetchSalary(filteredInfo, dates);
-    }
+    this.setState({ dates, columns: this.getColumns(dates) });
+    this.fetchSalary(filteredInfo, dates);
   }
 
   onChangeDepartment = (departmentId) => {
@@ -239,12 +172,6 @@ class SalaryList extends Component {
     this.setState({ filteredInfo });
 
     this.fetchSalary(filteredInfo, dates);
-  }
-
-  onToggleDisplayFilter = () => {
-    const { displayFilter } = this.state;
-
-    this.setState({ displayFilter: !displayFilter });
   }
 
   showTimeKeepingModal = (indexRecord, indexDate, record, date) => {
@@ -277,48 +204,6 @@ class SalaryList extends Component {
     this.fetchSalary(filteredInfo, dates);
   }
 
-  onCancelDoTimeKeepingModal = () => {
-    this.setState({
-      doTimeKeeping: {
-        visible: false,
-        personnel: null,
-        date: null,
-      },
-    });
-  }
-
-  onCancelCreateRequestModal = () => {
-    this.setState({
-      doTimeKeeping: {
-        visible: false,
-        personnel: null,
-        date: null,
-      },
-      visibleCreateRequest: false,
-    });
-  }
-
-  onOkCreateRequestModal = () => {
-    this.setState({
-      doTimeKeeping: {
-        visible: false,
-        personnel: null,
-        date: null,
-      },
-      visibleCreateRequest: false,
-    });
-  }
-
-  onOkDoTimeKeepingModal = () => {
-    this.setState({
-      doTimeKeeping: {
-        visible: false,
-        personnel: null,
-        date: null,
-      },
-    });
-  }
-
   onExportExcel = () => {
     let { filteredInfo, dates } = this.state;
     this.props.exportExcel({
@@ -343,8 +228,7 @@ class SalaryList extends Component {
   }
 
   render() {
-    const { data, doTimeKeeping, dates, displayExcelDownload, visibleCreateRequest } = this.state;
-    const { visible, record, date, indexRecord, indexDate } = doTimeKeeping;
+    const { data, dates, displayExcelDownload } = this.state;
     const { isLoading, departments = [], isExporting } = this.props;
 
     let { sortedInfo, filteredInfo, type, pickerFormat, columns } = this.state;
@@ -365,11 +249,6 @@ class SalaryList extends Component {
             <Col span={24} md={{ span: 12 }}>
               <Button
                 style={{ marginRight: '2px' }}
-                onClick={this.onToggleDisplayFilter}
-                icon={<FilterTwoTone />}>
-              </Button>
-              <Button
-                style={{ marginRight: '2px' }}
                 onClick={this.refreshData}
                 icon={<ReloadOutlined />}>
               </Button>
@@ -382,7 +261,7 @@ class SalaryList extends Component {
                 defaultValue={moment()}
                 format={pickerFormat}
                 onChange={this.onDatePickerChange}
-                picker={type} />
+                picker='month' />
 
               <Select
                 value={filteredInfo.departmentId}
@@ -441,15 +320,6 @@ class SalaryList extends Component {
             scroll={{ x: 'max-content' }}
           />
         </div>
-        <DoTimeKeepingModal
-          visible={visible}
-          record={record}
-          date={date}
-          indexRecord={indexRecord}
-          indexDate={indexDate}
-          onCancel={this.onCancelDoTimeKeepingModal}
-          onOk={this.onOkDoTimeKeepingModal}
-        />
         <ExcelProgressModal
           title='Bạn đang xuất dữ liệu chấm công'
           visible={displayExcelDownload}
@@ -457,27 +327,17 @@ class SalaryList extends Component {
           onOk={this.saveExcelToClient}
           isExporting={isExporting}
         />
-        <CreateRequestModal
-          visible={visibleCreateRequest}
-          record={record}
-          date={date}
-          indexRecord={indexRecord}
-          indexDate={indexDate}
-          onCancel={this.onCancelCreateRequestModal}
-          onOk={this.onOkCreateRequestModal}
-        />
       </>
     );
   }
 }
 
-const mapStateToProps = ({ timeKeeping, department, personnel }) => {
-  const { timeKeepingList } = timeKeeping;
+const mapStateToProps = ({ department, salary }) => {
+  const { salaryList } = salary
   const { departmentList, } = department;
-  // const { time } = personnel;
 
   return {
-    ...timeKeepingList,
+    ...salaryList,
     departments: departmentList.dataList.content,
   };
 };
