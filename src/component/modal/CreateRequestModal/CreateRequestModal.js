@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
 import './index.scss';
-import { Modal, Button, List, notification, message, Row, Col, Form, Input, DatePicker, Select, Divider } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { Modal, Button, notification, message, Row, Col, Form, Input, Select, Divider, Typography } from 'antd';
 import * as timeKeepingAction from '../../../action/timeKeepingAction';
 import { connect } from 'react-redux';
 import { getDateFormatForTitle } from '../../../util/date';
-import TimeKeepingDot from '../../common/TimeKeepingDot/TimeKeepingDot';
-import { timeKeepingColors } from '../../../constant/colors';
 import { getErrorMessage } from '../../../util/get';
-import moment from 'moment';
 import TextArea from 'antd/lib/input/TextArea';
 import SelectUserModal from '../SelectUserlModal/SelectUserModal';
+import * as requestAction from '../../../action/requestAction';
 
+const { Title } = Typography;
 class CreateRequestModal extends Component {
 
   componentDidMount() {
@@ -27,7 +25,7 @@ class CreateRequestModal extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { error, isUpdating, isCreating } = this.props;
+    const { error, isUpdating, isCreating, success } = this.props;
 
     if (error && error !== prevProps.error) {
       if (error) {
@@ -55,6 +53,14 @@ class CreateRequestModal extends Component {
       if (!isCreating) {
         message.success({ content: 'Chấm xong', key: this.messageLoadingKey, duration: 0.4 });
       }
+    }
+
+    if (success !== undefined && success !== prevProps.success) {
+      notification.success({
+        message: 'Thành công',
+        description: success,
+        duration: 2.5,
+      });
     }
   }
 
@@ -85,8 +91,30 @@ class CreateRequestModal extends Component {
     this.setState({ visibleSelectUser: false, user });
   }
 
+  onSubmitForm = (values) => {
+    const { user } = this.state;
+    const { record, date } = this.props;
+
+    let requestPayload = {
+      ...values,
+      personnelId: record.personnel.id,
+      type: 'OnLeave',
+      receiverId: user.id,
+      startDade: date,
+      endDate: date,
+    };
+
+    this.props.createOneRequest(requestPayload);
+    this.props.onOK();
+  }
+
   footer = (
-    <div className='modal-footer-wrapper'>
+    <Col
+      span={24}
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+      }}>
       <Button
         size='small'
         onClick={this.onCancel}
@@ -102,17 +130,17 @@ class CreateRequestModal extends Component {
       >
         OK
       </Button >
-    </div>
+    </Col>
   );
 
   statusList = [
     'Chờ phê duyệt',
     'Châp thuận',
-    'Không chấp thuận',
+    'Từ chối',
   ];
 
   render() {
-    const { visible, record, date, indexDate } = this.props;
+    const { visible, record, date } = this.props;
     const { visibleSelectUser } = this.state;
 
     let title = '';
@@ -138,20 +166,15 @@ class CreateRequestModal extends Component {
             onFinish={this.onSubmitForm}
           >
             <Row>
-              <Col span={24} md={{ span: 12 }}>
-                <Form.Item
-                  name='decidedDate'
-                  label='Ngày quyệt định'
-                  rules={[{ required: true, message: 'Vui lòng chọn ngày quyết định' }]}
-                >
-                  <DatePicker style={{ width: '100%' }} />
-                </Form.Item>
+              <Col span={24} md={{ span: 24 }} className='wrapper-title'>
+                <Title className='form-title advance-form' level={4}>THÔNG TIN NGHỈ PHÉP</Title>
+                <Divider className='divider-advance' />
               </Col>
-              <Col span={24} md={{ span: 12 }}>
+              <Col span={24} md={{ span: 24 }}>
                 <Form.Item
-                  name='amount'
-                  label='Số tiền'
-                  rules={[{ required: true, message: 'Vui lòng nhập số  tiền' }]}
+                  name='info'
+                  label='Tiêu đề'
+                  rules={[{ required: true, message: 'Vui lòng thông tin' }]}
                 >
                   <Input />
                 </Form.Item>
@@ -169,7 +192,7 @@ class CreateRequestModal extends Component {
                   />
                 </Form.Item>
               </Col>
-              <Col span={24} md={{ span: 24 }}>
+              <Col span={24} md={{ span: 12 }}>
                 <Form.Item
                   name='fullName'
                   label='Người phê duyệt'
@@ -179,7 +202,11 @@ class CreateRequestModal extends Component {
                 </Form.Item>
               </Col>
               <Col span={24} md={{ span: 24 }}>
-                <Form.Item name='reason' wrapperCol={{ span: 24 }} label='Lí do'>
+                <Form.Item
+                  name='reason'
+                  wrapperCol={{ span: 24 }}
+                  label='Lí do'
+                >
                   <TextArea rows={3} />
                 </Form.Item>
               </Col>
@@ -207,8 +234,7 @@ const mapStateToProps = ({ timeKeeping }) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createTimeKeeping: (indexRecord, indexDate, personnelId, timeKeepingRequest) => dispatch(timeKeepingAction.createTimeKeeping(indexRecord, indexDate, personnelId, timeKeepingRequest)),
-    updateTimeKeeping: (indexRecord, indexDate, personnelId, timeKeepingId, timeKeepingRequest) => dispatch(timeKeepingAction.updateTimeKeeping(indexRecord, indexDate, personnelId, timeKeepingId, timeKeepingRequest)),
+    createOneRequest: (requestPayload) => dispatch(requestAction.createOneRequest(requestPayload))
   };
 };
 
