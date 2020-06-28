@@ -9,6 +9,7 @@ import { departmentReducer } from './department/departmentReducer';
 import { contractReducer } from './contract/contractReducer';
 import { timeKeepingReducer } from './timeKeeping/timeKeepingReducer';
 import { requestReducer } from './request/requestReducer';
+import { salaryReducer } from './salary/salaryReducer';
 
 export const rootReducer = combineReducers({
   app: appReducer,
@@ -21,4 +22,5 @@ export const rootReducer = combineReducers({
   contract: contractReducer,
   timeKeeping: timeKeepingReducer,
   request: requestReducer,
+  salary: salaryReducer,
 });
