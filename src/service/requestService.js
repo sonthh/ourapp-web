@@ -33,3 +33,14 @@ export const countRequests = async (params = {}) => {
     return Promise.reject(error)
   }
 }
+
+export const updateRequest = async (requestId, requestPayload) => {
+  try {
+    const { data } = await axios
+      .put(`${config.API_URL}/requests/${requestId}`, requestPayload);
+
+    return data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};

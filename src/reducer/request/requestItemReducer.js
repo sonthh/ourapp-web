@@ -2,7 +2,6 @@
 import { actionTypes } from '../../constant/actionTypes';
 
 const initialState = {
-  isLoading: false,
   item: {},
 };
 
@@ -33,6 +32,29 @@ export const requestItemReducer = (state = initialState, { type, payloads }) => 
         ...state,
         isCreating: true,
         success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_ONE_REQUEST_REQUEST: {
+      return {
+        ...state,
+        isUpdating: true,
+        success: undefined,
+      }
+    }
+    case actionTypes.UPDATE_ONE_REQUEST_FAILURE: {
+      const { error } = payloads;
+      return {
+        ...state,
+        error,
+        isUpdating: false,
+      }
+    }
+    case actionTypes.UPDATE_ONE_REQUEST_SUCCESS: {
+      return {
+        ...state,
+        isUpdating: false,
+        success: 'Cập nhật thành công',
+        isUpdated: true,
       }
     }
     default:

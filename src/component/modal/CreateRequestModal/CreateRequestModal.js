@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import './index.scss';
-import { Modal, Button, List, notification, message, Row, Col, Form, Input, DatePicker, Select, Divider } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { Modal, Button, notification, message, Row, Col, Form, Input, DatePicker, Select } from 'antd';
 import * as timeKeepingAction from '../../../action/timeKeepingAction';
 import { connect } from 'react-redux';
 import { getDateFormatForTitle } from '../../../util/date';
-import TimeKeepingDot from '../../common/TimeKeepingDot/TimeKeepingDot';
-import { timeKeepingColors } from '../../../constant/colors';
 import { getErrorMessage } from '../../../util/get';
-import moment from 'moment';
 import TextArea from 'antd/lib/input/TextArea';
 import SelectUserModal from '../SelectUserlModal/SelectUserModal';
 
@@ -107,12 +103,12 @@ class CreateRequestModal extends Component {
 
   statusList = [
     'Chờ phê duyệt',
-    'Châp thuận',
+    'Chấp thuận',
     'Không chấp thuận',
   ];
 
   render() {
-    const { visible, record, date, indexDate } = this.props;
+    const { visible, record, date } = this.props;
     const { visibleSelectUser } = this.state;
 
     let title = '';

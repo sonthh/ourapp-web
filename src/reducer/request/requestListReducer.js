@@ -13,7 +13,7 @@ export const requestListReducer = (state = initialState, { type, payloads }) => 
 
   switch (type) {
     case actionTypes.FIND_MANY_REQUEST_REQUEST: {
-
+      
       return {
         ...state,
         isLoading: true
@@ -58,6 +58,39 @@ export const requestListReducer = (state = initialState, { type, payloads }) => 
         ...state,
         error,
       };
+    }
+    case actionTypes.UPDATE_ONE_REQUEST_SUCCESS: {
+      const { requestId, request } = payloads;
+
+      let { dataList, countRequest } = state;
+      let { content } = dataList;
+
+      let { waiting, approved, rejected } = countRequest;
+
+      if (waiting) {
+        waiting = waiting - 1;
+      }
+
+      if (request.status === 'Chấp thuận') {
+        approved = approved + 1;
+      }
+
+      if (request.status === 'Từ chối') {
+        rejected = rejected + 1;
+      }
+
+      content = content.filter(item => item.id !== requestId);
+
+      return {
+        ...state,
+        dataList: {
+          ...dataList,
+          content,
+        },
+        countRequest: {
+          approved, waiting, rejected,
+        }
+      }
     }
     default:
       return state;
